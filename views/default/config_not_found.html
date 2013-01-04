@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+<h1>{{=T('Config not found')}}</h1>
+
+{{=XML(T('Please go to %(config)s to configure this installation of meshkit.') %
+   dict(config='<a href="/meshkit/appadmin/insert/db/config">/meshkit/appadmin/insert/db/config</a>'))}}
+
+<h2>{{=T('Help')}}</h2>
+
+<ul>
+  <li>{{=T('You can only connect to appadmin via localhost or by using https.')}}</li>
+  <li>{{=T('For help on config options and allowed values consult the INSTALL file.')}}</li>
+</ul>
+
+{{block footer}}
+{{include 'footer.html'}}
+{{end}}

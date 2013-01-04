@@ -1,0 +1,119 @@
+{{extend 'layout.html'}}
+{{footer_enable=True}}
+<h1>{{=T('Step 1 - Basic configuration')}}</h1>
+<div style="height:20px"></div>
+    <form method="post" name="step1" enctype="multipart/form-data" action="">
+        {{if config.communitysupport == True:}}
+        <label id="imageconf_community__label" for="imageconf_community" class="form_label">{{=T('Community')}}</label>
+        <div class="form_value">
+            <select name="community" id="imageconf_community" class="generic-widget">
+                {{for p in communities:}}
+                  {{selected = ""}}
+                  {{if p == session.community: selected = " SELECTED"}}
+                <option value="{{=p}}"{{=selected}}>{{=p}}</option>
+                {{pass}}
+            </select>
+            {{= helptext('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.',config.expandablehelp)}}
+        </div>
+        {{pass}}
+
+        <label id="imageconf_target__label" for="imageconf_target" class="form_label">{{=T('Target')}}</label>
+        <div class="form_value">
+            <select name="target" id="imageconf_target" class="generic-widget">
+                {{for t in targets:}}
+                <option value="{{=t}}">{{=t}}</option>
+                {{pass}}
+            </select>
+            {{= helptext('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.',config.expandablehelp)}}
+        </div>
+        
+        {{if not config.noconf == True:}}
+        <label class="form_label" for="imageconf_noconf" id="imageconf_noconf__label">{{=T('No configuration')}}</label>
+            <div class="form_value">               
+                <input class="boolean" id="imageconf_noconf" name="noconf" type="checkbox"/>
+                {{= helptext('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.',config.expandablehelp)}}
+            </div>
+        {{pass}}
+        
+        <label id="imageconf_mail__label" for="imageconf_mail" class="form_label">{{=T('Mail')}}</label>
+        <div class="form_value">
+            <input type="text" id="imageconf_mail" value="{{=form.vars.mail or user_email or ''}}" name="mail"/>
+            {{= helptext('Enter your email address here. After the images have been built you will receive an email with download links for the firmware.',config.expandablehelp)}}
+            {{=formhelpers.errormsg('mail', form.errors.mail)}}
+        </div>
+            
+        <input type="submit" value="SUBMIT"/>
+        <input type="hidden" name="profile" id="imageconf_profile"/>
+        <input type="hidden" name="_formname" value="step1" />
+    </form>
+<div style="height:35px"></div>
+
+<h2>{{=T('Select by model')}}</h2>
+<p>{{=T('You may select some known router models below. The target on this page and the profile on the next page will automatically be set for you then.')}}<br />
+{{=T('If your model is not shown below then continue by setting target and profile (on the next page) manually.')}}</p>
+
+<div id="modellist">
+</div>
+<script type="text/javascript">
+
+var modellist = {{=XML(modellist)}};
+var target_options = document.getElementById('imageconf_target').options;
+
+function target_rewrite(target) {
+    for(option in target_options) {
+	var ret;
+	if(typeof target_options[option].value != "undefined"){
+          if (target_options[option].value.match(target)) {
+             ret = target_options[option].value;
+          }
+	}
+    }
+    return ret;
+}
+
+
+function set_target(target) {
+    $('select[name="target"]').val(target);
+}
+
+function set_profile(profile) {
+    $('input[name="profile"]').val(profile);
+}
+
+var list = "<table>";
+
+for(var manufacturer in modellist) {
+  var len = Object.keys(modellist[manufacturer]).length;
+  list += '<tr>';
+  list += '<th>' + manufacturer + '</th>';
+  var i = 1;
+  for(var model in modellist[manufacturer]) {
+    list += '<td>';
+    var target = modellist[manufacturer][model]['target'];
+    var profile = modellist[manufacturer][model]['profile'];
+    var full_target = target_rewrite(target);
+    msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
+    link = "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");";
+    link += "set_profile(\"" + profile + "\");";
+    link += "jQuery(\".flash\").html(" + "\"" + msg + "\"" + ").slideDown()'>" + model + "</a>";
+    if( typeof full_target != "undefined") {
+      if(i < len) {
+        list += link + " | "
+      } else {
+        list += link;
+      }
+    }
+    i++;
+  }
+  list += '</td></tr>';
+list += "</table";
+}
+
+
+document.getElementById('modellist').innerHTML = list
+
+</script>
+
+{{block footer}}
+{{include 'footer.html'}}
+{{end}}

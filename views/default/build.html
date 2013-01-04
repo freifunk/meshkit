@@ -1,0 +1,72 @@
+{{extend 'layout.html'}}
+
+<h1>{{=T('Step 3 - Build the images')}}</h1>
+
+<div id="imagelist">
+    <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+    {{=T('Generating images...')}}
+</div>
+
+<script type="text/javascript">
+function ajax() {
+var timeout = 10000
+var retries = 10
+tryCount = 0
+
+$.ajax({
+    url : '{{=URL('static/ajax', str(session.rand))}}',
+    type : 'get',
+    data : '',
+    dataType : 'json',
+    timeout : timeout,
+    tryCount : 0,
+    retryLimit : retries,
+    success : function(json) {
+        var files = ""
+        baseurl = "{{=config.images_web_dir}}/{{=session.rand}}/bin/"
+        for(var i = json.length - 1; i >= 0; --i) {
+        var o = json[i];
+        var name = o.name;
+        var size = (o.size/1024/1024).toFixed(2);
+        var addnew = "<a href='" + baseurl + name + "'>" + name + "</a> (" + size + " M)<br/>";
+        files = files + addnew;  
+}
+
+        document.getElementById('imagelist').innerHTML = files;
+    },
+    error : function(xhr, textStatus, errorThrown ) {
+        if (textStatus == 'timeout') {
+            this.tryCount++;
+            if (this.tryCount <= this.retryLimit) {
+                //try again
+                $.ajax(this);
+                return;
+            }
+            alert('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+            return;
+        }
+        if (xhr.status == 500) {
+            alert('Oops! There seems to be a server problem, please try again later.');
+        }
+        else if (xhr.status == 404) {
+            tryCount++;
+            if (tryCount <= retries) {
+                setTimeout("ajax()", timeout);
+                return;
+            }
+        } else {
+            alert('Oops! There was a problem, sorry.');
+        }
+    }
+});
+
+} // end function ajax
+
+ajax();
+
+
+</script>
+
+{{block footer}}
+{{include 'footer.html'}}
+{{end}}

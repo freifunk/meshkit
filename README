@@ -1,0 +1,32 @@
+== Overview ==
+This is an application for web2py and is used to build preconfigured firmware
+images for openwrt and is a rewrite of the "Freifunk OpenWrt Imagebuilder" [1].
+
+Meshkit is mainly intended to be used for creating
+firmware images for wireless communities like Freifunk that are
+"ready-to-mesh" directly after they have been flashed on a router. But with
+the "noconf" config option it is also possible to use it just to build
+OpenWrt images with a custom package selection and uploaded files included.
+
+== A few words about how image configuration works ==
+Meshkit itself just writes a uci config file and stores it in
+/etc/config/meshkwizard in the resulting firmware image. The actual
+configuration is done by meshwizard [2], which uses community profiles [3]
+and the settings from meshkit to configure the device at first boot after
+the device has been flashed.
+
+== INSTALLATION ==
+See the INSTALL file for installing and configuring meshkit.
+
+== DEVELOPMENT ==
+Watch Meshkit development at:
+http://trac.augsburg.freifunk.net/browser/kamikaze/contrib/meshkit
+
+== BUGTRACKER ==
+Report bugs, feature requests etc. at:
+http://trac.augsburg.freifunk.net/newticket
+
+== LINKS ==
+[1] http://trac.augsburg.freifunk.net/browser/kamikaze/contrib/imagebuilder
+[2] http://luci.subsignal.org/trac/browser/luci/trunk/contrib/package/meshwizard
+[3] http://luci.subsignal.org/trac/browser/luci/trunk/contrib/package/community-profiles

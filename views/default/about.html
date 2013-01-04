@@ -1,0 +1,19 @@
+{{extend 'layout.html'}}
+
+<h1>{{=T('About Meshkit')}}</h1>
+{{=XML(T('Meshkit is a webinterface for the %(openwrt)s image generator.' % dict(openwrt='<a href="https://openwrt.org">OpenWrt</a>')))}} 
+{{=XML(T('Read more about the OpenWrt %(image_generator)s in the OpenWrt wiki.' % dict(image_generator='<a href="http://wiki.openwrt.org/doc/howto/obtain.firmware.generate">image generator</a>')))}}
+{{=T('It allows you to build customized OpenWrt firmware images to use on your router/access point.')}} 
+
+<h2>{{=T('I found some bugs!')}}</h2>
+<p>{{=T('Great! Please report bugs in the Meshkit system itself at:')}} <a href='http://trac.augsburg.freifunk.net'>trac.augsburg.freifunk.net</a>.<br />
+{{=T('For all bugs and questions regarding this specific installation of Meshkit please contact the the admin of this installation:')}} 
+<a href="mailto:{{=adminmail}}">{{=adminmail}}</a>
+
+
+
+
+
+{{block footer}}
+{{include 'footer.html'}}
+{{end}}

@@ -1,0 +1,6 @@
+This is a rewrite of the imagebuilder [1] used to build firmware images for wireless community networks. It is a application to be used together with web2py [2]. Just drop this app in the applications folder of web2py and edit the model 0.py to fit your needs/environment. All variables that are only used by meshkit are prefixed with config_
+
+Contact: freifunk <at> somakoma <dot> de
+
+[1] http://trac.augsburg.freifunk.net/browser/kamikaze/contrib/imagebuilder
+[2] http://www.web2py.com

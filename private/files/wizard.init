@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+# This script is part of Meshkit / Meshwizard
+# It used to setup the Router after the first boot,
+# after that it is disabled
+
+START=99
+boot() {
+	logger -t wizard.notice \"the meshwizard is starting his work\"
+	/usr/bin/meshwizard/wizard.sh
+	/etc/init.d/wizard disable
+	logger -t wizard.notice \"The meshwizard has finished\"
+}

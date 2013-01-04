@@ -1,0 +1,5 @@
+# Note: This will not work if you use wsgi. Setup a normal linux crontab
+# for this task then.
+# run cleanup on config.images_output_dir every hour; images are kept for config.keep_images hours
+*  */1  *  *  * root *applications/meshkit/modules/clean_imagedir.py
+
