@@ -148,6 +148,7 @@
 'Share internet': 'Internet teilen',
 'Show map': 'Karte anzeigen',
 'Size': 'Größe',
+'Standort darf höchstens 64 Zeichen lang sein': 'Standort darf höchstens 64 Zeichen lang sein',
 'Statistics': 'Statistiken',
 'Status': 'Status',
 'Step 1 - Basic configuration': 'Step 1 - Grundlegende Konfiguration',
