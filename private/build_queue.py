@@ -65,11 +65,11 @@ class BuildImages(object):
                  name=None, email=None, phone=None, note=None,
                  theme=None,
                  wifi0ipv4addr=None, wifi0chan=None, wifi0dhcp=None, wifi0dhcprange=None,
-                 wifi0ipv6addr=None, wifi0ipv6ra=False,
+                 wifi0vap=False, wifi0ipv6addr=None, wifi0ipv6ra=False,
                  wifi1ipv4addr=None, wifi1chan=None, wifi1dhcp=None, wifi1dhcprange=None,
-                 wifi1ipv6addr=None, wifi1ipv6ra=False,
+                 wifi1vap=False, wifi1ipv6addr=None, wifi1ipv6ra=False,
                  wifi2ipv4addr=None, wifi2chan=None, wifi2dhcp=None, wifi2dhcprange=None,
-                 wifi2ipv6addr=None, wifi2ipv6ra=False,
+                 wifi2vap=False, wifi2ipv6addr=None, wifi2ipv6ra=False,
                  lanproto=None, lanipv4addr=None, lannetmask=None, landhcp=None,
                  landhcprange=None, wanproto=None, wanipv4addr=None, wannetmask=None,
                  wangateway=None, wandns=None, wan_allow_ssh=None, wan_allow_web=None,
@@ -83,6 +83,8 @@ class BuildImages(object):
         self.Pkgs = pkgs
         if not noconf == True:
             self.Pkgs += ' meshwizard'
+        if wifi0vap == True or wifi1vap == True or wifi2vap == True:
+            self.Pkgs += ' hostapd-mini'
         self.Upload = upload
         self.Mail = mail # this is the mailaddress used to send mails after build
         self.Noconf = noconf
@@ -106,18 +108,21 @@ class BuildImages(object):
         self.Wifi0chan = wifi0chan or "1"
         self.Wifi0dhcp = wifi0dhcp and "1" or "0"
         self.Wifi0ipv6ra = wifi0ipv6ra and "1" or "0"
+        self.Wifi0vap = wifi0vap and "1" or "0"
         self.Wifi0dhcprange = wifi0dhcprange or ''
         self.Wifi1ipv4addr = wifi1ipv4addr
         self.Wifi1ipv6addr = wifi1ipv6addr
         self.Wifi1chan = wifi1chan or "1"
         self.Wifi1dhcp = wifi1dhcp and "1" or "0"
         self.Wifi1ipv6ra = wifi1ipv6ra and "1" or "0"
+        self.Wifi1vap = wifi1vap and "1" or "0"
         self.Wifi1dhcprange = wifi1dhcprange or ''
         self.Wifi2ipv4addr = wifi2ipv4addr
         self.Wifi2ipv6addr = wifi2ipv6addr
         self.Wifi2chan = wifi2chan or "1"
         self.Wifi2dhcp = wifi2dhcp and "1" or "0"
         self.Wifi2ipv6ra = wifi2ipv6ra and "1" or "0"
+        self.Wifi2vap = wifi2vap and "1" or "0"
         self.Wifi2dhcprange = wifi2dhcprange or ''
         self.Lanproto = lanproto or 'dhcp'
         self.Lanipv4addr = lanipv4addr
@@ -291,6 +296,7 @@ class BuildImages(object):
                 wifiipv4 = eval('self.Wifi' + i + 'ipv4addr')
                 wifiipv6 = eval('self.Wifi' + i + 'ipv6addr')
                 ra = eval('self.Wifi' +  i + 'ipv6ra')
+                vap = eval('self.Wifi' +  i + 'vap')
                 if wifiipv4 is not None:
                     chan = eval('self.Wifi' + i + 'chan')
                     dhcp = eval('self.Wifi' +  i + 'dhcp')
@@ -300,6 +306,8 @@ class BuildImages(object):
                     config += "\toption 'IB_wifi" + i + "_channel' '" + chan + "'\n"
                     config += "\toption 'IB_wifi" + i + "_dhcp' '" + dhcp + "'\n"
                     config += "\toption 'IB_wifi" + i + "_dhcprange' '" + dhcprange + "'\n"
+                    config += "\toption 'IB_wifi" + i + "_vap' '" + vap + "'\n"
+
                     if self.Ipv6 and self.Ipv6_config == 'static' and wifiipv6:
                         config += "\toption 'IB_wifi" + i + "_ip6addr' '" + wifiipv6 + "'\n"
                     if self.Ipv6 and (self.Ipv6_config == 'auto-ipv6-random' or
@@ -459,13 +467,13 @@ else:
                                       email=row.email, phone=row.phone, note=row.note, theme=row.theme,
                                       wifi0ipv4addr=row.wifi0ipv4addr, wifi0chan=row.wifi0chan,
                                       wifi0ipv6addr=row.wifi0ipv6addr, wifi0ipv6ra=row.wifi0ipv6ra,
-                                      wifi0dhcp=row.wifi0dhcp, wifi0dhcprange=row.wifi0dhcprange,
+                                      wifi0dhcp=row.wifi0dhcp, wifi0vap=row.wifi0vap, wifi0dhcprange=row.wifi0dhcprange,
                                       wifi1ipv4addr=row.wifi1ipv4addr, wifi1chan=row.wifi1chan,
                                       wifi1ipv6addr=row.wifi1ipv6addr, wifi1ipv6ra=row.wifi1ipv6ra,
-                                      wifi1dhcp=row.wifi1dhcp, wifi1dhcprange=row.wifi1dhcprange,
+                                      wifi1dhcp=row.wifi1dhcp, wifi1vap=row.wifi1vap, wifi1dhcprange=row.wifi1dhcprange,
                                       wifi2ipv4addr=row.wifi2ipv4addr, wifi2chan=row.wifi2chan,
                                       wifi2ipv6addr=row.wifi2ipv6addr, wifi2ipv6ra=row.wifi2ipv6ra,
-                                      wifi2dhcp=row.wifi2dhcp, wifi2dhcprange=row.wifi2dhcprange,
+                                      wifi2dhcp=row.wifi2dhcp, wifi2vap=row.wifi2vap,wifi2dhcprange=row.wifi2dhcprange,
                                       lanproto=row.lanproto, lanipv4addr=row.lanipv4addr,
                                       lannetmask=row.lannetmask, landhcp=row.landhcp,
                                       landhcprange=row.landhcprange, wanproto=row.wanproto,

@@ -68,6 +68,7 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name='WIFI0 ' + T('Channel'))))
         ),
         Field('wifi0dhcp','boolean'),
+        Field('wifi0vap','boolean'),
         Field('wifi0dhcprange',
             requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI0 ' + T('DHCP Range'))))
         ),
@@ -82,6 +83,7 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name='WIFI1 ' + T('Channel'))))
         ),
         Field('wifi1dhcp','boolean'),
+        Field('wifi1vap','boolean'),
         Field('wifi1dhcprange',
             requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI1 ' + T('DHCP Range'))))
         ),
@@ -96,6 +98,7 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name='WIFI2 ' + T('Channel'))))
         ),
         Field('wifi2dhcp','boolean'),
+        Field('wifi2vap','boolean'),
         Field('wifi2dhcprange',
             requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI2 ' + T('DHCP Range'))))
         ),

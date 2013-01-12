@@ -282,6 +282,10 @@
             var v_wifi1_dhcprange = "{{=form.vars.wifi1dhcprange or ''}}";
             var v_wifi2_dhcprange = "{{=form.vars.wifi2dhcprange or ''}}";
 
+            var v_wifi0_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
+            var v_wifi1_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
+            var v_wifi2_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
+
             var v_wifi0_ipv6ra = "{{=form.vars.wifi0ipv6ra or session.wifi0ipv6ra or ''}}";
             var v_wifi1_ipv6ra = "{{=form.vars.wifi1ipv6ra or session.wifi1ipv6ra or ''}}";
             var v_wifi2_ipv6ra = "{{=form.vars.wifi2ipv6ra or session.wifi2ipv6ra or ''}}";
@@ -378,6 +382,26 @@
             wifi_dhcp_input += "</div>"
             wifi_dhcp = wifi_dhcp_label + wifi_dhcp_input;
 
+
+            /* VAP */
+            checked = ''
+            for (var i=0; i<wifi_limit; i++) {
+              var v = eval("v_wifi" + i + "_vap");
+              if ((v=="True" || v=="on") && wifi_counter==i)  {
+                checked = ' checked="1" ';
+              }
+            }
+            wifi_vap_label = "<label id='imageconf_wifi" + wifi_counter + "vap__label' ";
+            wifi_vap_label += "for='imageconf_wifi" + wifi_counter + "vap' class='form_label'>";
+            wifi_vap_label += "{{=T('VAP')}}</label>";
+            wifi_vap_input = "<div class='form_value'>";
+            wifi_vap_input += "<input type='checkbox'" + checked;
+            wifi_vap_input += "name='wifi" + wifi_counter + "vap' id='imageconf_wifi" + wifi_counter +"vap'/>";
+            wifi_vap_input += '{{=helptext(T("Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k."),config.expandablehelp)}}';
+            wifi_vap_input += "</div>"
+            wifi_vap = wifi_vap_label + wifi_vap_input;
+
+
             wifi_dhcp_range_wrap_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "dhcp_range'>";
             wifi_dhcp_range_label = "<label id='imageconf_wifi" + wifi_counter + "dhcprange__label' ";
             wifi_dhcp_range_label += "for='imageconf_wifi" + wifi_counter + "dhcprange' class='form_label'>";
@@ -396,7 +420,7 @@
             wifi_dhcp_range_wrap_end = "</div>";
             wifi_dhcp_range = wifi_dhcp_range_wrap_start + wifi_dhcp_range_label + wifi_dhcp_range_input + wifi_dhcp_range_wrap_end;
             wrapper_end = "</fieldset></div>";
-            newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_dhcp_range + wifi_ipv6ra + wrapper_end;
+            newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_vap + wifi_dhcp_range + wifi_ipv6ra + wrapper_end;
             document.getElementById(divName).appendChild(newdiv);
             wifi_counter++;
             document.getElementById("wifiifsnr").value = wifi_counter;
