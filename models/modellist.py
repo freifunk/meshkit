@@ -9,7 +9,6 @@ config_modellist = {
     },
     "Ubiquiti":{
         "Routerstation":{"target":"ar71xx", "profile":"UBNTRS"},
-        "Routerstation + madwifi":{"target":"ar71xx", "profile":"Madwifi"},
         "Routerstation Pro":{"target":"ar71xx", "profile":"UBNTRSPRO"},
     },
     "\"TP-Link\"":{
