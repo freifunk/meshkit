@@ -65,6 +65,17 @@ def index():
         modellist += k + ":" + str(config_modellist[k]) + ","
     modellist += '}'
 
+    lang = T.accepted_language or 'en'
+    if lang == "de" and content_de:
+        content = content_de
+    else:
+        content = content_en
+
+    if content:
+        startpage = content.startpage or content_en.startpage or ''
+    else:
+        startpage = ''
+
     if form.process(session=None, formname='step1', keepvalues=True).accepted:
         response.flash="form accepted"
         session.community = form.vars.community
@@ -79,7 +90,7 @@ def index():
             errormsg = errormsg + "<li>" + str(form.errors[i]) + "</li>"
             response.flash = XML(T('Form has errors:') + "</br><ul>" + errormsg + "</ul>")
     return dict(form=form,communities=communities, targets=targets, user_email=user_email,
-                formhelpers=formhelpers, vars=form.vars, modellist=modellist)
+                formhelpers=formhelpers, vars=form.vars, modellist=modellist, startpage=startpage)
     
 # coding: utf8
 # try something like

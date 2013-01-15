@@ -12,7 +12,10 @@ config_modellist = {
         "Routerstation Pro":{"target":"ar71xx", "profile":"UBNTRSPRO"},
     },
     "\"TP-Link\"":{
+        "WR741":{"target":"ar71xx", "profile":"TLWR741"},
         "WR1043ND":{"target":"ar71xx", "profile":"TLWR1043"},
+        "WDR3600":{"target":"ar71xx", "profile":"TLWDR4300"},
+        "WDR4300":{"target":"ar71xx", "profile":"TLWDR4300"},
+        "WDR4310":{"target":"ar71xx", "profile":"TLWDR4300"},
     },
-
 }

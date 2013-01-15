@@ -1,6 +1,9 @@
 {{extend 'layout.html'}}
 {{footer_enable=True}}
 <h1>{{=T('Step 1 - Basic configuration')}}</h1>
+
+{{=XML(startpage)}}
+
 <div style="height:20px"></div>
     <form method="post" name="step1" enctype="multipart/form-data" action="">
         {{if config.communitysupport == True:}}
