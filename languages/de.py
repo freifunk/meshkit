@@ -75,7 +75,7 @@
 'IPv6': 'IPv6',
 'IPv6 address': 'IPv6-Adresse',
 'IPv6Packages': 'IPv6Packages',
-'If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".': 'Wird das Protokoll "olsr" benutzt dann verwende eine IP-Adresse aus dem bereich deiner Community. Dann wird olsr für dieses interface aktiviert und das Interface der Zone "freifunk" hinzugefügt.',
+'If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".': 'Wird das Protokoll "olsr" benutzt dann verwende eine IP-Adresse aus dem Bereich deiner Community. Dann wird olsr für dieses interface aktiviert und das Interface der Zone "freifunk" hinzugefügt.',
 'If your model is not shown below then continue by setting target and profile (on the next page) manually.': 'Wenn dein Routermodell nicht angezeigt wird dann wähle "Target" und "Profil" (auf der nächsten Seite) bitte von Hand aus.',
 'Images output directory': 'Images output directory',
 'Images web directory': 'Images web directory',
