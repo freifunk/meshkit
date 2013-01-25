@@ -431,7 +431,13 @@ class BuildImages(object):
             else:
                 option_profile = ""
 
-            cmd = "cd " + config.buildroots_dir + "/" + self.Target + "; make image " + option_profile + " PACKAGES='" + self.Pkgs + "' BIN_DIR='" + self.BinDir + "' FILES='" + self.FilesDir + "'"
+            # check if there are any files to include in the image
+            if len(os.listdir(self.FilesDir)) > 0:
+                option_files = " FILES='" + self.FilesDir + "'"
+            else:
+                option_files=""
+
+            cmd = "cd " + config.buildroots_dir + "/" + self.Target + "; make image " + option_profile + " PACKAGES='" + self.Pkgs + "' BIN_DIR='" + self.BinDir + "' " + option_files
             ret = subprocess.call([cmd, ""], stdout=out, stderr=subprocess.STDOUT, shell=True)
             builder.build_links_json()
             if ret != 0:
