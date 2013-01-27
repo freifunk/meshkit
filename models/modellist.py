@@ -21,6 +21,7 @@ config_modellist = {
     "Ubiquiti":{
         "Routerstation":{"target":"ar71xx", "profile":"UBNTRS"},
         "Routerstation Pro":{"target":"ar71xx", "profile":"UBNTRSPRO"},
+        "Litestation LS-SR71":{"target":"ar71xx", "profile":"UBNT"},
     },
 
 }
