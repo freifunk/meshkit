@@ -11,29 +11,54 @@
     {{pass}}
   </tr>
   <tr>
-    <td>{{=T('Load average')}}</td><td><strong>{{=loadavg}}</strong></td>
+    <td>{{=T('Load average')}}</td><td><strong><span id="loadavg">{{=loadavg}}</span></strong></td>
   <tr>
   <tr>
     <td>{{=T('Memory usage')}}</td>
-    <td><strong>{{=memfree}} {{=T('MB')}}</strong> {{=T('free')}} /
-                <strong>{{=memused}} {{=T('MB')}}</strong> {{=T('used')}}</td>
+    <td><strong><span id="memfree">{{=memfree}}</span> {{=T('MB')}}</strong> {{=T('free')}} /
+                <strong><span id="memused">{{=memused}}</span> {{=T('MB')}}</strong> {{=T('used')}}</td>
 </table>
 
 <h2>{{=T('Statistics')}}</h2>
 <table width="99%">
   <tr>
     <td width="30%">{{=T('Total images generated')}}</td>
-    <td><strong>{{=totalimg}}</strong></td>
+    <td><strong><span id="totalimg">{{=totalimg}}</span></strong></td>
   </tr>
   <tr>
     <td width="30%">{{=T('Successful')}}</td>
-    <td><span style="color:green">{{=successimg}}</span></td>
+    <td><span style="color:green" id="successimg">{{=successimg}}</span></td>
   </tr>
   <tr>
     <td width="30%">{{=T('Failed')}}</td>
-    <td><span style="color:red">{{=failedimg}}</span></td>
+    <td><span style="color:red" id="failedimg">{{=failedimg}}</span></td>
+  </tr>
+  <tr>
+    <td width="30%">{{=T('Queued')}}</td>
+    <td><span id="queuedimg">{{=queuedimg}}</span></td>
   </tr>
 </table>
+
+<script type="text/javascript">
+
+function refreshStats(){
+  $.getJSON('status?json=1', '', function (json, textStatus){
+        document.getElementById('memfree').innerHTML = json.memfree;
+        document.getElementById('memused').innerHTML = json.memused;
+        document.getElementById('loadavg').innerHTML = json.loadavg;
+        document.getElementById('totalimg').innerHTML = json.totalimg;
+        document.getElementById('successimg').innerHTML = json.successimg;
+        document.getElementById('failedimg').innerHTML = json.failedimg;
+        document.getElementById('queuedimg').innerHTML = json.queuedimg;
+  });
+}
+
+// Keep interval in a variable in case you want to cancel it later.
+var refreshInterval = setInterval(refreshStats, 10000);
+
+refreshStats();
+
+</script>
 
 {{block footer}}
 {{include 'footer.html'}}

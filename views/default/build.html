@@ -2,6 +2,8 @@
 
 <h1>{{=T('Step 3 - Build the images')}}</h1>
 
+<div id="status"></div>
+
 <div id="imagelist">
     <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
     {{=T('Generating images...')}}
@@ -31,7 +33,7 @@ $.ajax({
         var addnew = "<a href='" + baseurl + name + "'>" + name + "</a> (" + size + " M)<br/>";
         files = files + addnew;  
 }
-
+	document.getElementById('status').innerHTML = "{{=T('Your images were sucessfully built. Have fun.')}}";
         document.getElementById('imagelist').innerHTML = files;
     },
     error : function(xhr, textStatus, errorThrown ) {
@@ -66,6 +68,30 @@ ajax();
 
 
 </script>
+
+
+<script type="text/javascript">
+/*
+function refreshQueue(){
+  $.getJSON('status?json=1', '', function (json, textStatus){
+        var queued = json.queuedimg;
+        var text = ''
+        if (queued == "0") {
+            text = "{{=T('There are no images queued in front of you. Your build will start soon.')}}"
+        } else {
+            text = "{{=XML(T('Currently there are %(numqueued)s builds in the build queue.' % dict(numqueued='<span id=\'queued\'>'+queuedimg+'</span>')))}}"
+        }
+        document.getElementById('status').innerHTML = text;
+        document.getElementById('queued').innerHTML = queued;
+
+  });
+}
+
+var refreshInterval = setInterval(refreshQueue, 10000);
+refreshQueue();   
+*/
+</script>
+
 
 {{block footer}}
 {{include 'footer.html'}}

@@ -205,18 +205,23 @@ def wizard():
                 )
 
 def build():
-    return dict()
+    queuedimg = str(cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60))
+    return locals()
     
 def about():
     adminmail = config.adminmail.replace('@', '(at)')
     return dict(adminmail=adminmail)
 
 def status():
+    json=request.vars['json']
     status = check_queue()
     loadavg = cache.ram('loadavg',lambda:utils.loadavg(),time_expire=10)
     memory = cache.ram('memory',lambda:utils.memory_stats(),time_expire=10)
     memused, memfree = str(memory[1]), str(memory[2])
     totalimg = cache.ram('totalimg',lambda:db(db.imageconf).select(db.imageconf.id.max()).first()['MAX(imageconf.id)'],time_expire=60)
+    queuedimg = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60)
     failedimg = cache.ram('failedimg',lambda:len(db((db.imageconf.status=='2') | (db.imageconf.status=='3')).select()),time_expire=60)
     successimg = cache.ram('successimg',lambda:totalimg - failedimg,time_expire=60)
+    if json:
+         response.view='default/status.json'
     return locals()
