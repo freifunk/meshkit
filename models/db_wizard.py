@@ -11,6 +11,7 @@ if not config == None:
             )
         ),
         Field('noconf', 'boolean'),
+        Field('expert', 'boolean'),
         Field('mail',
             requires=IS_EMPTY_OR(IS_EMAIL(error_message=T('%(name)s is invalid') % dict(name=T('Email'))))
         ),

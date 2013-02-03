@@ -29,7 +29,14 @@
             </select>
             {{= helptext('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.',config.expandablehelp)}}
         </div>
-        
+
+        <label class="form_label" for="imageconf_expert" id="imageconf_expert__label">{{=T('Expert')}}</label>
+            <div class="form_value">               
+                <input class="boolean" id="imageconf_expert" name="expert" type="checkbox"/>
+                {{= helptext('Enable this to show much more options for customizing your firmware.',config.expandablehelp)}}
+            </div>
+
+
         {{if not config.noconf == True:}}
         <label class="form_label" for="imageconf_noconf" id="imageconf_noconf__label">{{=T('No configuration')}}</label>
             <div class="form_value">               

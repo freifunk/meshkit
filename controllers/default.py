@@ -83,6 +83,9 @@ def index():
         session.mail = form.vars.mail
         session.profile = form.vars.profile or 'Default'
         session.noconf = form.vars.noconf or config.noconf
+        session.expert = form.vars.expert
+        if session.noconf:
+            session.expert = True
         redirect(URL('wizard'))
     elif form.errors:
         errormsg = ''

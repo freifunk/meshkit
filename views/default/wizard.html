@@ -10,760 +10,760 @@
 <script type="text/javascript">user_packagelist = '{{=user_packagelist}}'</script>
 <script type="text/javascript">addpackages = '{{=addpackages}}'</script>
 
+{{if session.expert:}}
+<style type="text/css">
+.expert{
+	display: inline !important;
+}
+#tab-lan, #tab-wan, #tab-packages, #tab-upload {
+	display: block !important;
+}
+</style>
+{{pass}}
+
+<script>
+$(function() {
+$( "#accordion" ).accordion({ heightStyle: "content" });
+});
+</script>
 
 <h1>Step 2 - Image configuration</h1>
 
 <form action="" name="MAINFORM" enctype="multipart/form-data" method="POST">
-  <div id="tab-container">
+  <div id="accordion">
   <!-- Start system tab -->
-    <div class="tab-content" style="display: block;">
-      <div class="formelement">
-      <h1 title="{{=T('Basic system settings')}}" class="tab">{{=T('System')}}</h1>
+	<h3 title="{{=T('Basic system settings')}}">{{=T('System')}}</h3>
+	<div>
+	  {{if session.profiles:}}
+	  <label class="form_label" for="imageconf_profile" id="imageconf_profile__label">{{=T('Profile')}}</label>
+	  <div class="form_value">
+		<select onchange="var e = document.getElementById('imageconf_profile'); var selected = e.options[e.selectedIndex].value; ProfilePkgs('{{=URL("static", "ajax/" + session.target)}}', selected);" class="generic-widget" id="imageconf_profile" name="profile">
+		  {{for profile in session.profiles:}}
+			{{selected = ""}}
+			{{if profile == session.profile: selected = " SELECTED"}}
+		      <option value="{{=profile}}"{{=selected}}>{{=profile}}</option>
+		    {{pass}}
+		</select>
+		    {{=helptext(T('This sets a profile for your router model. If your device is not listed try something generic (default) if available.'),config.expandablehelp)}}
+	  </div>
+	      {{pass}}
 
-      {{if session.profiles:}}
-      <label class="form_label" for="imageconf_profile" id="imageconf_profile__label">{{=T('Profile')}}</label>
-      <div class="form_value">
-        <select onchange="var e = document.getElementById('imageconf_profile'); var selected = e.options[e.selectedIndex].value; ProfilePkgs('{{=URL("static", "ajax/" + session.target)}}', selected);" class="generic-widget" id="imageconf_profile" name="profile">
-          {{for profile in session.profiles:}}
-            {{selected = ""}}
-            {{if profile == session.profile: selected = " SELECTED"}}
-          <option value="{{=profile}}"{{=selected}}>{{=profile}}</option>
-          {{pass}}
-        </select>
-        {{=helptext(T('This sets a profile for your router model. If your device is not listed try something generic (default) if available.'),config.expandablehelp)}}
-      </div>
-      {{pass}}
+	  <script type="text/javascript">
+		var e = document.getElementById('imageconf_profile');
+		var selected = e.options[e.selectedIndex].value;
+		ProfilePkgs('{{=URL("static", "ajax/" + session.target)}}', selected);
+		update_defaultpkgs();
+	  </script>
 
-      <script type="text/javascript">
-        var e = document.getElementById('imageconf_profile');
-        var selected = e.options[e.selectedIndex].value;
-        ProfilePkgs('{{=URL("static", "ajax/" + session.target)}}', selected);
-        update_defaultpkgs();
-      </script>
-   
-      <label class="form_label" for="imageconf_webif" id="imageconf_webif__label">{{=T('Webinterface')}}</label>
-      <div class="form_value">
-        <select onchange="themeselect()" class="generic-widget" id="imageconf_webif" name="webif">
-          {{for webif in config.webifs:}}
-            {{selected = ""}}
-            {{if webif == form.vars.webif: selected = " SELECTED"}}
-          <option value="{{=webif}}"{{=selected}}>{{=webif}}</option>
-          {{pass}}
-        </select>
-        {{= helptext(T('Webinterface that is installed. This may remove or add packages depending on your selection.'),config.expandablehelp)}}
-      </div>
-                
-      <div id="theme_options">
-        <!-- this will be replaced by the js below -->
-      </div>
+          <div class="expert">
+		<label class="form_label" for="imageconf_webif" id="imageconf_webif__label">{{=T('Webinterface')}}</label>
+		<div class="form_value">
+		<select onchange="themeselect()" class="generic-widget" id="imageconf_webif" name="webif">
+		  {{for webif in config.webifs:}}
+			{{selected = ""}}
+			  {{if webif == form.vars.webif: selected = " SELECTED"}}
+			<option value="{{=webif}}"{{=selected}}>{{=webif}}</option>
+			{{pass}}
+		  </select>
+		  {{= helptext(T('Webinterface that is installed. This may remove or add packages depending on your selection.'),config.expandablehelp)}}
+		</div>
+          </div> 
+				
+		<div id="theme_options" class="expert">
+		<!-- this will be replaced by the js below -->
+		</div>
 
-      {{if not session.noconf == True:}}
-      <label id="imageconf_hostname__label" for="imageconf_hostname" class="form_label">{{=T('Hostname')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_hostname" value="{{=form.vars.hostname or ''}}" name="hostname"/>
-        {{= helptext(T('Hostname. If left empty it will be autogenerated from the IPv4 address'),config.expandablehelp)}}
-        {{=formhelpers.errormsg('hostname', form.errors.hostname, 'Hostname must only contain a-z,A-Z,0-9, period and minus. It must not start or end with period or minus.')}}
-      </div>
+		{{if not session.noconf == True:}}
+		<label id="imageconf_hostname__label" for="imageconf_hostname" class="form_label">{{=T('Hostname')}}</label>
+		<div class="form_value">
+			<input type="text" id="imageconf_hostname" value="{{=form.vars.hostname or ''}}" name="hostname"/>
+			{{= helptext(T('Hostname. If left empty it will be autogenerated from the IPv4 address'),config.expandablehelp)}}
+			{{=formhelpers.errormsg('hostname', form.errors.hostname, 'Hostname must only contain a-z,A-Z,0-9, period and minus. It must not start or end with period or minus.')}}
+		</div>
 
-      {{if session.ipv6conf == True:}}
-      <label class="form_label" for="imageconf_ipv6" id="imageconf_ipv6__label">{{=T('IPv6')}}</label>
-        <div class="form_value">
-          <input class="boolean" id="imageconf_ipv6" name="ipv6" type="checkbox" {{if session.ipv6:}}checked="1"{{pass}}" onchange="ipv6pkgs();"/>
-          {{= helptext(T('Enable/Disable IPv6 globally.'), config.expandablehelp)}}
-        </div>
-      <script type='text/javascript'>
-        function ipv6pkgs() {
-          if(document.getElementById("imageconf_ipv6").checked)
-            {
-              ipv6packages='{{=ipv6_packages}}';
-              update_defaultpkgs();
-            }
-            else    {
-              ipv6packages = '';
-              update_defaultpkgs();
-            }
-          };
-        ipv6pkgs();
-      </script>
-      {{pass}}
-      
-      <label class="form_label" for="imageconf_pubkeys" id="imageconf_note__label">{{=T('Pubkeys')}}</label>
-      <div class="form_value">
-        <textarea wrap="off" rows="5" class="text note" id="imageconf_pubkeys" name="pubkeys" type="text">{{=form.vars.pubkeys or session.pubkeys}}</textarea>
-          {{= helptext(T('Add ssh public keys, one per line.'), config.expandablehelp)}}
-      </div>
+		  {{if session.ipv6conf == True:}}
+		<label class="form_label expert" for="imageconf_ipv6" id="imageconf_ipv6__label">{{=T('IPv6')}}</label>
+		<div class="form_value expert">
+		  <input class="boolean" id="imageconf_ipv6" name="ipv6" type="checkbox" {{if session.ipv6:}}checked="1"{{pass}}" onchange="ipv6pkgs();"/>
+		  {{= helptext(T('Enable/Disable IPv6 globally.'), config.expandablehelp)}}
+		</div>
 
-      <span id='osm'>
-        <label id="imageconf_latitude__label" for="imageconf_latitude" class="form_label">{{=T('Latitude')}}</label>
-        <div class="form_value">
-          <input type="text" id="imageconf_latitude" value="{{=lat}}" name="latitude"/>
-          {{= helptext(T('Latitude') + " " + T('in decimal notation.'), config.expandablehelp)}}
-          {{=formhelpers.errormsg('latitude', form.errors.latitude, T('Latitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.'))}}
-        </div>
-        <label id="imageconf_longitude__label" for="imageconf_longitude" class="form_label">{{=T('Longitude')}}</label>
-        <div class="form_value">
-          <input type="text" id="imageconf_longitude" value="{{=lon}}" name="longitude"/>
-          {{= helptext(T('Longitude') + " " + T('in decimal notation.'), config.expandablehelp)}}
-          {{=formhelpers.errormsg('longitude', form.errors.longitude, T('Longitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.'))}}
-        </div>
-          <input type="button" id="showmap" value="{{=T('Show map')}}" style="cursor:pointer" onclick="toggle_button()">
-      </span>
-
-      <script type='text/javascript'>
-        function toggle_container(cmd) {
-          if ( cmd == 'show' ) {
-            var osm1 = function() {
-              loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
-            };
-            document.getElementById('map_container').innerHTML="<div id='map'></div><div style='font-size:0.8em'>Map by <a href='http://www.openstreetmap.org' title='www.openstreetmap.org'>openstreetmap.org</a>, License CC-BY-SA</div>";
-            loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
-            var osm2 = function() {
-              loadScript('{{=URL("static", "js", "osm.js")}}',do_map);
-            };
-            var do_map = function() {
-              init(); drawmap();
-            };
-
-            } else {
-              document.getElementById('map_container').innerHTML = '';
-            }
-          }
-
-          function toggle_button() {
-            var val = document.getElementById('showmap').value;
-            if (val == '{{=T('Show map')}}' ) {
-              var val = document.getElementById('showmap').value = '{{=T("Hide map")}}';
-              toggle_container('show');
-            }
-            else
-            {
-              var val = document.getElementById('showmap').value = '{{=T("Show map")}}';
-              toggle_container('hide');
-            }
-          }
-    </script>
-
-    <div id='map_container'></div>
+		<script type='text/javascript'>
+		  function ipv6pkgs() {
+			if(document.getElementById("imageconf_ipv6").checked)
+			  {
+				ipv6packages='{{=ipv6_packages}}';
+				update_defaultpkgs();
+			  }
+			  else    {
+				  ipv6packages = '';
+				  update_defaultpkgs();
+			  }
+		  };
+		  ipv6pkgs();
+		</script>
+		  {{pass}}
+	  
+		<label class="form_label expert" for="imageconf_pubkeys" id="imageconf_note__label">{{=T('Pubkeys')}}</label>
+		<div class="form_value expert">
+			<textarea wrap="off" rows="5" class="text note" id="imageconf_pubkeys" name="pubkeys" type="text">{{=form.vars.pubkeys or session.pubkeys}}</textarea>
+			  {{= helptext(T('Add ssh public keys, one per line.'), config.expandablehelp)}}
+		</div>
 
 
-      {{pass}}
-                
-      <script type="text/javascript">
-      function themeselect() {
-        var e = document.getElementById("imageconf_webif");
-        var selected = e.options[e.selectedIndex].value;
-        if ( selected == "none" ) {
-          document.getElementById("theme_options").innerHTML = '';
-          lucipackages = '';
-          themepackages= '';
-          update_defaultpkgs();
-        };
-        if ( selected == "luci" ) {
-          var newdiv = "<label class='form_label' for='imageconf_theme' id='imageconf_theme__label'>{{=T('Theme')}}</label>";
-          newdiv += "<div class='form_value'><select class='generic-widget' id='imageconf_theme' name='theme' onchange='themepkgs()'>";
-          {{for theme in themes:}}
-          {{selected = ""}}
-          {{if theme == session.theme: selected = " SELECTED"}}
+	  <span id='osm'>
+		<label id="imageconf_latitude__label" for="imageconf_latitude" class="form_label">{{=T('Latitude')}}</label>
+		<div class="form_value">
+		  <input type="text" id="imageconf_latitude" value="{{=lat}}" name="latitude"/>
+		  {{= helptext(T('Latitude') + " " + T('in decimal notation.'), config.expandablehelp)}}
+		  {{=formhelpers.errormsg('latitude', form.errors.latitude, T('Latitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.'))}}
+		</div>
+		<label id="imageconf_longitude__label" for="imageconf_longitude" class="form_label">{{=T('Longitude')}}</label>
+		<div class="form_value">
+		  <input type="text" id="imageconf_longitude" value="{{=lon}}" name="longitude"/>
+		  {{= helptext(T('Longitude') + " " + T('in decimal notation.'), config.expandablehelp)}}
+		  {{=formhelpers.errormsg('longitude', form.errors.longitude, T('Longitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.'))}}
+		</div>
+		  <input type="button" id="showmap" value="{{=T('Show map')}}" style="cursor:pointer" onclick="toggle_button()">
+	  </span>
 
-          newdiv += "<option value='{{=theme}}'{{=selected}}>{{=theme}}</option>";
-          {{pass}}
-          {{pass}}
-          newdiv += "</select>";
-          newdiv += '{{=helptext(T("Webinterface that will be installed."),config.expandablehelp)}}';
-          newdiv += "</div>";
-          document.getElementById("theme_options").innerHTML = newdiv;
-          lucipackages = "{{=lucipackages}}";
-          themepkgs();
-          update_defaultpkgs();
-          hideAll();
-        };
-      }
-      themeselect();
-      themepkgs();
-      </script>
-    </div>
-  </div>
+	  <script type='text/javascript'>
+		function toggle_container(cmd) {
+		  if ( cmd == 'show' ) {
+			var osm1 = function() {
+			  loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
+			};
+			document.getElementById('map_container').innerHTML="<div id='map'></div><div style='font-size:0.8em'>Map by <a href='http://www.openstreetmap.org' title='www.openstreetmap.org'>openstreetmap.org</a>, License CC-BY-SA</div>";
+			loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
+			var osm2 = function() {
+			  loadScript('{{=URL("static", "js", "osm.js")}}',do_map);
+			};
+			var do_map = function() {
+			  init(); drawmap();
+			};
+
+			} else {
+			  document.getElementById('map_container').innerHTML = '';
+			}
+		  }
+
+		  function toggle_button() {
+			var val = document.getElementById('showmap').value;
+			if (val == '{{=T('Show map')}}' ) {
+			  var val = document.getElementById('showmap').value = '{{=T("Hide map")}}';
+			  toggle_container('show');
+			}
+			else
+			{
+			  var val = document.getElementById('showmap').value = '{{=T("Show map")}}';
+			  toggle_container('hide');
+			}
+		  }
+	</script>
+
+	  <div id='map_container'></div>
+	  {{pass}}
+				
+	  <script type="text/javascript">
+	  function themeselect() {
+		var e = document.getElementById("imageconf_webif");
+		var selected = e.options[e.selectedIndex].value;
+		if ( selected == "none" ) {
+		  document.getElementById("theme_options").innerHTML = '';
+		  lucipackages = '';
+		  themepackages= '';
+		  update_defaultpkgs();
+		};
+		if ( selected == "luci" ) {
+		  var newdiv = "<label class='form_label' for='imageconf_theme' id='imageconf_theme__label'>{{=T('Theme')}}</label>";
+		  newdiv += "<div class='form_value'><select class='generic-widget' id='imageconf_theme' name='theme' onchange='themepkgs()'>";
+		  {{for theme in themes:}}
+		  {{selected = ""}}
+		  {{if theme == session.theme: selected = " SELECTED"}}
+
+		  newdiv += "<option value='{{=theme}}'{{=selected}}>{{=theme}}</option>";
+		  {{pass}}
+		  {{pass}}
+		  newdiv += "</select>";
+		  newdiv += '{{=helptext(T("Webinterface that will be installed."),config.expandablehelp)}}';
+		  newdiv += "</div>";
+		  document.getElementById("theme_options").innerHTML = newdiv;
+		  lucipackages = "{{=lucipackages}}";
+		  themepkgs();
+		  update_defaultpkgs();
+		  hideAll();
+		};
+	  }
+	  themeselect();
+	  themepkgs();
+	  </script>
+	</div>
   <!-- End system tab -->
 
   {{if not session.noconf == True and session.communitysupport == True:}}
   <!-- Start contact tab -->
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-    <h1 title="{{=T('Contact')}}" class="tab">{{=T('Contact')}}</h1>
-            
-    <label id="imageconf_nickname__label" for="imageconf_nickname" class="form_label">{{=T('Nickname')}}</label>
-    <div class="form_value">
-       <input type="text" id="imageconf_nickname" value="{{=form.vars.nickname or session.nickname}}" name="nickname"/>
-       {{=formhelpers.errormsg('nickname', form.errors.nickname)}}
-    </div>
-                
-    <label id="imageconf_name__label" for="imageconf_name" class="form_label">{{=T('Name')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_name" value="{{=form.vars.name or session.name}}" name="name"/>
-        {{=formhelpers.errormsg('name', form.errors.name)}}
-      </div>
+  <h3 title="{{=T('Contact')}}">{{=T('Contact')}}</h3>
+  <div>
+	<label id="imageconf_nickname__label" for="imageconf_nickname" class="form_label">{{=T('Nickname')}}</label>
+	<div class="form_value">
+	  <input type="text" id="imageconf_nickname" value="{{=form.vars.nickname or session.nickname}}" name="nickname"/>
+	  {{=formhelpers.errormsg('nickname', form.errors.nickname)}}
+	</div>
+				
+	<label id="imageconf_name__label" for="imageconf_name" class="form_label">{{=T('Name')}}</label>
+	  <div class="form_value">
+		<input type="text" id="imageconf_name" value="{{=form.vars.name or session.name}}" name="name"/>
+		{{=formhelpers.errormsg('name', form.errors.name)}}
+	  </div>
 
-      <label id="imageconf_email__label" for="imageconf_email" class="form_label">{{=T('Mail')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_email" value="{{=form.vars.email or session.mail}}" name="email"/>
-        {{=formhelpers.errormsg('email', form.errors.email)}}
-      </div>
+	  <label id="imageconf_email__label" for="imageconf_email" class="form_label">{{=T('Mail')}}</label>
+	  <div class="form_value">
+		<input type="text" id="imageconf_email" value="{{=form.vars.email or session.mail}}" name="email"/>
+		{{=formhelpers.errormsg('email', form.errors.email)}}
+	  </div>
 
-      <label id="imageconf_phone__label" for="imageconf_phone" class="form_label">{{=T('Phone')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_phone" value="{{=form.vars.phone or session.phone}}" name="phone"/>
-        {{=formhelpers.errormsg('phone', form.errors.phone)}}
-      </div>
-                
-      <label id="imageconf_location__label" for="imageconf_location" class="form_label">{{=T('Location')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_location" value="{{=form.vars.location or session.location}}" name="location"/>
-        {{=formhelpers.errormsg('location', form.errors.location)}}
-      </div>
-                
-      <label class="form_label" for="imageconf_note" id="imageconf_note__label">{{=T('Note')}}</label>
-      <div class="form_value">            
-        <textarea rows="5" class="text note" id="imageconf_note" name="note" type="text">{{=form.vars.note or session.note}}</textarea>
-      </div>
-      {{=formhelpers.errormsg('note', form.errors.note)}}
-    </div>
+	  <label id="imageconf_phone__label" for="imageconf_phone" class="form_label">{{=T('Phone')}}</label>
+	  <div class="form_value">
+		<input type="text" id="imageconf_phone" value="{{=form.vars.phone or session.phone}}" name="phone"/>
+		{{=formhelpers.errormsg('phone', form.errors.phone)}}
+	  </div>
+				
+	  <label id="imageconf_location__label" for="imageconf_location" class="form_label">{{=T('Location')}}</label>
+	  <div class="form_value">
+		<input type="text" id="imageconf_location" value="{{=form.vars.location or session.location}}" name="location"/>
+		{{=formhelpers.errormsg('location', form.errors.location)}}
+	  </div>
+				
+	  <label class="form_label" for="imageconf_note" id="imageconf_note__label">{{=T('Note')}}</label>
+	  <div class="form_value">            
+		<textarea rows="5" class="text note" id="imageconf_note" name="note" type="text">{{=form.vars.note or session.note}}</textarea>
+	  </div>
+	  {{=formhelpers.errormsg('note', form.errors.note)}}
   </div>
   <!-- End contact tab -->
   {{pass}}
-            
+			
   {{if not session.noconf == True:}}
   <!-- Start wifi tab -->
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-      <h1 title="{{=T('Wireless settings')}}" class="tab">{{=T('Wireless')}}</h1>
-      <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or 1}}" />
-      <script type="text/javascript">
-        var wifi_counter = 0;
-        var wifi_limit = 3;
-        function removeWifi(number) {
-          if (document.getElementById(number)) {
-            parent = document.getElementById(number).parentNode
-            child = document.getElementById(number);
-            parent.removeChild(child);
-            wifi_counter--;
-            document.getElementById("wifiifsnr").value = wifi_counter;
-          };
-        }
-        function addInput(divName){
-          if (wifi_counter == wifi_limit)  {
-            alert("{{=T('Maximum number of wifi interfaces reached.')}}");
-          }
-          else {
-            var e_wifi0_ipv4addr = "{{=form.errors.wifi0ipv4addr}}";
-            var e_wifi1_ipv4addr = "{{=form.errors.wifi1ipv4addr}}";
-            var e_wifi2_ipv4addr = "{{=form.errors.wifi2ipv4addr}}";
-            var v_wifi0_ipv4addr = "{{=form.vars.wifi0ipv4addr or defip}}";
-            var v_wifi1_ipv4addr = "{{=form.vars.wifi1ipv4addr or defip}}";
-            var v_wifi2_ipv4addr = "{{=form.vars.wifi2ipv4addr or defip}}";
+  <h3 title="{{=T('Wireless')}}">{{=T('Wireless')}}</h3>
+  <div>
+	  <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or 1}}" />
+	  <script type="text/javascript">
+		var wifi_counter = 0;
+		var wifi_limit = 3;
+		function removeWifi(number) {
+		  if (document.getElementById(number)) {
+			parent = document.getElementById(number).parentNode
+			child = document.getElementById(number);
+			parent.removeChild(child);
+			wifi_counter--;
+			document.getElementById("wifiifsnr").value = wifi_counter;
+		  };
+		}
+		function addInput(divName){
+		  if (wifi_counter == wifi_limit)  {
+			alert("{{=T('Maximum number of wifi interfaces reached.')}}");
+		  }
+		  else {
+			var e_wifi0_ipv4addr = "{{=form.errors.wifi0ipv4addr}}";
+			var e_wifi1_ipv4addr = "{{=form.errors.wifi1ipv4addr}}";
+			var e_wifi2_ipv4addr = "{{=form.errors.wifi2ipv4addr}}";
+			var v_wifi0_ipv4addr = "{{=form.vars.wifi0ipv4addr or defip}}";
+			var v_wifi1_ipv4addr = "{{=form.vars.wifi1ipv4addr or defip}}";
+			var v_wifi2_ipv4addr = "{{=form.vars.wifi2ipv4addr or defip}}";
 
-            var e_wifi0_ipv6addr = "{{=form.errors.wifi0ipv6addr}}";
-            var e_wifi1_ipv6addr = "{{=form.errors.wifi1ipv6addr}}";
-            var e_wifi2_ipv6addr = "{{=form.errors.wifi2ipv6addr}}";
-            var v_wifi0_ipv6addr = "{{=form.vars.wifi0ipv6addr or ''}}";
-            var v_wifi1_ipv6addr = "{{=form.vars.wifi1ipv6addr or ''}}";
-            var v_wifi2_ipv6addr = "{{=form.vars.wifi2ipv6addr or ''}}";
+			var e_wifi0_ipv6addr = "{{=form.errors.wifi0ipv6addr}}";
+			var e_wifi1_ipv6addr = "{{=form.errors.wifi1ipv6addr}}";
+			var e_wifi2_ipv6addr = "{{=form.errors.wifi2ipv6addr}}";
+			var v_wifi0_ipv6addr = "{{=form.vars.wifi0ipv6addr or ''}}";
+			var v_wifi1_ipv6addr = "{{=form.vars.wifi1ipv6addr or ''}}";
+			var v_wifi2_ipv6addr = "{{=form.vars.wifi2ipv6addr or ''}}";
 
-            var e_wifi0_chan = "{{=form.errors.wifi0chan}}";
-            var e_wifi1_chan = "{{=form.errors.wifi1chan}}";
-            var e_wifi2_chan = "{{=form.errors.wifi2chan}}";
-            var v_wifi0_chan = "{{=form.vars.wifi0chan or defchannel}}";
-            var v_wifi1_chan = "{{=form.vars.wifi1chan or defchannel}}";
-            var v_wifi2_chan = "{{=form.vars.wifi2chan or defchannel}}";
+			var e_wifi0_chan = "{{=form.errors.wifi0chan}}";
+			var e_wifi1_chan = "{{=form.errors.wifi1chan}}";
+			var e_wifi2_chan = "{{=form.errors.wifi2chan}}";
+			var v_wifi0_chan = "{{=form.vars.wifi0chan or defchannel}}";
+			var v_wifi1_chan = "{{=form.vars.wifi1chan or defchannel}}";
+			var v_wifi2_chan = "{{=form.vars.wifi2chan or defchannel}}";
 
-            var e_wifi0_dhcprange = "{{=form.errors.wifi0dhcprange}}";
-            var e_wifi1_dhcprange = "{{=form.errors.wifi1dhcprange}}";
-            var e_wifi2_dhcprange = "{{=form.errors.wifi2dhcprange}}";
-            var v_wifi0_dhcprange = "{{=form.vars.wifi0dhcprange or ''}}";
-            var v_wifi1_dhcprange = "{{=form.vars.wifi1dhcprange or ''}}";
-            var v_wifi2_dhcprange = "{{=form.vars.wifi2dhcprange or ''}}";
+			var e_wifi0_dhcprange = "{{=form.errors.wifi0dhcprange}}";
+			var e_wifi1_dhcprange = "{{=form.errors.wifi1dhcprange}}";
+			var e_wifi2_dhcprange = "{{=form.errors.wifi2dhcprange}}";
+			var v_wifi0_dhcprange = "{{=form.vars.wifi0dhcprange or ''}}";
+			var v_wifi1_dhcprange = "{{=form.vars.wifi1dhcprange or ''}}";
+			var v_wifi2_dhcprange = "{{=form.vars.wifi2dhcprange or ''}}";
 
-            var v_wifi0_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
-            var v_wifi1_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
-            var v_wifi2_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
+			var v_wifi0_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
+			var v_wifi1_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
+			var v_wifi2_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
 
-            var v_wifi0_ipv6ra = "{{=form.vars.wifi0ipv6ra or session.wifi0ipv6ra or ''}}";
-            var v_wifi1_ipv6ra = "{{=form.vars.wifi1ipv6ra or session.wifi1ipv6ra or ''}}";
-            var v_wifi2_ipv6ra = "{{=form.vars.wifi2ipv6ra or session.wifi2ipv6ra or ''}}";
+			var v_wifi0_ipv6ra = "{{=form.vars.wifi0ipv6ra or session.wifi0ipv6ra or ''}}";
+			var v_wifi1_ipv6ra = "{{=form.vars.wifi1ipv6ra or session.wifi1ipv6ra or ''}}";
+			var v_wifi2_ipv6ra = "{{=form.vars.wifi2ipv6ra or session.wifi2ipv6ra or ''}}";
 
-            var newdiv = document.createElement('div');
-            wrapper_start = "<div id='wifi" + wifi_counter + "'>";
-            wrapper_start += "<fieldset class='section' xmlns='http://www.w3.org/1999/xhtml'>";
-            wrapper_start += "<legend>Wifi" + wifi_counter;
-            wrapper_start += "<span class='sectionremove'>";
-            wrapper_start += "<a onclick=\"removeWifi('wifi" + wifi_counter + "')\" ";
-            wrapper_start += "href='javascript:void(0)' title='{{=T('Remove')}}'>";
-            wrapper_start += "<img src=\"{{=URL('static', 'images/icons/remove.gif')}}\" alt=\"{{=T('Remove')}}\">";
-            wrapper_start += "</a></span></legend>";
+			var newdiv = document.createElement('div');
+			wrapper_start = "<div id='wifi" + wifi_counter + "'>";
+			wrapper_start += "<fieldset class='section' xmlns='http://www.w3.org/1999/xhtml'>";
+			wrapper_start += "<legend>Wifi" + wifi_counter;
+			wrapper_start += "<span class='sectionremove'>";
+			wrapper_start += "<a onclick=\"removeWifi('wifi" + wifi_counter + "')\" ";
+			wrapper_start += "href='javascript:void(0)' title='{{=T('Remove')}}'>";
+			wrapper_start += "<img src=\"{{=URL('static', 'images/icons/remove.gif')}}\" alt=\"{{=T('Remove')}}\">";
+			wrapper_start += "</a></span></legend>";
 
-            wifi_ipv4addr_label = "<label id='imageconf_wifi" + wifi_counter + "ipv4addr__label' ";
-            wifi_ipv4addr_label += "for='imageconf_wifi" + wifi_counter + "ipv4addr' class='form_label'>";
-            wifi_ipv4addr_label += "{{=T('IPv4 address')}}</label>";
-            wifi_ipv4addr_input = "<div class='form_value'>";
-            wifi_ipv4addr_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "ipv4addr' ";
-            wifi_ipv4addr_input += "value='" + eval('v_wifi' + wifi_counter + '_ipv4addr') + "' name='wifi" + wifi_counter + "ipv4addr'/>";
-            wifi_ipv4addr_input += '{{=helptext(T("IPv4 address for this interface."),config.expandablehelp)}}';
+			wifi_ipv4addr_label = "<label id='imageconf_wifi" + wifi_counter + "ipv4addr__label' ";
+			wifi_ipv4addr_label += "for='imageconf_wifi" + wifi_counter + "ipv4addr' class='form_label'>";
+			wifi_ipv4addr_label += "{{=T('IPv4 address')}}</label>";
+			wifi_ipv4addr_input = "<div class='form_value'>";
+			wifi_ipv4addr_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "ipv4addr' ";
+			wifi_ipv4addr_input += "value='" + eval('v_wifi' + wifi_counter + '_ipv4addr') + "' name='wifi" + wifi_counter + "ipv4addr'/>";
+			wifi_ipv4addr_input += '{{=helptext(T("IPv4 address for this interface."),config.expandablehelp)}}';
 
-            for (var i=0; i<wifi_limit; i++) {
-              var e = eval("e_wifi" + i + "_ipv4addr");
-              if (e!="None" && wifi_counter==i)  {
-                wifi_ipv4addr_input += "<div id='wifi" + wifi_counter + "ipv4addr__error' class='error'>" + e + "</div>";
-              }
-            }
-            wifi_ipv4addr_input += "</div>"
-            wifi_ipv4addr = wifi_ipv4addr_label + wifi_ipv4addr_input;
+			for (var i=0; i<wifi_limit; i++) {
+			  var e = eval("e_wifi" + i + "_ipv4addr");
+			  if (e!="None" && wifi_counter==i)  {
+				wifi_ipv4addr_input += "<div id='wifi" + wifi_counter + "ipv4addr__error' class='error'>" + e + "</div>";
+			  }
+			}
+			wifi_ipv4addr_input += "</div>"
+			wifi_ipv4addr = wifi_ipv4addr_label + wifi_ipv4addr_input;
 
-            wifi_ipv6addr = '';
-            {{ if session.ipv6_config == 'static':}}
-            wifi_ipv6addr_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6addr__label' ";
-            wifi_ipv6addr_label += "for='imageconf_wifi" + wifi_counter + "ipv6addr' class='form_label'>";
-            wifi_ipv6addr_label += "{{=T('IPv6 address')}}</label>";
-            wifi_ipv6addr_input = "<div class='form_value'>";
-            wifi_ipv6addr_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "ipv6addr' ";
-            wifi_ipv6addr_input += "value='" + eval('v_wifi' + wifi_counter + '_ipv6addr') + "' name='wifi" + wifi_counter + "ipv6addr'/>";
-            for (var i=0; i<wifi_limit; i++) {
-              var e = eval("e_wifi" + i + "_ipv6addr");
-              if (e!="None" && wifi_counter==i)  {
-                wifi_ipv6addr_input += "<div id='wifi" + wifi_counter + "ipv6addr__error' class='error'>" + e + "</div>";
-              }
-            }
-            wifi_ipv6addr_input += "</div>"
-            wifi_ipv6addr = wifi_ipv6addr_label + wifi_ipv6addr_input;
-            {{pass}}
+			wifi_ipv6addr = '';
+			{{ if session.ipv6_config == 'static':}}
+			wifi_ipv6addr_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6addr__label' ";
+			wifi_ipv6addr_label += "for='imageconf_wifi" + wifi_counter + "ipv6addr' class='form_label'>";
+			wifi_ipv6addr_label += "{{=T('IPv6 address')}}</label>";
+			wifi_ipv6addr_input = "<div class='form_value'>";
+			wifi_ipv6addr_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "ipv6addr' ";
+			wifi_ipv6addr_input += "value='" + eval('v_wifi' + wifi_counter + '_ipv6addr') + "' name='wifi" + wifi_counter + "ipv6addr'/>";
+			for (var i=0; i<wifi_limit; i++) {
+			  var e = eval("e_wifi" + i + "_ipv6addr");
+			  if (e!="None" && wifi_counter==i)  {
+				wifi_ipv6addr_input += "<div id='wifi" + wifi_counter + "ipv6addr__error' class='error'>" + e + "</div>";
+			  }
+			}
+			wifi_ipv6addr_input += "</div>"
+			wifi_ipv6addr = wifi_ipv6addr_label + wifi_ipv6addr_input;
+			{{pass}}
 
-            wifi_ipv6ra = '';
-            {{ if session.ipv6_config == 'auto-ipv6-random' or session.ipv6_config == 'auto-ipv6-fromv4' or session.ipv6_config == 'static':}}
-            wifi_ipv6ra_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6ra__label' ";
-            wifi_ipv6ra_label += "for='imageconf_wifi" + wifi_counter + "ipv6ra' class='form_label'>";
-            wifi_ipv6ra_label += "{{=T('Router Advertisement')}}</label>";
-            wifi_ipv6ra_input = "<div class='form_value'>";
-            checked = ''
-            for (var i=0; i<wifi_limit; i++) {
-              var v = eval("v_wifi" + i + "_ipv6ra");
-              if ((v=="True" || v=="on") && wifi_counter==i)  {
-                checked = ' checked="1" ';
-              }
-            }
-            wifi_ipv6ra_input += "<input type='checkbox'" + checked;
-            wifi_ipv6ra_input += "name='wifi" + wifi_counter + "ipv6ra' id='imageconf_wifi" + wifi_counter +"ipv6ra'/>";
-            wifi_ipv6ra_input += '{{=helptext(T("Send IPv6 router advertisements."),config.expandablehelp)}}';
-            wifi_ipv6ra_input += "</div>"
-            wifi_ipv6ra = wifi_ipv6ra_label + wifi_ipv6ra_input;
-            {{pass}}
+			wifi_ipv6ra = '';
+			{{ if session.ipv6_config == 'auto-ipv6-random' or session.ipv6_config == 'auto-ipv6-fromv4' or session.ipv6_config == 'static':}}
+			wifi_ipv6ra_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6ra__label' ";
+			wifi_ipv6ra_label += "for='imageconf_wifi" + wifi_counter + "ipv6ra' class='expert form_label'>";
+			wifi_ipv6ra_label += "{{=T('Router Advertisement')}}</label>";
+			wifi_ipv6ra_input = "<div class='form_value expert'>";
+			checked = ''
+			for (var i=0; i<wifi_limit; i++) {
+			  var v = eval("v_wifi" + i + "_ipv6ra");
+			  if ((v=="True" || v=="on") && wifi_counter==i)  {
+				checked = ' checked="1" ';
+			  }
+			}
+			wifi_ipv6ra_input += "<input type='checkbox'" + checked;
+			wifi_ipv6ra_input += "name='wifi" + wifi_counter + "ipv6ra' id='imageconf_wifi" + wifi_counter +"ipv6ra'/>";
+			wifi_ipv6ra_input += '{{=helptext(T("Send IPv6 router advertisements."),config.expandablehelp)}}';
+			wifi_ipv6ra_input += "</div>"
+			wifi_ipv6ra = wifi_ipv6ra_label + wifi_ipv6ra_input;
+			{{pass}}
 
-            wifi_chan_label = "<label id='imageconf_wifi" + wifi_counter + "chan__label' ";
-            wifi_chan_label += "for='imageconf_wifi" + wifi_counter + "chan' class='form_label'>";
-            wifi_chan_label += "{{=T('Channel')}}</label>";
-            wifi_chan_input = "<div class='form_value'>";
-            wifi_chan_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "chan' ";
-            wifi_chan_input += "value='" + eval('v_wifi' + wifi_counter + '_chan') + "' name='wifi" + wifi_counter + "chan'/>";
-            for (var i=0; i<wifi_limit; i++) {
-              var e = eval("e_wifi" + i + "_chan");
-              if (e!="None" && wifi_counter==i)  {
-                wifi_chan_input += "<div id='wifi" + wifi_counter + "chan__error' class='error'>" + e + "</div>";
-              }
-            }
-            wifi_chan_input += "</div>";
-            wifi_chan = wifi_chan_label + wifi_chan_input;
+			wifi_chan_label = "<label id='imageconf_wifi" + wifi_counter + "chan__label' ";
+			wifi_chan_label += "for='imageconf_wifi" + wifi_counter + "chan' class='form_label'>";
+			wifi_chan_label += "{{=T('Channel')}}</label>";
+			wifi_chan_input = "<div class='form_value'>";
+			wifi_chan_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "chan' ";
+			wifi_chan_input += "value='" + eval('v_wifi' + wifi_counter + '_chan') + "' name='wifi" + wifi_counter + "chan'/>";
+			for (var i=0; i<wifi_limit; i++) {
+			  var e = eval("e_wifi" + i + "_chan");
+			  if (e!="None" && wifi_counter==i)  {
+				wifi_chan_input += "<div id='wifi" + wifi_counter + "chan__error' class='error'>" + e + "</div>";
+			  }
+			}
+			wifi_chan_input += "</div>";
+			wifi_chan = wifi_chan_label + wifi_chan_input;
 
-            wifi_dhcp_label = "<label id='imageconf_wifi" + wifi_counter + "dhcp__label' ";
-            wifi_dhcp_label += "for='imageconf_wifi" + wifi_counter + "dhcp' class='form_label'>";
-            wifi_dhcp_label += "{{=T('Enable DHCP')}}</label>";
-            wifi_dhcp_input = "<div class='form_value'>";
-            wifi_dhcp_input += "<input type='checkbox' checked='' ";
-            wifi_dhcp_input += "name='wifi" + wifi_counter + "dhcp' id='imageconf_wifi" + wifi_counter +"dhcp'/>";
-            wifi_dhcp_input += "<a onclick=\"ToggleDiv('wifi" + wifi_counter + "dhcp_range')\" ";
-            wifi_dhcp_input += "title='Advanced Options' class='advanced' href='javascript:void(0)'>+/-</a>"
-            wifi_dhcp_input += '{{=helptext(T("Enable DHCP and allow guests to connect to the network without using olsrd."),config.expandablehelp)}}';
-            wifi_dhcp_input += "</div>"
-            wifi_dhcp = wifi_dhcp_label + wifi_dhcp_input;
-
-
-            /* VAP */
-            checked = ''
-            for (var i=0; i<wifi_limit; i++) {
-              var v = eval("v_wifi" + i + "_vap");
-              if ((v=="True" || v=="on") && wifi_counter==i)  {
-                checked = ' checked="1" ';
-              }
-            }
-            wifi_vap_label = "<label id='imageconf_wifi" + wifi_counter + "vap__label' ";
-            wifi_vap_label += "for='imageconf_wifi" + wifi_counter + "vap' class='form_label'>";
-            wifi_vap_label += "{{=T('VAP')}}</label>";
-            wifi_vap_input = "<div class='form_value'>";
-            wifi_vap_input += "<input type='checkbox'" + checked;
-            wifi_vap_input += "name='wifi" + wifi_counter + "vap' id='imageconf_wifi" + wifi_counter +"vap'/>";
-            wifi_vap_input += '{{=helptext(T("Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k."),config.expandablehelp)}}';
-            wifi_vap_input += "</div>"
-            wifi_vap = wifi_vap_label + wifi_vap_input;
+			wifi_dhcp_label = "<label id='imageconf_wifi" + wifi_counter + "dhcp__label' ";
+			wifi_dhcp_label += "for='imageconf_wifi" + wifi_counter + "dhcp' class='form_label'>";
+			wifi_dhcp_label += "{{=T('Enable DHCP')}}</label>";
+			wifi_dhcp_input = "<div class='form_value'>";
+			wifi_dhcp_input += "<input type='checkbox' checked='' ";
+			wifi_dhcp_input += "name='wifi" + wifi_counter + "dhcp' id='imageconf_wifi" + wifi_counter +"dhcp'/>";
+			wifi_dhcp_input += "<a onclick=\"ToggleDiv('wifi" + wifi_counter + "dhcp_range')\" ";
+			wifi_dhcp_input += "title='Advanced Options' class='advanced' href='javascript:void(0)'>+/-</a>"
+			wifi_dhcp_input += '{{=helptext(T("Enable DHCP and allow guests to connect to the network without using olsrd."),config.expandablehelp)}}';
+			wifi_dhcp_input += "</div>"
+			wifi_dhcp = '<div class="expert">' + wifi_dhcp_label + wifi_dhcp_input + '</div>'; 
 
 
-            wifi_dhcp_range_wrap_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "dhcp_range'>";
-            wifi_dhcp_range_label = "<label id='imageconf_wifi" + wifi_counter + "dhcprange__label' ";
-            wifi_dhcp_range_label += "for='imageconf_wifi" + wifi_counter + "dhcprange' class='form_label'>";
-            wifi_dhcp_range_label += "{{=T('DHCP Range')}}</label>";
-            wifi_dhcp_range_input = "<div class='form_value'>";
-            wifi_dhcp_range_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "dhcprange' ";
-            wifi_dhcp_range_input += "value='" + eval('v_wifi' + wifi_counter + '_dhcprange') + "' name='wifi" + wifi_counter + "dhcprange'/>";
-            for (var i=0; i<wifi_limit; i++) {
-              var e = eval("e_wifi" + i + "_dhcprange");
-              if (e!="None" && wifi_counter==i)  {
-                wifi_dhcp_range_input += "<div id='wifi" + wifi_counter + "dhcprange__error' class='error'>" + e + "</div>";
-              }
-            }
-            wifi_dhcp_range_input += '{{=helptext(T("The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8."),config.expandablehelp)}}';
-            wifi_dhcp_range_input += "</div>";
-            wifi_dhcp_range_wrap_end = "</div>";
-            wifi_dhcp_range = wifi_dhcp_range_wrap_start + wifi_dhcp_range_label + wifi_dhcp_range_input + wifi_dhcp_range_wrap_end;
-            wrapper_end = "</fieldset></div>";
-            newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_vap + wifi_dhcp_range + wifi_ipv6ra + wrapper_end;
-            document.getElementById(divName).appendChild(newdiv);
-            wifi_counter++;
-            document.getElementById("wifiifsnr").value = wifi_counter;
-          }
-        }
-      </script>
 
-      <div id="dynamicWifi">
-        <!-- This will be replaced by dynamically created wifi interface config sections -->
-      </div>
+			/* VAP */
+			checked = ''
+			for (var i=0; i<wifi_limit; i++) {
+			  var v = eval("v_wifi" + i + "_vap");
+			  if ((v=="True" || v=="on") && wifi_counter==i)  {
+				checked = ' checked="1" ';
+			  }
+			}
+			wifi_vap_label = "<label id='imageconf_wifi" + wifi_counter + "vap__label' ";
+			wifi_vap_label += "for='imageconf_wifi" + wifi_counter + "vap' class='form_label'>";
+			wifi_vap_label += "{{=T('VAP')}}</label>";
+			wifi_vap_input = "<div class='form_value'>";
+			wifi_vap_input += "<input type='checkbox'" + checked;
+			wifi_vap_input += "name='wifi" + wifi_counter + "vap' id='imageconf_wifi" + wifi_counter +"vap'/>";
+			wifi_vap_input += '{{=helptext(T("Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k."),config.expandablehelp)}}';
+			wifi_vap_input += "</div>"
+			wifi_vap = '<div class="expert">' + wifi_vap_label + wifi_vap_input + '</div>';
 
-      <!-- add wifi entry(s) -->
-      <script type="text/javascript">
-        nr = document.getElementById("wifiifsnr").value;
-        var i = 0;
-        while (i < nr) {
-          addInput('dynamicWifi');
-          i++;
-        }
-      </script>
 
-      <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
-    </div>
+			wifi_dhcp_range_wrap_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "dhcp_range'>";
+			wifi_dhcp_range_label = "<label id='imageconf_wifi" + wifi_counter + "dhcprange__label' ";
+			wifi_dhcp_range_label += "for='imageconf_wifi" + wifi_counter + "dhcprange' class='form_label'>";
+			wifi_dhcp_range_label += "{{=T('DHCP Range')}}</label>";
+			wifi_dhcp_range_input = "<div class='form_value'>";
+			wifi_dhcp_range_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "dhcprange' ";
+			wifi_dhcp_range_input += "value='" + eval('v_wifi' + wifi_counter + '_dhcprange') + "' name='wifi" + wifi_counter + "dhcprange'/>";
+			for (var i=0; i<wifi_limit; i++) {
+			  var e = eval("e_wifi" + i + "_dhcprange");
+			  if (e!="None" && wifi_counter==i)  {
+				wifi_dhcp_range_input += "<div id='wifi" + wifi_counter + "dhcprange__error' class='error'>" + e + "</div>";
+			  }
+			}
+			wifi_dhcp_range_input += '{{=helptext(T("The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8."),config.expandablehelp)}}';
+			wifi_dhcp_range_input += "</div>";
+			wifi_dhcp_range_wrap_end = "</div>";
+			wifi_dhcp_range = wifi_dhcp_range_wrap_start + wifi_dhcp_range_label + wifi_dhcp_range_input + wifi_dhcp_range_wrap_end;
+			wrapper_end = "</fieldset></div>";
+			newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_vap + wifi_dhcp_range + wifi_ipv6ra + wrapper_end;
+			document.getElementById(divName).appendChild(newdiv);
+			wifi_counter++;
+			document.getElementById("wifiifsnr").value = wifi_counter;
+		  }
+		}
+	  </script>
+
+	  <div id="dynamicWifi">
+		<!-- This will be replaced by dynamically created wifi interface config sections -->
+	  </div>
+
+	  <!-- add wifi entry(s) -->
+	  <script type="text/javascript">
+		nr = document.getElementById("wifiifsnr").value;
+		var i = 0;
+		while (i < nr) {
+		  addInput('dynamicWifi');
+		  i++;
+		}
+	  </script>
+
+	  <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
   </div>
   <!-- End wifi tab -->
   {{pass}}
 
   {{if not session.noconf == True:}}
   <!-- Start Lan tab -->
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-      <h1 title="{{=T('LAN settings')}}" class="tab">{{=T('LAN')}}</h1>
-      <h3>{{=T('You can change the settings for the LAN interface here.')}}</h3>
-      <ul>
-        <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
-        <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
-      </ul>
-      <br/>
+  <h3 id="tab-lan" title="{{=T('LAN settings')}}">{{=T('LAN')}}</h3>
+  <div>
+	  <h3>{{=T('You can change the settings for the LAN interface here.')}}</h3>
+	  <ul>
+		<li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
+		<li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
+	  </ul>
+	  <br/>
 
-      <label class="form_label" for="imageconf_lanproto" id="imageconf_lanproto__label">{{=T('LAN Protocol')}}</label>
-      <div class="form_value">
-        <select onchange="lanselect()" class="generic-widget" id="imageconf_lanproto" name="lanproto">
-        {{for proto in config.lanprotos:}}
-          {{selected = ""}}
-          {{if proto == form.vars.lanproto: selected = " SELECTED"}}
-          <option value="{{=proto}}"{{=selected}}>{{=proto}}</option>
-        {{pass}}
-        </select>
-      </div>
+	  <label class="form_label" for="imageconf_lanproto" id="imageconf_lanproto__label">{{=T('LAN Protocol')}}</label>
+	  <div class="form_value">
+		<select onchange="lanselect()" class="generic-widget" id="imageconf_lanproto" name="lanproto">
+		{{for proto in config.lanprotos:}}
+		  {{selected = ""}}
+		  {{if proto == form.vars.lanproto: selected = " SELECTED"}}
+		  <option value="{{=proto}}"{{=selected}}>{{=proto}}</option>
+		{{pass}}
+		</select>
+	  </div>
 
-      <label id="imageconf_lanipv4addr" for="imageconf_lanipv4addr" class="form_label">{{=T('IPv4 Address')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_lanipv4addr" value="{{=form.vars.lanipv4addr or '192.168.1.1'}}" name="lanipv4addr"/>
-        {{=formhelpers.errormsg('lanipv4addr', form.errors.lanipv4addr)}}
-      </div>
+	  <label id="imageconf_lanipv4addr" for="imageconf_lanipv4addr" class="form_label">{{=T('IPv4 Address')}}</label>
+	  <div class="form_value">
+		<input type="text" id="imageconf_lanipv4addr" value="{{=form.vars.lanipv4addr or '192.168.1.1'}}" name="lanipv4addr"/>
+		{{=formhelpers.errormsg('lanipv4addr', form.errors.lanipv4addr)}}
+	  </div>
 
-      <label id="imageconf_lannetmask" for="imageconf_lannetmask" class="form_label">{{=T('Netmask')}}</label>
-      <div class="form_value">
-        <input type="text" id="imageconf_lannetmask" value="{{=form.vars.lannetmask or '255.255.255.0'}}" name="lannetmask"/>
-        {{=formhelpers.errormsg('lannetmask', form.errors.lannetmask)}}
-      </div>
+	  <label id="imageconf_lannetmask" for="imageconf_lannetmask" class="form_label">{{=T('Netmask')}}</label>
+	  <div class="form_value">
+		<input type="text" id="imageconf_lannetmask" value="{{=form.vars.lannetmask or '255.255.255.0'}}" name="lannetmask"/>
+		{{=formhelpers.errormsg('lannetmask', form.errors.lannetmask)}}
+	  </div>
 
-      <div id="lan_options">
-        <!--This will be replaced by the javascript below -->
-      </div>
+	  <div id="lan_options">
+		<!--This will be replaced by the javascript below -->
+	  </div>
 
-      <script type="text/javascript">
-        function lanselect() {
-          var e = document.getElementById("imageconf_lanproto");
-          var selected = e.options[e.selectedIndex].value;
-          if ( selected == "static" ) {
-            document.getElementById("lan_options").innerHTML = '';
-          };
-          if ( selected == "olsr" ) {
-            lan_ipv6addr = ''
-            {{ if session.ipv6_config == 'static':}}
-            lan_ipv6addr_label = "<label id='imageconf_lanipv6addr__label' ";
-            lan_ipv6addr_label += "for='imageconf_lanipv6addr' class='form_label'>";
-            lan_ipv6addr_label += "{{=T('IPv6 address')}}</label>";
-            lan_ipv6addr_error = '';
-            lan_ipv6addr_error += '{{=formhelpers.errormsg('lanipv6addr', form.errors.lanipv6addr)}}';
-            lan_ipv6addr_input = "<div class='form_value'>";
-            lan_ipv6addr_input += "<input type='text' id='imageconf_lanipv6addr' ";
-            lan_ipv6addr_input += "value='{{=form.vars.lanipv6addr or ""}}' name='lanipv6addr'/>" + lan_ipv6addr_error + "</div>";
-            lan_ipv6addr = lan_ipv6addr_label + lan_ipv6addr_input;
-            {{pass}}
-            landhcplabel = '<label id="imageconf_landhcp" for="imageconf_landhcp" class="form_label">{{=T("Enable DHCP")}}</label>';
-            landhcpinputwrapstart = '<div class="form_value">';
-            landhcpinput = '<input type="checkbox" checked=""';
-            landhcpinput += 'name="landhcp" id="imageconf_landhcp"/>';
-            landhcpadvancedlink = '<a href="javascript:void(0)" class="advanced" title="Advanced Options" onclick=ToggleDiv("lan_dhcp_range")>+/-</a>'
-            landhcphelp = '{{= helptext("Enable DHCP-Server for the LAN interface.",config.expandablehelp)}}';
-            landhcpinputwrapend = '</div>';
-            landhcp = landhcplabel + landhcpinputwrapstart + landhcpinput + landhcpadvancedlink + landhcphelp + landhcpinputwrapend;
-            landhcprangewrapstart = '<div id="lan_dhcp_range" class="suboptions" style="display:none">';
-            landhcprangelabel = '<label id="imageconf_landhcprange" for="imageconf_landhcprange" class="form_label">';
-            landhcprangelabel += '{{=T("DHCP Range")}}</label>';
-            landhcprangeinput = '<div class="form_value">';
-            landhcprangeinput += '<input type="text" id="imageconf_landhcprange" value="{{=form.vars.landhcprange or ""}}" name="landhcprange"/>';
-            landhcprangehelp = '{{= helptext("The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8.",config.expandablehelp)}}';
-            landhcprangeerror = '';
-            landhcprangeerror += '{{=formhelpers.errormsg('landhcprange', form.errors.landhcprange)}}';
-            landhcprangewrapend = '</div>';
-            landhcprange = landhcprangewrapstart + landhcprangelabel + landhcprangeinput + landhcprangehelp + landhcprangeerror + landhcprangewrapend;
-            lanolsr = lan_ipv6addr + landhcp + landhcprange;
-            document.getElementById("lan_options").innerHTML = lanolsr
-            hideAll();
-          };
-        }
-        lanselect();
-      </script>
-    </div>
+	  <script type="text/javascript">
+		function lanselect() {
+		  var e = document.getElementById("imageconf_lanproto");
+		  var selected = e.options[e.selectedIndex].value;
+		  if ( selected == "static" ) {
+			document.getElementById("lan_options").innerHTML = '';
+		  };
+		  if ( selected == "olsr" ) {
+			lan_ipv6addr = ''
+			{{ if session.ipv6_config == 'static':}}
+			lan_ipv6addr_label = "<label id='imageconf_lanipv6addr__label' ";
+			lan_ipv6addr_label += "for='imageconf_lanipv6addr' class='form_label'>";
+			lan_ipv6addr_label += "{{=T('IPv6 address')}}</label>";
+			lan_ipv6addr_error = '';
+			lan_ipv6addr_error += '{{=formhelpers.errormsg('lanipv6addr', form.errors.lanipv6addr)}}';
+			lan_ipv6addr_input = "<div class='form_value'>";
+			lan_ipv6addr_input += "<input type='text' id='imageconf_lanipv6addr' ";
+			lan_ipv6addr_input += "value='{{=form.vars.lanipv6addr or ""}}' name='lanipv6addr'/>" + lan_ipv6addr_error + "</div>";
+			lan_ipv6addr = lan_ipv6addr_label + lan_ipv6addr_input;
+			{{pass}}
+			landhcplabel = '<label id="imageconf_landhcp" for="imageconf_landhcp" class="form_label">{{=T("Enable DHCP")}}</label>';
+			landhcpinputwrapstart = '<div class="form_value">';
+			landhcpinput = '<input type="checkbox" checked=""';
+			landhcpinput += 'name="landhcp" id="imageconf_landhcp"/>';
+			landhcpadvancedlink = '<a href="javascript:void(0)" class="advanced" title="Advanced Options" onclick=ToggleDiv("lan_dhcp_range")>+/-</a>'
+			landhcphelp = '{{= helptext("Enable DHCP-Server for the LAN interface.",config.expandablehelp)}}';
+			landhcpinputwrapend = '</div>';
+			landhcp = landhcplabel + landhcpinputwrapstart + landhcpinput + landhcpadvancedlink + landhcphelp + landhcpinputwrapend;
+			landhcprangewrapstart = '<div id="lan_dhcp_range" class="suboptions" style="display:none">';
+			landhcprangelabel = '<label id="imageconf_landhcprange" for="imageconf_landhcprange" class="form_label">';
+			landhcprangelabel += '{{=T("DHCP Range")}}</label>';
+			landhcprangeinput = '<div class="form_value">';
+			landhcprangeinput += '<input type="text" id="imageconf_landhcprange" value="{{=form.vars.landhcprange or ""}}" name="landhcprange"/>';
+			landhcprangehelp = '{{= helptext("The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8.",config.expandablehelp)}}';
+			landhcprangeerror = '';
+			landhcprangeerror += '{{=formhelpers.errormsg('landhcprange', form.errors.landhcprange)}}';
+			landhcprangewrapend = '</div>';
+			landhcprange = landhcprangewrapstart + landhcprangelabel + landhcprangeinput + landhcprangehelp + landhcprangeerror + landhcprangewrapend;
+			lanolsr = lan_ipv6addr + landhcp + landhcprange;
+			document.getElementById("lan_options").innerHTML = lanolsr
+			hideAll();
+		  };
+		}
+		lanselect();
+	  </script>
   </div>
   <!-- End Lan tab -->
   {{pass}}
 
   {{if not session.noconf == True:}}
   <!-- Start Wan tab -->
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-      <h1 title="{{=T('WAN settings')}}" class="tab">{{=T('WAN')}}</h1>
-      <label class="form_label" for="imageconf_wanproto" id="imageconf_wanproto__label">{{=T('WAN Protocol')}}</label>
-      <div class="form_value">
-        <select onchange="wanselect()" class="generic-widget" id="imageconf_wanproto" name="wanproto">
-        {{for proto in config.wanprotos:}}
-          {{selected = ""}}
-          {{if proto == form.vars.wanproto: selected = " SELECTED"}}
-             <option value="{{=proto}}"{{=selected}}>{{=proto}}</option>
-        {{pass}}
-        </select>
-      </div>
-         
-      <div id="wan_options">
-        <!-- This will be replaced by javascript -->
-      </div>
+  <h3 id="tab-wan" title="{{=T('WAN settings')}}">{{=T('WAN')}}</h3>
+  <div>
+	  <label class="form_label" for="imageconf_wanproto" id="imageconf_wanproto__label">{{=T('WAN Protocol')}}</label>
+	  <div class="form_value">
+		<select onchange="wanselect()" class="generic-widget" id="imageconf_wanproto" name="wanproto">
+		{{for proto in config.wanprotos:}}
+		  {{selected = ""}}
+		  {{if proto == form.vars.wanproto: selected = " SELECTED"}}
+			<option value="{{=proto}}"{{=selected}}>{{=proto}}</option>
+		{{pass}}
+		</select>
+	  </div>
+		
+	  <div id="wan_options">
+		<!-- This will be replaced by javascript -->
+	  </div>
 
-      <script type="text/javascript">
-        function wanselect() {
-          var e = document.getElementById('imageconf_wanproto');
-          var selected = e.options[e.selectedIndex].value;
+	  <script type="text/javascript">
+		function wanselect() {
+		  var e = document.getElementById('imageconf_wanproto');
+		  var selected = e.options[e.selectedIndex].value;
 
-          wanipv4addrlabel = '<label id="imageconf_wanipv4addr" for="imageconf_wanipv4addr" ';
-          wanipv4addrlabel += 'class="form_label">{{=T("IPv4 Address")}}</label>';
-          wanipv4addrvalue = '<div class="form_value">';
-          wanipv4addrvalue += '<input type="text" id="imageconf_wanipv4addr" value="{{=form.vars.wanipv4addr or ""}}" name="wanipv4addr"/>';
-          wanipv4addrvalue += '{{=formhelpers.errormsg('wanipv4addr', form.errors.wanipv4addr)}}';
-          wanipv4addrvalue += '</div>';
-          wanipv4addr = wanipv4addrlabel + wanipv4addrvalue;
+		  wanipv4addrlabel = '<label id="imageconf_wanipv4addr" for="imageconf_wanipv4addr" ';
+		  wanipv4addrlabel += 'class="form_label">{{=T("IPv4 Address")}}</label>';
+		  wanipv4addrvalue = '<div class="form_value">';
+		  wanipv4addrvalue += '<input type="text" id="imageconf_wanipv4addr" value="{{=form.vars.wanipv4addr or ""}}" name="wanipv4addr"/>';
+		  wanipv4addrvalue += '{{=formhelpers.errormsg('wanipv4addr', form.errors.wanipv4addr)}}';
+		  wanipv4addrvalue += '</div>';
+		  wanipv4addr = wanipv4addrlabel + wanipv4addrvalue;
 
-          wannetmasklabel = '<label id="imageconf_wannetmask" for="imageconf_wannetmask" ';
-          wannetmasklabel += 'class="form_label">{{=T("Netmask")}}</label>';
-          wannetmaskvalue = '<div class="form_value">';
-          wannetmaskvalue += '<input type="text" id="imageconf_wannetmask" value="{{=form.vars.wannetmask or "255.255.255.0"}}" name="wannetmask"/>';
-          wannetmaskvalue += '{{=formhelpers.errormsg('wannetmask', form.errors.wannetmask)}}';
-          wannetmaskvalue += '</div>';
-          wannetmask = wannetmasklabel + wannetmaskvalue;
+		  wannetmasklabel = '<label id="imageconf_wannetmask" for="imageconf_wannetmask" ';
+		  wannetmasklabel += 'class="form_label">{{=T("Netmask")}}</label>';
+		  wannetmaskvalue = '<div class="form_value">';
+		  wannetmaskvalue += '<input type="text" id="imageconf_wannetmask" value="{{=form.vars.wannetmask or "255.255.255.0"}}" name="wannetmask"/>';
+		  wannetmaskvalue += '{{=formhelpers.errormsg('wannetmask', form.errors.wannetmask)}}';
+		  wannetmaskvalue += '</div>';
+		  wannetmask = wannetmasklabel + wannetmaskvalue;
 
-          localrestrictlabel = '<label id="imageconf_localrestrict" for="imageconf_localrestrict" class="form_label">{{=T("Protect local network")}}</label>';
-          localrestrictinputwrapstart = '<div class="form_value">';
-          localrestrictinput = '<input type="checkbox" {{if session.localrestrict:}}checked="1" {{pass}}';
-          localrestrictinput += 'name="localrestrict" id="imageconf_localrestrict"/>';
-          localrestrictinput += '{{=helptext(T("Protect the network behind wan from being accessed from the mesh."),config.expandablehelp)}}';
-          localrestrict_inputwrapend = '</div>';
-          localrestrict = localrestrictlabel + localrestrictinputwrapstart + localrestrictinput + localrestrict_inputwrapend;
+		  localrestrictlabel = '<label id="imageconf_localrestrict" for="imageconf_localrestrict" class="form_label">{{=T("Protect local network")}}</label>';
+		  localrestrictinputwrapstart = '<div class="form_value">';
+		  localrestrictinput = '<input type="checkbox" {{if session.localrestrict:}}checked="1" {{pass}}';
+		  localrestrictinput += 'name="localrestrict" id="imageconf_localrestrict"/>';
+		  localrestrictinput += '{{=helptext(T("Protect the network behind wan from being accessed from the mesh."),config.expandablehelp)}}';
+		  localrestrict_inputwrapend = '</div>';
+		  localrestrict = localrestrictlabel + localrestrictinputwrapstart + localrestrictinput + localrestrict_inputwrapend;
 
-          sharenetlabel = '<label id="imageconf_sharenet__label" for="imageconf_sharenet" class="form_label">{{=T("Share internet")}}</label>';
-          sharenetinputwrapstart = '<div class="form_value">';
-          sharenetinput = '<input type="checkbox" {{if form.vars.sharenet:}}checked="1"{{pass}} id="imageconf_sharenet" onchange="nosharepkgs();"';
-          sharenetinput += 'name="sharenet" id="imageconf_sharenet"/>';
-          sharenetinput += '{{=helptext(T("Allow others in the mesh to use your internet connection. This makes use of the olsrd dyngw_plain plugin, which checks for available internet connectivity and starts to announce it as hna as soon as it is detected."),config.expandablehelp)}}';
-          sharenet_inputwrapend = '</div>';
-          sharenet = sharenetlabel + sharenetinputwrapstart + sharenetinput + sharenet_inputwrapend;
+		  sharenetlabel = '<label id="imageconf_sharenet__label" for="imageconf_sharenet" class="form_label">{{=T("Share internet")}}</label>';
+		  sharenetinputwrapstart = '<div class="form_value">';
+		  sharenetinput = '<input type="checkbox" {{if form.vars.sharenet:}}checked="1"{{pass}} id="imageconf_sharenet" onchange="nosharepkgs();"';
+		  sharenetinput += 'name="sharenet" id="imageconf_sharenet"/>';
+		  sharenetinput += '{{=helptext(T("Allow others in the mesh to use your internet connection. This makes use of the olsrd dyngw_plain plugin, which checks for available internet connectivity and starts to announce it as hna as soon as it is detected."),config.expandablehelp)}}';
+		  sharenet_inputwrapend = '</div>';
+		  sharenet = sharenetlabel + sharenetinputwrapstart + sharenetinput + sharenet_inputwrapend;
 
-          wan_allow_sshlabel = '<label id="imageconf_wan_allow_ssh" for="imageconf_wan_allow_ssh" class="form_label">{{=T("Allow ssh")}}</label>';
-          wan_allow_sshinputwrapstart = '<div class="form_value">';
-          wan_allow_sshinput = '<input type="checkbox" {{if form.vars.wan_allow_ssh:}}checked="1" {{pass}}';
-          wan_allow_sshinput += 'name="wan_allow_ssh" id="imageconf_wan_allow_ssh"/>';
-          wan_allow_sshinput += '{{=helptext(T("Add firewall rule to allow ssh access from the wan interface."),config.expandablehelp)}}';
-          wan_allow_ssh_inputwrapend = '</div>';
-          wan_allow_ssh = wan_allow_sshlabel + wan_allow_sshinputwrapstart + wan_allow_sshinput + wan_allow_ssh_inputwrapend;
+		  wan_allow_sshlabel = '<label id="imageconf_wan_allow_ssh" for="imageconf_wan_allow_ssh" class="form_label">{{=T("Allow ssh")}}</label>';
+		  wan_allow_sshinputwrapstart = '<div class="form_value">';
+		  wan_allow_sshinput = '<input type="checkbox" {{if form.vars.wan_allow_ssh:}}checked="1" {{pass}}';
+		  wan_allow_sshinput += 'name="wan_allow_ssh" id="imageconf_wan_allow_ssh"/>';
+		  wan_allow_sshinput += '{{=helptext(T("Add firewall rule to allow ssh access from the wan interface."),config.expandablehelp)}}';
+		  wan_allow_ssh_inputwrapend = '</div>';
+		  wan_allow_ssh = wan_allow_sshlabel + wan_allow_sshinputwrapstart + wan_allow_sshinput + wan_allow_ssh_inputwrapend;
 
-          wan_allow_weblabel = '<label id="imageconf_wan_allow_web" for="imageconf_wan_allow_web" class="form_label">{{=T("Allow web")}}</label>';
-          wan_allow_webinputwrapstart = '<div class="form_value">';
-          wan_allow_webinput = '<input type="checkbox" {{if form.vars.wan_allow_web:}}checked="1" {{pass}}';
-          wan_allow_webinput += 'name="wan_allow_web" id="imageconf_wan_allow_web"/>';
-          wan_allow_webinput += '{{=helptext(T("Add firewall rule to allow web access from the wan interface."),config.expandablehelp)}}';
-          wan_allow_web_inputwrapend = '</div>';
-          wan_allow_web = wan_allow_weblabel + wan_allow_webinputwrapstart + wan_allow_webinput + wan_allow_web_inputwrapend;
+		  wan_allow_weblabel = '<label id="imageconf_wan_allow_web" for="imageconf_wan_allow_web" class="form_label">{{=T("Allow web")}}</label>';
+		  wan_allow_webinputwrapstart = '<div class="form_value">';
+		  wan_allow_webinput = '<input type="checkbox" {{if form.vars.wan_allow_web:}}checked="1" {{pass}}';
+		  wan_allow_webinput += 'name="wan_allow_web" id="imageconf_wan_allow_web"/>';
+		  wan_allow_webinput += '{{=helptext(T("Add firewall rule to allow web access from the wan interface."),config.expandablehelp)}}';
+		  wan_allow_web_inputwrapend = '</div>';
+		  wan_allow_web = wan_allow_weblabel + wan_allow_webinputwrapstart + wan_allow_webinput + wan_allow_web_inputwrapend;
 
-          if ( selected == 'dhcp' ) {
-            document.getElementById('wan_options').innerHTML = wan_allow_ssh + wan_allow_web + localrestrict + sharenet;
-          };
-          if ( selected == 'static' ) {
-            wangatewaylabel = '<label id="imageconf_wangateway" for="imageconf_wangateway" ';
-            wangatewaylabel += 'class="form_label">{{=T("Gateway")}}</label>';
-            wangatewayvalue = '<div class="form_value">';
-            wangatewayvalue += '<input type="text" id="imageconf_wangateway" value="{{=form.vars.wangateway or ""}}" name="wangateway"/>';
-            wangatewayvalue += '{{=formhelpers.errormsg('wangateway', form.errors.wangateway)}}';
-            wangatewayvalue += '</div>';
-            wangateway = wangatewaylabel + wangatewayvalue;
+		  if ( selected == 'dhcp' ) {
+			document.getElementById('wan_options').innerHTML = wan_allow_ssh + wan_allow_web + localrestrict + sharenet;
+		  };
+		  if ( selected == 'static' ) {
+			wangatewaylabel = '<label id="imageconf_wangateway" for="imageconf_wangateway" ';
+			wangatewaylabel += 'class="form_label">{{=T("Gateway")}}</label>';
+			wangatewayvalue = '<div class="form_value">';
+			wangatewayvalue += '<input type="text" id="imageconf_wangateway" value="{{=form.vars.wangateway or ""}}" name="wangateway"/>';
+			wangatewayvalue += '{{=formhelpers.errormsg('wangateway', form.errors.wangateway)}}';
+			wangatewayvalue += '</div>';
+			wangateway = wangatewaylabel + wangatewayvalue;
 
-            wandnslabel = '<label id="imageconf_wandns" for="imageconf_wandns" ';
-            wandnslabel += 'class="form_label">{{=T("DNS")}}</label>';
-            wandnsvalue = '<div class="form_value">';
-            wandnsvalue += '<input type="text" id="imageconf_wandns" value="{{=form.vars.wandns or ""}}" name="wandns"/>';
-            wandnsvalue += '{{=formhelpers.errormsg('wandns', form.errors.wandns)}}';
-            wandnsvalue += '</div>';
-            wandns = wandnslabel + wandnsvalue;
+			wandnslabel = '<label id="imageconf_wandns" for="imageconf_wandns" ';
+			wandnslabel += 'class="form_label">{{=T("DNS")}}</label>';
+			wandnsvalue = '<div class="form_value">';
+			wandnsvalue += '<input type="text" id="imageconf_wandns" value="{{=form.vars.wandns or ""}}" name="wandns"/>';
+			wandnsvalue += '{{=formhelpers.errormsg('wandns', form.errors.wandns)}}';
+			wandnsvalue += '</div>';
+			wandns = wandnslabel + wandnsvalue;
 
-            document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask + wangateway + wandns + localrestrict + sharenet + wan_allow_ssh + wan_allow_web;
-            hideAll();
-          };
-          if ( selected == 'olsr' ) {
-            document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask;
-            hideAll();
-          };
-        };
-        wanselect();
+			document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask + wangateway + wandns + localrestrict + sharenet + wan_allow_ssh + wan_allow_web;
+			hideAll();
+		  };
+		  if ( selected == 'olsr' ) {
+			document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask;
+			hideAll();
+		  };
+		};
+		wanselect();
 
-        function nosharepkgs() {
-          if(document.getElementById("imageconf_sharenet").checked)
-            {
-              nosharepackages='';
-              update_defaultpkgs();
-            }
-            else    {
-              nosharepackages = 'luci-app-freifunk-policyrouting';
-              update_defaultpkgs();
-            }
-          };
-        nosharepkgs();
-      </script>
-
-    </div>
+		function nosharepkgs() {
+		  if(document.getElementById("imageconf_sharenet").checked)
+			{
+			  nosharepackages='';
+			  update_defaultpkgs();
+			}
+			else    {
+			  nosharepackages = 'luci-app-freifunk-policyrouting';
+			  update_defaultpkgs();
+			}
+		  };
+		nosharepkgs();
+	  </script>
   </div>
   <!-- End Wan tab -->
   {{pass}}
 
 
 
-  <!-- Start packages tab -->     
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-      <h1 title="{{=T('Packages')}}" class="tab">{{=T('Packages')}}</h1>
-      <strong>{{=T('Default Packages')}}:</strong> 
-      <span id='default_packages'></span>
-      <script type='text/javascript'>update_defaultpkgs();</script>
-      <div style="clear:both"></div>
-            
-      <label class="form_label" for="imageconf_packages" id="imageconf_packages__label">{{=T('Packages')}}</label>
-      <div class="form_value">            
-        <textarea rows="5" class="text packages" id="imageconf_packages" name="packages" type="text"></textarea>
-      </div>
-                                       
-      <H2>{{=T('Available Packages')}}</h2>
-      <div id="packagelist">
-        <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
-        Loading package list...
-      </div>
+  <!-- Start packages tab -->
+  <h3 id="tab-packages" title="{{=T('Packages')}}">{{=T('Packages')}}</h3>
+  <div>
+	  <strong>{{=T('Default Packages')}}:</strong> 
+	  <span id='default_packages'></span>
+	  <script type='text/javascript'>update_defaultpkgs();</script>
+	  <div style="clear:both"></div>
+			
+	  <label class="form_label" for="imageconf_packages" id="imageconf_packages__label">{{=T('Packages')}}</label>
+	  <div class="form_value">            
+		<textarea rows="5" class="text packages" id="imageconf_packages" name="packages" type="text"></textarea>
+	  </div>
+									  
+	  <H2>{{=T('Available Packages')}}</h2>
+	  <div id="packagelist">
+		<img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+		Loading package list...
+	  </div>
 
-      <script type="text/javascript">
-        function ajax_packagelist() {
-          $.ajax({
-            url : '{{=URL('static/package_lists', session.target)}}',
-            type : 'get',
-            dataType : 'json',
-            timeout : 10000,
-            tryCount : 0,
-            retryLimit : 10,
-            success : function(json) {
-              var packagelist = "";
-              for(var section in json) {
-                packagelist += "<div id='packages_category' onclick='ToggleDiv(\"" + section + "\")'><b>" + section + "</b></div>";
-                packagelist += "<table id='" + section + "' class='packages_table' style='display: none'><thead>";
-                packagelist += "<tr><th></th><th width='300px'>{{=T('Package')}}</th><th width='450px'>{{=T('Version')}}</th><th width='100px'>{{=T('Size')}}</th></tr></thead>";
-                d = json[section];
-                for(var pkg in d) {
-                  size = json[section][pkg]['size'];
-                  version = json[section][pkg]['version'];
-                  packagelist += "<tr>";
-                  packagelist += "<td><input type='button' value='+' style='margin-right:10px;border:0px' onClick='addpackage(\"" + pkg + "\");'></td>";
-                  packagelist += "<td>" + pkg + "</td>";
-                  packagelist += "<td>" + version + "</td>";
-                  packagelist += "<td>" + size + "</td>";
-                  packagelist += "</tr>";
-                }
-                packagelist += "</table>"
-              }
-              document.getElementById('packagelist').innerHTML = packagelist; 
-            },
-            error : function(xhr, textStatus, errorThrown ) {
-              if (textStatus == 'parsererror') {
-                var error = "{{=T('There was a problem parsing the package list, is it really valid json?')}}";
-                document.getElementById('packagelist').innerHTML = error;
-                return;
-              }        
-              if (textStatus == 'timeout') {
-                this.tryCount++;
-                if (this.tryCount <= this.retryLimit) {
-                    //try again
-                    $.ajax(this);
-                    return;
-                }
-                var error = "{{=T('Loading the package list timed out.')}}";
-                document.getElementById('packagelist').innerHTML = error;
-                return;
-              }
-              if (xhr.status == 500) {
-                error = "{{=T('The server returned status 500 and the package list could not be loaded, please try again later.')}}";
-                document.getElementById('packagelist').innerHTML = error;
-              }
-              else {
-                error = "{{=T('There was another problem loading the package list.')}}";
-                document.getElementById('packagelist').innerHTML = error;
-              }
-            }
-         });
-        } 
-        ajax_packagelist();         
-      </script>        
-    </div>
+	  <script type="text/javascript">
+		function ajax_packagelist() {
+		  $.ajax({
+			url : '{{=URL('static/package_lists', session.target)}}',
+			type : 'get',
+			dataType : 'json',
+			timeout : 10000,
+			tryCount : 0,
+			retryLimit : 10,
+			success : function(json) {
+			  var packagelist = "";
+			  for(var section in json) {
+				packagelist += "<div id='packages_category' onclick='ToggleDiv(\"" + section + "\")'><b>" + section + "</b></div>";
+				packagelist += "<table id='" + section + "' class='packages_table' style='display: none'><thead>";
+				packagelist += "<tr><th></th><th width='300px'>{{=T('Package')}}</th><th width='450px'>{{=T('Version')}}</th><th width='100px'>{{=T('Size')}}</th></tr></thead>";
+				d = json[section];
+				for(var pkg in d) {
+				  size = json[section][pkg]['size'];
+				  version = json[section][pkg]['version'];
+				  packagelist += "<tr>";
+				  packagelist += "<td><input type='button' value='+' style='margin-right:10px;border:0px' onClick='addpackage(\"" + pkg + "\");'></td>";
+				  packagelist += "<td>" + pkg + "</td>";
+				  packagelist += "<td>" + version + "</td>";
+				  packagelist += "<td>" + size + "</td>";
+				  packagelist += "</tr>";
+				}
+				packagelist += "</table>"
+			  }
+			  document.getElementById('packagelist').innerHTML = packagelist; 
+			},
+			error : function(xhr, textStatus, errorThrown ) {
+			  if (textStatus == 'parsererror') {
+				var error = "{{=T('There was a problem parsing the package list, is it really valid json?')}}";
+				document.getElementById('packagelist').innerHTML = error;
+				return;
+			  }        
+			  if (textStatus == 'timeout') {
+				this.tryCount++;
+				if (this.tryCount <= this.retryLimit) {
+					//try again
+					$.ajax(this);
+					return;
+				}
+				var error = "{{=T('Loading the package list timed out.')}}";
+				document.getElementById('packagelist').innerHTML = error;
+				return;
+			  }
+			  if (xhr.status == 500) {
+				error = "{{=T('The server returned status 500 and the package list could not be loaded, please try again later.')}}";
+				document.getElementById('packagelist').innerHTML = error;
+			  }
+			  else {
+				error = "{{=T('There was another problem loading the package list.')}}";
+				document.getElementById('packagelist').innerHTML = error;
+			  }
+			}
+		});
+		} 
+		ajax_packagelist();         
+	  </script>        
   </div>
   <!-- End packages tab -->
 
   <!-- Start upload tab -->
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-      <h1 title="{{=T('>Upload')}}" class="tab">{{=T('Upload')}}</h1>
-      <input type="file" id="upload" class="upload" name="upload"/>
-      {{=helptext(T("Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive."),config.expandablehelp)}}
-      {{ if form.errors.upload:}}
-        <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
-      {{pass}}
-    </div>
+  <h3 id="tab-upload" title="{{=T('>Upload')}}" class="tab">{{=T('Upload')}}</h3>
+  <div>
+	  <input type="file" id="upload" class="upload" name="upload"/>
+	  {{=helptext(T("Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive."),config.expandablehelp)}}
+	  {{ if form.errors.upload:}}
+		<div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
+	  {{pass}}
   </div>
   <!-- End upload tab -->
 
   <!-- Start submit tab -->
-  <div class="tab-content" style="display: block;">
-    <div class="formelement">
-      <h1 title="{{=T('Submit')}}" class="tab">{{=T('Submit')}}</h1>
-      <input type="submit" value="Submit" class="button" />
-    </div>
+  <h3 title="{{=T('Submit')}}">{{=T('Submit')}}</h3>
+  <div>
+	  <input type="submit" value="Submit" class="button" />
   </div>
   <!-- End submit tab -->
 
@@ -774,9 +774,9 @@
   {{pass}}
   <input type="hidden" name="mail" value="{{=session.mail}}" />
   {{if not config.noconf == True:}}
-    {{if not session.noconf == False:}}
+	{{if not session.noconf == False:}}
   <input type="hidden" name="noconf" value="True" />
-    {{pass}}
+	{{pass}}
   {{pass}}
   {{ if session.ipv6_config:}}
   <input type="hidden" name="ipv6_config" value="{{=session.ipv6_config}}" />
@@ -788,7 +788,6 @@
 </form>
 
 <script type="text/javascript">
-  build_tabs();
   update_defaultpkgs();
 </script>
 
