@@ -549,8 +549,14 @@ input.formerror, textarea.formerror {
 
 .sitetitle {
 	float:left;
+	width: 80%;
 }
 
 .sitelogo {
 	float:right;
+	width:20%;
+}
+
+.sitelogo img {
+	width:100%;
 }
