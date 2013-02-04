@@ -1,4 +1,5 @@
 from meshkit import *
+from gluon import current
 
 db.define_table('config',
     Field('noconf', 'boolean'),
@@ -48,6 +49,7 @@ db.define_table('config',
 )
 
 config = db.config[1]
+
 if config:
     if config.webifs and config.webifs is not None:
         config.webifs = [x.strip(' ') for x in config.webifs.split(',')]
@@ -75,3 +77,7 @@ if config:
             communities = []
     else:
         communities = []
+
+
+# Needs to be there so config can be accessed in modules
+current.config = config

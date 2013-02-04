@@ -2,55 +2,65 @@
 {{footer_enable=True}}
 <h1>{{=T('Step 1 - Basic configuration')}}</h1>
 
-{{=XML(startpage)}}
+<div id="custom_text_start">
+	{{=XML(startpage)}}
+</div>
 
-<div style="height:20px"></div>
     <form method="post" name="step1" enctype="multipart/form-data" action="">
-        {{if config.communitysupport == True:}}
-        <label id="imageconf_community__label" for="imageconf_community" class="form_label">{{=T('Community')}}</label>
-        <div class="form_value">
-            <select name="community" id="imageconf_community" class="generic-widget">
-                {{for p in communities:}}
-                  {{selected = ""}}
-                  {{if p == session.community: selected = " SELECTED"}}
-                <option value="{{=p}}"{{=selected}}>{{=p}}</option>
-                {{pass}}
-            </select>
-            {{= helptext('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.',config.expandablehelp)}}
-        </div>
-        {{pass}}
 
-        <label id="imageconf_target__label" for="imageconf_target" class="form_label">{{=T('Target')}}</label>
-        <div class="form_value">
-            <select name="target" id="imageconf_target" class="generic-widget">
-                {{for t in targets:}}
-                <option value="{{=t}}">{{=t}}</option>
-                {{pass}}
-            </select>
-            {{= helptext('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.',config.expandablehelp)}}
-        </div>
+{{
+field_target = formhelpers.formfield()
+field_target.Name = 'target'
+field_target.Label = T('Target')
+field_target.Valuelist = targets
+field_target.Helptext = T('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.')
+field_target = field_target.select()
 
-        <label class="form_label" for="imageconf_expert" id="imageconf_expert__label">{{=T('Expert')}}</label>
-            <div class="form_value">               
-                <input class="boolean" id="imageconf_expert" name="expert" type="checkbox"/>
-                {{= helptext('Enable this to show much more options for customizing your firmware.',config.expandablehelp)}}
-            </div>
+field_noconf = formhelpers.formfield()
+field_noconf.Name = 'noconf'
+field_noconf.Label = T('No configuration')
+field_noconf.Helptext = T('If you check this option meshkit will only build your ' +
+                'images, but not configure your system. Also it is still ' +
+                'possible to select packages and upload your own files.')
+field_noconf = field_noconf.chkbox()
 
 
-        {{if not config.noconf == True:}}
-        <label class="form_label" for="imageconf_noconf" id="imageconf_noconf__label">{{=T('No configuration')}}</label>
-            <div class="form_value">               
-                <input class="boolean" id="imageconf_noconf" name="noconf" type="checkbox"/>
-                {{= helptext('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.',config.expandablehelp)}}
-            </div>
-        {{pass}}
+field_expert = formhelpers.formfield()
+field_expert.Name = 'expert'
+field_expert.Label = T('Expert')
+field_expert.Helptext = T('Enable this to show much more options for customizing your firmware.')
+field_expert = field_expert.chkbox()
+
+
+field_mail = formhelpers.formfield()
+field_mail.Name = 'mail'
+field_mail.Label = T('Email')
+field_mail.Helptext = T('Enter your email address here. After the images have been built you will receive an email with download links for the firmware.')
+field_mail.Value = form.vars.mail or user_email or ''
+field_mail = field_mail.input()
+}}
+
+{{if config.communitysupport == True:
+    field_community = formhelpers.formfield()
+    field_community.Name = 'community'
+    field_community.Label = T('Community')
+    field_community.Valuelist = communities
+    field_community.Valueselected = session.community
+    field_community.Helptext = T('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.')
+    field_community = field_community.select()
+}}
+{{=field_community}}
+{{pass}}
+
+{{=field_target}}
+
+{{=field_expert}}
+
+{{if not config.noconf == True:}}
+    {{=field_noconf}}
+{{pass}}
         
-        <label id="imageconf_mail__label" for="imageconf_mail" class="form_label">{{=T('Mail')}}</label>
-        <div class="form_value">
-            <input type="text" id="imageconf_mail" value="{{=form.vars.mail or user_email or ''}}" name="mail"/>
-            {{= helptext('Enter your email address here. After the images have been built you will receive an email with download links for the firmware.',config.expandablehelp)}}
-            {{=formhelpers.errormsg('mail', form.errors.mail)}}
-        </div>
+{{=field_mail}}
             
         <input type="submit" value="SUBMIT"/>
         <input type="hidden" name="profile" id="imageconf_profile"/>

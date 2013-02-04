@@ -257,25 +257,6 @@ def create_package_list(ibpath, target, savedir):
     else:
         _generate_packagelist_json(ibpath, target, savedir)
    
-
-def helptext(text, expandable):
-    """Render a span element which contains the helptext.
-
-    Args:
-        text: The helptext which should be displayed
-        expandable: False or True. If True additional html is rendered to make
-                      the help expandable.
-    Returns:
-        A web2py html helper (in fact this is like returning html)
-
-    """
-    help = ""
-    if expandable is True:
-        help = TAG[''](SPAN("?",_class='helpLink'), DIV(text, _class='helptext'))
-    else:
-        help = DIV(text, _class='helptext')
-    return XML(help)
-
 def defip(mesh_network):
     """ Returns the first ip from mesh_network
 

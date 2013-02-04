@@ -92,6 +92,7 @@ def index():
         for i in form.errors:
             errormsg = errormsg + "<li>" + str(form.errors[i]) + "</li>"
             response.flash = XML(T('Form has errors:') + "</br><ul>" + errormsg + "</ul>")
+
     return dict(form=form,communities=communities, targets=targets, user_email=user_email,
                 formhelpers=formhelpers, vars=form.vars, modellist=modellist, startpage=startpage)
     
