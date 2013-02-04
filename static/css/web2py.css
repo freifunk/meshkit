@@ -560,3 +560,15 @@ input.formerror, textarea.formerror {
 .sitelogo img {
 	width:100%;
 }
+
+#custom_text_start {
+	margin-bottom: 20px;
+}
+
+.expert{
+        display: none;
+}
+#tab-lan, #tab-wan, #tab-packages, #tab-upload {
+        display: none;
+}
+
