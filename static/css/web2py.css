@@ -572,3 +572,6 @@ input.formerror, textarea.formerror {
         display: none;
 }
 
+.tab-description {
+	margin-bottom: 30px;
+}

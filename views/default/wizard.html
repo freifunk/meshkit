@@ -34,6 +34,9 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start system tab -->
     <h3 title="{{=T('Basic system settings')}}">{{=T('System')}}</h3>
     <div>
+      <div class="tab-description">
+        {{=T('Basic system settings.')}}
+      </div>
       {{if session.profiles:}}
         {{
         field_profile = formhelpers.formfield()
@@ -133,6 +136,9 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
     {{if not session.noconf == True and session.communitysupport == True:}}
     <h3 title="{{=T('Location for this node')}}">{{=T('Location')}}</h3>
     <div>
+      <div class="tab-description">
+        {{=T('Enter the coordinates and location for your node here. This is used to show your node on maps of the mesh network.')}}
+      </div>
       <span id='osm'>
         {{
         field_latitude = formhelpers.formfield()
@@ -144,6 +150,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
             field_latitude.Errormsg = T('Latitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.')
         pass
         field_latitude = field_latitude.input()
+
         field_longitude = formhelpers.formfield()
         field_longitude.Name = 'longitude'
         field_longitude.Label = T('Longitude')
@@ -153,7 +160,16 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
             field_longitude.Errormsg = T('Longitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.')
         pass
         field_longitude = field_longitude.input()
+
+        field_location = formhelpers.formfield()
+        field_location.Name = 'location'
+        field_location.Label = T('Location')
+        field_location.Helptext = T('Location of your node.')
+        field_location.Value = form.vars.location or session.location
+        field_location.Errormsg = form.errors.location
+        field_location = field_location.input()
         }}
+        {{=field_location}}
         {{=field_latitude}}
         {{=field_longitude}}
         <input type="button" id="showmap" value="{{=T('Show map')}}" style="cursor:pointer" onclick="toggle_button()">
@@ -202,6 +218,9 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start contact tab -->
   <h3 title="{{=T('Contact')}}">{{=T('Contact')}}</h3>
   <div>
+      <div class="tab-description">
+        {{=T('Please enter some personal informations here so others can contact you. Please have at least one valid contact option (email or phone).')}}
+      </div>
     {{
       field_nickname = formhelpers.formfield()
       field_nickname.Name = 'nickname'
@@ -252,6 +271,10 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start wifi tab -->
   <h3 title="{{=T('Wireless')}}">{{=T('Wireless')}}</h3>
   <div>
+      <div class="tab-description">
+        {{=T('Configure your wireless interface(s) here. These will be configured to operate in adhoc mode with the correct settings for your community.')}}
+      </div>
+
 	  <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or 1}}" />
 	  <script type="text/javascript">
 		var wifi_counter = 0;
@@ -468,12 +491,13 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start Lan tab -->
   <h3 id="tab-lan" title="{{=T('LAN settings')}}">{{=T('LAN')}}</h3>
   <div>
-    <p>{{=T('You can change the settings for the LAN interface here.')}}</p>
-    <ul>
-      <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
-      <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
-    </ul>
-    <br/>
+      <div class="tab-description">
+        {{=T('You can change the settings for the LAN interface here.')}}</p>
+        <ul>
+          <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
+          <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
+        </ul>
+      </div>
     {{
       field_lanproto = formhelpers.formfield()
       field_lanproto.Name = 'lanproto'
@@ -568,6 +592,9 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start Wan tab -->
   <h3 id="tab-wan" title="{{=T('WAN settings')}}">{{=T('WAN')}}</h3>
   <div>
+    <div class="tab-description">
+      {{=T('Configure your wan interface here. The OpenWrt Default is to use "dhcp".')}}
+    </div>
     {{
       field_wanproto = formhelpers.formfield()
       field_wanproto.Name = 'wanproto'
@@ -696,6 +723,10 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start packages tab -->
   <h3 id="tab-packages" title="{{=T('Packages')}}">{{=T('Packages')}}</h3>
   <div>
+    <div class="tab-description">
+      {{=T('Add or remove packages which are going to be installed into your firmware image here.')}}
+    </div>
+
     <strong>{{=T('Default Packages')}}:</strong> 
     <span id='default_packages'></span>
     <script type='text/javascript'>update_defaultpkgs();</script>
@@ -785,18 +816,24 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start upload tab -->
   <h3 id="tab-upload" title="{{=T('>Upload')}}" class="tab">{{=T('Upload')}}</h3>
   <div>
-	  <input type="file" id="upload" class="upload" name="upload"/>
-	  {{=formhelpers.helptext(T("Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive."),config.expandablehelp)}}
-	  {{ if form.errors.upload:}}
-		<div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
-	  {{pass}}
+    <div class="tab-description">
+        {{=T('Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive.')}}
+    </div>
+
+    <input type="file" id="upload" class="upload" name="upload"/>
+    {{ if form.errors.upload:}}
+      <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
+    {{pass}}
   </div>
   <!-- End upload tab -->
 
   <!-- Start submit tab -->
   <h3 title="{{=T('Submit')}}">{{=T('Submit')}}</h3>
   <div>
-	  <input type="submit" value="Submit" class="button" />
+    <div class="tab-description">
+        {{=T('Submit the form and build your images. Note: root password will be "admin".')}}
+    </div>
+    <input type="submit" value="Submit" class="button" />
   </div>
   <!-- End submit tab -->
 
