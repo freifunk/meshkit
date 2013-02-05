@@ -746,7 +746,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
               }
              document.getElementById('packagelist').innerHTML = packagelist; 
              $(function() {
-               $( "#packagelist" ).accordion({ heightStyle: "content" });
+               $( "#packagelist" ).accordion({ heightStyle: "content", collapsible: true, active: false });
              });
            },
            error : function(xhr, textStatus, errorThrown ) {
