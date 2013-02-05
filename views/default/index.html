@@ -1,6 +1,6 @@
 {{extend 'layout.html'}}
 {{footer_enable=True}}
-<h1>{{=T('Step 1 - Basic configuration')}}</h1>
+<h1>{{=T('1. Basic configuration')}}</h1>
 
 <div id="custom_text_start">
 	{{=XML(startpage)}}
@@ -19,9 +19,7 @@ field_target = field_target.select()
 field_noconf = formhelpers.formfield()
 field_noconf.Name = 'noconf'
 field_noconf.Label = T('No configuration')
-field_noconf.Helptext = T('If you check this option meshkit will only build your ' +
-                'images, but not configure your system. Also it is still ' +
-                'possible to select packages and upload your own files.')
+field_noconf.Helptext = T('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.')
 field_noconf = field_noconf.chkbox()
 
 
