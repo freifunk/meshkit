@@ -120,6 +120,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
           field_pubkeys.Name = 'pubkeys'
           field_pubkeys.Label = T('Public Keys')
           field_pubkeys.Helptext = T('Add ssh public keys, one per line.')
+          field_pubkeys.Special = 'wrap="off"'
           field_pubkeys.Value = form.vars.pubkeys or session.pubkeys
           field_pubkeys = field_pubkeys.textarea()
           }}
@@ -699,11 +700,16 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 	  <span id='default_packages'></span>
 	  <script type='text/javascript'>update_defaultpkgs();</script>
 	  <div style="clear:both"></div>
-			
-	  <label class="form_label" for="imageconf_packages" id="imageconf_packages__label">{{=T('Packages')}}</label>
-	  <div class="form_value">            
-		<textarea rows="5" class="text packages" id="imageconf_packages" name="packages" type="text"></textarea>
-	  </div>
+
+          {{
+          field_packages = formhelpers.formfield()
+          field_packages.Name = 'packages'
+          field_packages.Label = T('Packages')
+          field_packages = field_packages.textarea()
+          }}
+          {{=field_packages}}
+
+
 									  
 	  <H2>{{=T('Available Packages')}}</h2>
 	  <div id="packagelist">

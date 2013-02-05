@@ -109,6 +109,7 @@
 'Images web directory': 'Images web directory',
 'Import/Export': 'Import/Export',
 'Index': 'Index',
+'Install additional packages.': 'Install additional packages.',
 'Internal State': 'Internal State',
 'Internet gateway': 'Internet gateway',
 'Invalid Query': 'Ungültige Anfrage',

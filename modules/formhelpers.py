@@ -123,7 +123,7 @@ class formfield:
             return gluon.html.XML('<div class="error">Missing variables, at least specify name and label for a textarea field!</div>')
         label = '<label class="form_label" for="imageconf_' + self.Name + '" id="imageconf_' + self.Name + '__label">' + self.Label + '</label>'
         field =  '<div class="form_value">'
-        field += '<textarea wrap="off" rows="' + str(rows) + '" class="text note" id="imageconf_' + self.Name + '" name="' + self.Name + '" type="text">'
+        field += '<textarea ' + self.Special + ' rows="' + str(rows) + '" class="text note" id="imageconf_' + self.Name + '" name="' + self.Name + '" type="text">'
         field += self.Value + '</textarea>'
         if self.Helptext:
             field += helptext(self.Helptext)
