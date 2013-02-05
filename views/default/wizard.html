@@ -696,87 +696,89 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start packages tab -->
   <h3 id="tab-packages" title="{{=T('Packages')}}">{{=T('Packages')}}</h3>
   <div>
-	  <strong>{{=T('Default Packages')}}:</strong> 
-	  <span id='default_packages'></span>
-	  <script type='text/javascript'>update_defaultpkgs();</script>
-	  <div style="clear:both"></div>
+    <strong>{{=T('Default Packages')}}:</strong> 
+    <span id='default_packages'></span>
+    <script type='text/javascript'>update_defaultpkgs();</script>
+    <div style="clear:both"></div>
 
-          {{
-          field_packages = formhelpers.formfield()
-          field_packages.Name = 'packages'
-          field_packages.Label = T('Packages')
-          field_packages = field_packages.textarea()
-          }}
-          {{=field_packages}}
+    {{
+      field_packages = formhelpers.formfield()
+      field_packages.Name = 'packages'
+      field_packages.Label = T('Packages')
+      field_packages = field_packages.textarea()
+    }}
+    {{=field_packages}}
 
+    <H2>{{=T('Available Packages')}}</h2>
 
-									  
-	  <H2>{{=T('Available Packages')}}</h2>
-	  <div id="packagelist">
-		<img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
-		Loading package list...
-	  </div>
+    <div id="packagelist">
+      <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+      Loading package list...
+    </div>
 
-	  <script type="text/javascript">
-		function ajax_packagelist() {
-		  $.ajax({
-			url : '{{=URL('static/package_lists', session.target)}}',
-			type : 'get',
-			dataType : 'json',
-			timeout : 10000,
-			tryCount : 0,
-			retryLimit : 10,
-			success : function(json) {
-			  var packagelist = "";
-			  for(var section in json) {
-				packagelist += "<div id='packages_category' onclick='ToggleDiv(\"" + section + "\")'><b>" + section + "</b></div>";
-				packagelist += "<table id='" + section + "' class='packages_table' style='display: none'><thead>";
-				packagelist += "<tr><th></th><th width='300px'>{{=T('Package')}}</th><th width='450px'>{{=T('Version')}}</th><th width='100px'>{{=T('Size')}}</th></tr></thead>";
-				d = json[section];
-				for(var pkg in d) {
-				  size = json[section][pkg]['size'];
-				  version = json[section][pkg]['version'];
-				  packagelist += "<tr>";
-				  packagelist += "<td><input type='button' value='+' style='margin-right:10px;border:0px' onClick='addpackage(\"" + pkg + "\");'></td>";
-				  packagelist += "<td>" + pkg + "</td>";
-				  packagelist += "<td>" + version + "</td>";
-				  packagelist += "<td>" + size + "</td>";
-				  packagelist += "</tr>";
-				}
-				packagelist += "</table>"
-			  }
-			  document.getElementById('packagelist').innerHTML = packagelist; 
-			},
-			error : function(xhr, textStatus, errorThrown ) {
-			  if (textStatus == 'parsererror') {
-				var error = "{{=T('There was a problem parsing the package list, is it really valid json?')}}";
-				document.getElementById('packagelist').innerHTML = error;
-				return;
-			  }        
-			  if (textStatus == 'timeout') {
-				this.tryCount++;
-				if (this.tryCount <= this.retryLimit) {
-					//try again
-					$.ajax(this);
-					return;
-				}
-				var error = "{{=T('Loading the package list timed out.')}}";
-				document.getElementById('packagelist').innerHTML = error;
-				return;
-			  }
-			  if (xhr.status == 500) {
-				error = "{{=T('The server returned status 500 and the package list could not be loaded, please try again later.')}}";
-				document.getElementById('packagelist').innerHTML = error;
-			  }
-			  else {
-				error = "{{=T('There was another problem loading the package list.')}}";
-				document.getElementById('packagelist').innerHTML = error;
-			  }
-			}
-		});
-		} 
-		ajax_packagelist();         
-	  </script>        
+    <script type="text/javascript">
+      function ajax_packagelist() {
+        $.ajax({
+          url : '{{=URL('static/package_lists', session.target)}}',
+          type : 'get',
+          dataType : 'json',
+          timeout : 10000,
+          tryCount : 0,
+          retryLimit : 10,
+          success : function(json) {
+            var packagelist = "";
+              for(var section in json) {
+                packagelist += "<h3>" + section + "</h3>";
+                packagelist += "<div><table><thead>";
+                packagelist += "<tr><th></th><th width='300px'>{{=T('Package')}}</th><th width='450px'>{{=T('Version')}}</th><th width='100px'>{{=T('Size')}}</th></tr></thead>";
+                d = json[section];
+                for(var pkg in d) {
+                  size = json[section][pkg]['size'];
+                  version = json[section][pkg]['version'];
+                  packagelist += "<tr>";
+                  packagelist += "<td><input type='button' value='+' style='margin:0px 10px 0 0; border:0px' onClick='addpackage(\"" + pkg + "\");'></td>";
+                  packagelist += "<td>" + pkg + "</td>";
+                  packagelist += "<td>" + version + "</td>";
+                  packagelist += "<td>" + size + "</td>";
+                  packagelist += "</tr>";
+                }
+                packagelist += "</table></div>"
+              }
+             document.getElementById('packagelist').innerHTML = packagelist; 
+             $(function() {
+               $( "#packagelist" ).accordion({ heightStyle: "content" });
+             });
+           },
+           error : function(xhr, textStatus, errorThrown ) {
+           if (textStatus == 'parsererror') {
+             var error = "{{=T('There was a problem parsing the package list, is it really valid json?')}}";
+                                document.getElementById('packagelist').innerHTML = error;
+             return;
+           }        
+           if (textStatus == 'timeout') {
+             this.tryCount++;
+             if (this.tryCount <= this.retryLimit) {
+               //try again
+               $.ajax(this);
+               return;
+             }
+             var error = "{{=T('Loading the package list timed out.')}}";
+             document.getElementById('packagelist').innerHTML = error;
+             return;
+           }
+           if (xhr.status == 500) {
+             error = "{{=T('The server returned status 500 and the package list could not be loaded, please try again later.')}}";
+                            document.getElementById('packagelist').innerHTML = error;
+           }
+           else {
+             error = "{{=T('There was another problem loading the package list.')}}";
+             document.getElementById('packagelist').innerHTML = error;
+           }
+         }
+       });
+     } 
+     ajax_packagelist();         
+    </script>        
   </div>
   <!-- End packages tab -->
 
