@@ -532,7 +532,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
             field_landhcp.Name = 'landhcp'
             field_landhcp.Label = T('Enable DHCP')
             field_landhcp.Helptext = T('Enable DHCP-Server for the LAN interface.')
-            field_landhcp.Value = form.vars.landhcp or True
+            field_landhcp.Value = form.vars.landhcp or False
             field_landhcp.Errormsg = form.errors.landhcp
             field_landhcp.Advanced = '<a href="javascript:void(0)" class="advanced" title="Advanced Options" onclick=ToggleDiv("lan_dhcp_range")>+/-</a>'
             field_landhcp = field_landhcp.chkbox()
@@ -551,7 +551,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 
           landhcprangewrapstart = '<div id="lan_dhcp_range" class="suboptions" style="display:none">';
           landhcprangewrapend = '</div>';
-          landhcprange = landhcprangewrapstart + {{=field_landhcprange}} + landhcprangewrapend;
+          landhcprange = landhcprangewrapstart + '{{=field_landhcprange}}' + landhcprangewrapend;
           lanolsr = lan_ipv6addr + landhcp + landhcprange;
           document.getElementById("lan_options").innerHTML = lanolsr
           hideAll();
@@ -567,117 +567,125 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- Start Wan tab -->
   <h3 id="tab-wan" title="{{=T('WAN settings')}}">{{=T('WAN')}}</h3>
   <div>
-	  <label class="form_label" for="imageconf_wanproto" id="imageconf_wanproto__label">{{=T('WAN Protocol')}}</label>
-	  <div class="form_value">
-		<select onchange="wanselect()" class="generic-widget" id="imageconf_wanproto" name="wanproto">
-		{{for proto in config.wanprotos:}}
-		  {{selected = ""}}
-		  {{if proto == form.vars.wanproto: selected = " SELECTED"}}
-			<option value="{{=proto}}"{{=selected}}>{{=proto}}</option>
-		{{pass}}
-		</select>
-	  </div>
-		
-	  <div id="wan_options">
-		<!-- This will be replaced by javascript -->
-	  </div>
+    {{
+      field_wanproto = formhelpers.formfield()
+      field_wanproto.Name = 'wanproto'
+      field_wanproto.Label = T('WAN Protocol')
+      field_wanproto.Valuelist = config.wanprotos
+      field_wanproto.Valueselected = form.vars.wanproto
+      field_wanproto.Helptext = T('Protocol to use for the WAN interface.')
+      field_wanproto.Special = 'onchange="wanselect()"'
+      field_wanproto = field_wanproto.select()
 
-	  <script type="text/javascript">
-		function wanselect() {
-		  var e = document.getElementById('imageconf_wanproto');
-		  var selected = e.options[e.selectedIndex].value;
+      field_wanipv4addr = formhelpers.formfield()
+      field_wanipv4addr.Name = 'wanipv4addr'
+      field_wanipv4addr.Label = T('IPv4 Address')
+      field_wanipv4addr.Helptext = T('IPv4 address for the wan interface')
+      field_wanipv4addr.Value = form.vars.wanipv4addr or ''
+      field_wanipv4addr.Errormsg = form.errors.wanipv4addr
+      field_wanipv4addr = field_wanipv4addr.input()
 
-		  wanipv4addrlabel = '<label id="imageconf_wanipv4addr" for="imageconf_wanipv4addr" ';
-		  wanipv4addrlabel += 'class="form_label">{{=T("IPv4 Address")}}</label>';
-		  wanipv4addrvalue = '<div class="form_value">';
-		  wanipv4addrvalue += '<input type="text" id="imageconf_wanipv4addr" value="{{=form.vars.wanipv4addr or ""}}" name="wanipv4addr"/>';
-		  wanipv4addrvalue += '{{=formhelpers.errormsg('wanipv4addr', form.errors.wanipv4addr)}}';
-		  wanipv4addrvalue += '</div>';
-		  wanipv4addr = wanipv4addrlabel + wanipv4addrvalue;
+      field_wangateway = formhelpers.formfield()
+      field_wangateway.Name = 'wangateway'
+      field_wangateway.Label = T('Gateway')
+      field_wangateway.Helptext = T('Internet gateway')
+      field_wangateway.Value = form.vars.wangateway or ''
+      field_wangateway.Errormsg = form.errors.wangateway
+      field_wangateway = field_wangateway.input()
 
-		  wannetmasklabel = '<label id="imageconf_wannetmask" for="imageconf_wannetmask" ';
-		  wannetmasklabel += 'class="form_label">{{=T("Netmask")}}</label>';
-		  wannetmaskvalue = '<div class="form_value">';
-		  wannetmaskvalue += '<input type="text" id="imageconf_wannetmask" value="{{=form.vars.wannetmask or "255.255.255.0"}}" name="wannetmask"/>';
-		  wannetmaskvalue += '{{=formhelpers.errormsg('wannetmask', form.errors.wannetmask)}}';
-		  wannetmaskvalue += '</div>';
-		  wannetmask = wannetmasklabel + wannetmaskvalue;
+      field_wandns = formhelpers.formfield()
+      field_wandns.Name = 'wandns'
+      field_wandns.Label = T('DNS')
+      field_wandns.Helptext = T('DNS server(s). Seperate by space if you want to use multiple DNS servers.')
+      field_wandns.Value = form.vars.wandns or ''
+      field_wandns.Errormsg = form.errors.wandns
+      field_wandns = field_wandns.input()
 
-		  localrestrictlabel = '<label id="imageconf_localrestrict" for="imageconf_localrestrict" class="form_label">{{=T("Protect local network")}}</label>';
-		  localrestrictinputwrapstart = '<div class="form_value">';
-		  localrestrictinput = '<input type="checkbox" {{if session.localrestrict:}}checked="1" {{pass}}';
-		  localrestrictinput += 'name="localrestrict" id="imageconf_localrestrict"/>';
-		  localrestrictinput += '{{=formhelpers.helptext(T("Protect the network behind wan from being accessed from the mesh."),config.expandablehelp)}}';
-		  localrestrict_inputwrapend = '</div>';
-		  localrestrict = localrestrictlabel + localrestrictinputwrapstart + localrestrictinput + localrestrict_inputwrapend;
+      field_wannetmask = formhelpers.formfield()
+      field_wannetmask.Name = 'wannetmask'
+      field_wannetmask.Label = T('Netmask')
+      field_wannetmask.Helptext = T('IPv4 netmask for the wan interface')
+      field_wannetmask.Value = form.vars.wannetmask or ''
+      field_wannetmask.Errormsg = form.errors.wannetmask
+      field_wannetmask = field_wannetmask.input()
 
-		  sharenetlabel = '<label id="imageconf_sharenet__label" for="imageconf_sharenet" class="form_label">{{=T("Share internet")}}</label>';
-		  sharenetinputwrapstart = '<div class="form_value">';
-		  sharenetinput = '<input type="checkbox" {{if form.vars.sharenet:}}checked="1"{{pass}} id="imageconf_sharenet" onchange="nosharepkgs();"';
-		  sharenetinput += 'name="sharenet" id="imageconf_sharenet"/>';
-		  sharenetinput += '{{=formhelpers.helptext(T("Allow others in the mesh to use your internet connection. This makes use of the olsrd dyngw_plain plugin, which checks for available internet connectivity and starts to announce it as hna as soon as it is detected."),config.expandablehelp)}}';
-		  sharenet_inputwrapend = '</div>';
-		  sharenet = sharenetlabel + sharenetinputwrapstart + sharenetinput + sharenet_inputwrapend;
+      field_localrestrict = formhelpers.formfield()
+      field_localrestrict.Name = 'localrestrict'
+      field_localrestrict.Label = T('Protect local network')
+      field_localrestrict.Helptext = T('Protect the network behind wan from being accessed from the mesh.')
+      field_localrestrict.Value = session.localrestrict or True
+      field_localrestrict.Errormsg = form.errors.localrestrict
+      field_localrestrict = field_localrestrict.chkbox()
 
-		  wan_allow_sshlabel = '<label id="imageconf_wan_allow_ssh" for="imageconf_wan_allow_ssh" class="form_label">{{=T("Allow ssh")}}</label>';
-		  wan_allow_sshinputwrapstart = '<div class="form_value">';
-		  wan_allow_sshinput = '<input type="checkbox" {{if form.vars.wan_allow_ssh:}}checked="1" {{pass}}';
-		  wan_allow_sshinput += 'name="wan_allow_ssh" id="imageconf_wan_allow_ssh"/>';
-		  wan_allow_sshinput += '{{=formhelpers.helptext(T("Add firewall rule to allow ssh access from the wan interface."),config.expandablehelp)}}';
-		  wan_allow_ssh_inputwrapend = '</div>';
-		  wan_allow_ssh = wan_allow_sshlabel + wan_allow_sshinputwrapstart + wan_allow_sshinput + wan_allow_ssh_inputwrapend;
+      field_sharenet = formhelpers.formfield()
+      field_sharenet.Name = 'sharenet'
+      field_sharenet.Label = T('Share internet')
+      field_sharenet.Special = 'onchange="nosharepkgs();"'
+      field_sharenet.Helptext = T('Allow others in the mesh to use your internet connection. This makes use of the olsrd dyngw_plain plugin, which checks for available internet connectivity and starts to announce it as hna as soon as it is detected.')
+      field_sharenet.Value = form.vars.sharenet or False
+      field_sharenet.Errormsg = form.errors.sharenet
+      field_sharenet = field_sharenet.chkbox()
 
-		  wan_allow_weblabel = '<label id="imageconf_wan_allow_web" for="imageconf_wan_allow_web" class="form_label">{{=T("Allow web")}}</label>';
-		  wan_allow_webinputwrapstart = '<div class="form_value">';
-		  wan_allow_webinput = '<input type="checkbox" {{if form.vars.wan_allow_web:}}checked="1" {{pass}}';
-		  wan_allow_webinput += 'name="wan_allow_web" id="imageconf_wan_allow_web"/>';
-		  wan_allow_webinput += '{{=formhelpers.helptext(T("Add firewall rule to allow web access from the wan interface."),config.expandablehelp)}}';
-		  wan_allow_web_inputwrapend = '</div>';
-		  wan_allow_web = wan_allow_weblabel + wan_allow_webinputwrapstart + wan_allow_webinput + wan_allow_web_inputwrapend;
+      field_wan_allow_ssh = formhelpers.formfield()
+      field_wan_allow_ssh.Name = 'wan_allow_ssh'
+      field_wan_allow_ssh.Label = T('Allow ssh')
+      field_wan_allow_ssh.Helptext = T('Add firewall rule to allow ssh access from the wan interface.')
+      field_wan_allow_ssh.Value = form.vars.wan_allow_ssh or False
+      field_wan_allow_ssh.Errormsg = form.errors.wan_allow_ssh
+      field_wan_allow_ssh = field_wan_allow_ssh.chkbox()
 
-		  if ( selected == 'dhcp' ) {
-			document.getElementById('wan_options').innerHTML = wan_allow_ssh + wan_allow_web + localrestrict + sharenet;
-		  };
-		  if ( selected == 'static' ) {
-			wangatewaylabel = '<label id="imageconf_wangateway" for="imageconf_wangateway" ';
-			wangatewaylabel += 'class="form_label">{{=T("Gateway")}}</label>';
-			wangatewayvalue = '<div class="form_value">';
-			wangatewayvalue += '<input type="text" id="imageconf_wangateway" value="{{=form.vars.wangateway or ""}}" name="wangateway"/>';
-			wangatewayvalue += '{{=formhelpers.errormsg('wangateway', form.errors.wangateway)}}';
-			wangatewayvalue += '</div>';
-			wangateway = wangatewaylabel + wangatewayvalue;
+      field_wan_allow_web = formhelpers.formfield()
+      field_wan_allow_web.Name = 'wan_allow_web'
+      field_wan_allow_web.Label = T('Allow web')
+      field_wan_allow_web.Helptext = T('Add firewall rule to allow web access from the wan interface.')
+      field_wan_allow_web.Value = form.vars.wan_allow_web or False
+      field_wan_allow_web.Errormsg = form.errors.wan_allow_web
+      field_wan_allow_web = field_wan_allow_web.chkbox()
+    }}
+    {{=field_wanproto}}	
+    <div id="wan_options">
+      <!-- This will be replaced by javascript -->
+    </div>
 
-			wandnslabel = '<label id="imageconf_wandns" for="imageconf_wandns" ';
-			wandnslabel += 'class="form_label">{{=T("DNS")}}</label>';
-			wandnsvalue = '<div class="form_value">';
-			wandnsvalue += '<input type="text" id="imageconf_wandns" value="{{=form.vars.wandns or ""}}" name="wandns"/>';
-			wandnsvalue += '{{=formhelpers.errormsg('wandns', form.errors.wandns)}}';
-			wandnsvalue += '</div>';
-			wandns = wandnslabel + wandnsvalue;
+    <script type="text/javascript">
+      function wanselect() {
+        var e = document.getElementById('imageconf_wanproto');
+        var selected = e.options[e.selectedIndex].value;
 
-			document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask + wangateway + wandns + localrestrict + sharenet + wan_allow_ssh + wan_allow_web;
-			hideAll();
-		  };
-		  if ( selected == 'olsr' ) {
-			document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask;
-			hideAll();
-		  };
-		};
-		wanselect();
+        wanipv4addr = '{{=field_wanipv4addr}}';
+        wannetmask = '{{=field_wannetmask}}';
+        localrestrict = '{{=field_localrestrict}}';
+        sharenet = '{{=field_sharenet}}';
+        wan_allow_ssh = '{{=field_wan_allow_ssh}}';
+        wan_allow_web = '{{=field_wan_allow_web}}';
 
-		function nosharepkgs() {
-		  if(document.getElementById("imageconf_sharenet").checked)
-			{
-			  nosharepackages='';
-			  update_defaultpkgs();
-			}
-			else    {
-			  nosharepackages = 'luci-app-freifunk-policyrouting';
-			  update_defaultpkgs();
-			}
-		  };
-		nosharepkgs();
-	  </script>
+        if ( selected == 'dhcp' ) {
+          document.getElementById('wan_options').innerHTML = wan_allow_ssh + wan_allow_web + localrestrict + sharenet;
+        };
+        if ( selected == 'static' ) {
+          wangateway = '{{=field_wangateway}}';
+          wandns = '{{=field_wandns}}';
+          document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask + wangateway + wandns + localrestrict + sharenet + wan_allow_ssh + wan_allow_web;
+        };
+        if ( selected == 'olsr' ) {
+          document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask;
+        };
+        hideAll();
+      };
+      wanselect();
+
+      function nosharepkgs() {
+        if(document.getElementById("imageconf_sharenet").checked) {
+          nosharepackages='';
+          update_defaultpkgs();
+        }
+        else {
+          nosharepackages = 'luci-app-freifunk-policyrouting';
+          update_defaultpkgs();
+        }
+      };
+      nosharepkgs();
+    </script>
   </div>
   <!-- End Wan tab -->
   {{pass}}
@@ -830,12 +838,14 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 
 <script type="text/javascript">
   function ipv6pkgs() {
-    if(document.getElementById("imageconf_ipv6").checked) {
-      ipv6packages='{{=ipv6_packages}}';
-      update_defaultpkgs();
-    } else {
-      ipv6packages = '';
-      update_defaultpkgs();
+    if(document.getElementById("imageconf_ipv6")) {
+      if(document.getElementById("imageconf_ipv6").checked) {
+        ipv6packages='{{=ipv6_packages}}';
+        update_defaultpkgs();
+      } else {
+        ipv6packages = '';
+        update_defaultpkgs();
+      }
     }
   };
 
