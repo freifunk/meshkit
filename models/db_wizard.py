@@ -143,7 +143,7 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_IPV4(error_message=T('%(name)s is invalid') % dict(name='WAN ' + T('Gateway'))))
         ),
         Field('wandns',
-            requires=IS_EMPTY_OR(IS_IPV4(error_message=T('%(name)s is invalid') % dict(name='WAN ' + T('DNS'))))
+            requires=IS_EMPTY_OR(IS_MATCH('[0-9\. ]+', error_message=T('%(name)s is invalid') % dict(name=T('Profile'))))
         ),
         Field('wan_allow_ssh','boolean'),
         Field('wan_allow_web','boolean'),
