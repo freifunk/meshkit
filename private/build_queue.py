@@ -73,7 +73,7 @@ class BuildImages(object):
                  lanproto=None, lanipv4addr=None, lannetmask=None, landhcp=None,
                  landhcprange=None, wanproto=None, wanipv4addr=None, wannetmask=None,
                  wangateway=None, wandns=None, wan_allow_ssh=None, wan_allow_web=None,
-                 localrestrict=None, sharenet=None
+                 localrestrict=None, sharenet=None,url=None
                  ):
         self.Id = str(id)
         self.Rand = rand
@@ -157,6 +157,7 @@ class BuildImages(object):
         self.BinDir = os.path.join(self.OutputDir, "bin")
         self.OutputDirWeb = os.path.join(config.images_web_dir, self.Rand)
         self.BinDirWeb = os.path.join(self.OutputDirWeb, "bin")
+        self.Url = url or ''
 
 
     def build_links_json(self):
@@ -394,6 +395,29 @@ class BuildImages(object):
             if e.errno == errno.EEXIST:
                 pass
 
+        # Write /etc/config/meshkit containing current configuration
+	#config_meshkit = 'config "meshkit" "update"\n'
+        #for o in self.__dict__:
+        #    v = "{key}\t'{value}'".format(key=o, value=self.__dict__[o])
+        #    config_meshkit += '\toption' + '\t' + v + '\n'
+
+        config_meshkit = add_section('meshkit', 'update')
+        config_meshkit += add_option('community', self.Community)
+        config_meshkit += add_option('target', self.Target)
+        config_meshkit += add_option('url', self.Url)
+
+        try:
+            f = open(os.path.join(self.FilesDirConfig, 'meshkit'), "w")
+            try:
+                f.write(config_meshkit)
+            finally:
+                f.close()
+        except IOError:
+            logger.critical("Could not write /etc/config/meshkit!")
+
+
+    
+
     def build(self):
         logger.info("Build started, ID: " + self.Id + ", target: " + self.Target)
         if builder.createdirectories():
@@ -486,7 +510,7 @@ else:
                                       wanipv4addr=row.wanipv4addr, wannetmask=row.wannetmask,
                                       wangateway=row.wangateway, wandns=row.wandns,
                                       wan_allow_ssh=row.wan_allow_ssh, wan_allow_web=row.wan_allow_web,
-                                      localrestrict=row.localrestrict, sharenet=row.sharenet
+                                      localrestrict=row.localrestrict, sharenet=row.sharenet,url=row.url
                                       )
                 ret = builder.build()
                 if ret == 0:

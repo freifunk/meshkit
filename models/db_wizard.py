@@ -168,4 +168,7 @@ if not config == None:
         Field('landhcprange',
             requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='LAN ' + T('DHCP Range'))))
         ),
+        Field('url',
+            requires=IS_URL(error_message=T('%(name)s is invalid') % dict(name=T('URL')))
+        ),
     )

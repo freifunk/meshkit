@@ -839,6 +839,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 
   <!-- Hidden fields -->
   <input type="hidden" name="target" value="{{=session.target}}" />
+  <input type="hidden" name="url" value="{{=session.url}}" />
   {{if not config.noconf == True:}}
   <input type="hidden" name="community" value="{{=session.community}}" />
   {{pass}}

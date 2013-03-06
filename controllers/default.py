@@ -118,6 +118,7 @@ def wizard():
     create_package_list(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "package_lists"))
     user_packagelist = ''
     latitude = longitude = defchannel = mesh_network = defip = community_packages = ipv6 = ipv6_config = ipv6_packages = ""
+    session.url = URL(request.application, request.controller, 'wizard', scheme=True, host=True)
     if config.communitysupport == True:
         c = uci.UCI(config.profiles, "profile_" + session.community)
         community_defaults = c.read()
