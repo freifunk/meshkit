@@ -9,6 +9,7 @@ import utils
 import os
 import subprocess
 import formhelpers
+import json
 
 ### end requires
 
@@ -229,3 +230,8 @@ def status():
     if json:
          response.view='default/status.json'
     return locals()
+
+def targets():
+    targets = get_targets(config.buildroots_dir)
+    response.view = 'default/targets.json'
+    return dict(targets=json.dumps(targets))
