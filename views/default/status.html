@@ -11,38 +11,38 @@
     {{pass}}
   </tr>
   <tr>
-    <td>{{=T('Load average')}}</td><td><strong><span id="loadavg">{{=loadavg}}</span></strong></td>
+    <td>{{=T('Load average')}}</td><td><strong><span id="loadavg">-</span></strong></td>
   <tr>
   <tr>
     <td>{{=T('Memory usage')}}</td>
-    <td><strong><span id="memfree">{{=memfree}}</span> {{=T('MB')}}</strong> {{=T('free')}} /
-                <strong><span id="memused">{{=memused}}</span> {{=T('MB')}}</strong> {{=T('used')}}</td>
+    <td><strong><span id="memfree">-</span> {{=T('MB')}}</strong> {{=T('free')}} /
+                <strong><span id="memused">-</span> {{=T('MB')}}</strong> {{=T('used')}}</td>
 </table>
 
 <h2>{{=T('Statistics')}}</h2>
 <table width="99%">
   <tr>
     <td width="30%">{{=T('Total images generated')}}</td>
-    <td><strong><span id="totalimg">{{=totalimg}}</span></strong></td>
+    <td><strong><span id="totalimg">-</span></strong></td>
   </tr>
   <tr>
     <td width="30%">{{=T('Successful')}}</td>
-    <td><span style="color:green" id="successimg">{{=successimg}}</span></td>
+    <td><span style="color:green" id="successimg">-</span></td>
   </tr>
   <tr>
     <td width="30%">{{=T('Failed')}}</td>
-    <td><span style="color:red" id="failedimg">{{=failedimg}}</span></td>
+    <td><span style="color:red" id="failedimg">-</span></td>
   </tr>
   <tr>
     <td width="30%">{{=T('Queued')}}</td>
-    <td><span id="queuedimg">{{=queuedimg}}</span></td>
+    <td><span id="queuedimg">-</span></td>
   </tr>
 </table>
 
 <script type="text/javascript">
 
 function refreshStats(){
-  $.getJSON('status?json=1', '', function (json, textStatus){
+  $.getJSON('api/json/status', '', function (json, textStatus){
         document.getElementById('memfree').innerHTML = json.memfree;
         document.getElementById('memused').innerHTML = json.memused;
         document.getElementById('loadavg').innerHTML = json.loadavg;

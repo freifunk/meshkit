@@ -1,1 +1,0 @@
-{"loadavg":"{{=loadavg}}","memused":{{=memused}},"memfree":{{=memfree}},"totalimg":{{=totalimg}},"queuedimg":{{=queuedimg}},"failedimg":{{=failedimg}},"successimg":{{=successimg}}}

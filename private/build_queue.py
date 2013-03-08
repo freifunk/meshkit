@@ -17,7 +17,7 @@ except ImportError:
     import simplejson as json
 import shutil
 sys.path.append(os.path.join(request.folder, "private", "modules"))
-import utils
+import mkutils
 import processupload
 import log
 import distutils
@@ -73,14 +73,14 @@ class BuildImages(object):
                  lanproto=None, lanipv4addr=None, lannetmask=None, landhcp=None,
                  landhcprange=None, wanproto=None, wanipv4addr=None, wannetmask=None,
                  wangateway=None, wandns=None, wan_allow_ssh=None, wan_allow_web=None,
-                 localrestrict=None, sharenet=None,url=None
+                 localrestrict=None, sharenet=None, url=None
                  ):
         self.Id = str(id)
         self.Rand = rand
         self.Target = target
         self.Profile = profile
         self.Pubkeys = pubkeys
-        self.Pkgs = pkgs
+        self.Pkgs = pkgs or ''
         if not noconf == True:
             self.Pkgs += ' meshwizard'
         if wifi0vap == True or wifi1vap == True or wifi2vap == True:
@@ -436,18 +436,19 @@ class BuildImages(object):
                     cptree(cfilesdir, self.FilesDir)
                     
             # Handle uploaded archive
-            uploaded_file = os.path.join(request.folder, "uploads", self.Upload)
-            if self.Upload and os.access(uploaded_file, os.R_OK):
-                logger.info("extracting " + uploaded_file)
-                pu_ret = processupload.extract(uploaded_file, self.FilesDir)
-                if pu_ret:
-                    logger.warning(pu_ret)
-                # delete uploaded file
-                try:
-                    os.remove(uploaded_file)
-                    logger.debug("Deleted " + uploaded_file)
-                except:
-                    logger.warning("Could not delete " + uploaded_file)
+            if self.Upload:
+                uploaded_file = os.path.join(request.folder, "uploads", self.Upload)
+                if os.access(uploaded_file, os.R_OK):
+                    logger.info("extracting " + uploaded_file)
+                    pu_ret = processupload.extract(uploaded_file, self.FilesDir)
+                    if pu_ret:
+                        logger.warning(pu_ret)
+                    # delete uploaded file
+                    try:
+                        os.remove(uploaded_file)
+                        logger.debug("Deleted " + uploaded_file)
+                    except:
+                        logger.warning("Could not delete " + uploaded_file)
 
             out = open(self.BinDir + "/build.log", "w")
             if self.Profile:
@@ -461,7 +462,12 @@ class BuildImages(object):
             else:
                 option_files=""
 
-            cmd = "cd " + config.buildroots_dir + "/" + self.Target + "; make image " + option_profile + " PACKAGES='" + self.Pkgs + "' BIN_DIR='" + self.BinDir + "' " + option_files
+            if self.Pkgs:
+                option_pkgs = " PACKAGES='" + self.Pkgs + "'"
+            else:
+                option_pkgs = " "
+
+            cmd = "cd " + config.buildroots_dir + "/" + self.Target + "; make image " + option_profile + option_pkgs + " BIN_DIR='" + self.BinDir + "' " + option_files
             ret = subprocess.call([cmd, ""], stdout=out, stderr=subprocess.STDOUT, shell=True)
             builder.build_links_json()
             if ret != 0:
@@ -476,7 +482,7 @@ class BuildImages(object):
             return 3
 
 # Do not start if build_queue is already running
-if utils.check_pid(os.path.join(request.folder, "private", "buildqueue.pid"), os.getpid()):
+if mkutils.check_pid(os.path.join(request.folder, "private", "buildqueue.pid"), os.getpid()):
     logger.warning('Buildqueue is already running, not starting it again.')
 else:
     try:
@@ -510,7 +516,7 @@ else:
                                       wanipv4addr=row.wanipv4addr, wannetmask=row.wannetmask,
                                       wangateway=row.wangateway, wandns=row.wandns,
                                       wan_allow_ssh=row.wan_allow_ssh, wan_allow_web=row.wan_allow_web,
-                                      localrestrict=row.localrestrict, sharenet=row.sharenet,url=row.url
+                                      localrestrict=row.localrestrict, sharenet=row.sharenet, url=row.url
                                       )
                 ret = builder.build()
                 if ret == 0:

@@ -5,7 +5,7 @@ def download(): return response.download(request,db)
 def call(): return service()
 import meshkit
 import uci
-import utils
+import mkutils
 import os
 import subprocess
 import formhelpers
@@ -17,7 +17,7 @@ import json
 # fake crontab functionality here. Also it is not possible to call private/build_queue.py directly
 # when using wsgi. So call this init instead.
 def check_queue():
-    queue_status = utils.check_pid(os.path.join(request.folder, "private", "buildqueue.pid"), False)
+    queue_status = mkutils.check_pid(os.path.join(request.folder, "private", "buildqueue.pid"), False)
     if queue_status:
         return True
     else:
@@ -218,21 +218,27 @@ def about():
     adminmail = config.adminmail.replace('@', '(at)')
     return dict(adminmail=adminmail)
 
-def status():
-    json=request.vars['json']
-    status = check_queue()
-    loadavg = cache.ram('loadavg',lambda:utils.loadavg(),time_expire=10)
-    memory = cache.ram('memory',lambda:utils.memory_stats(),time_expire=10)
-    memused, memfree = str(memory[1]), str(memory[2])
-    totalimg = cache.ram('totalimg',lambda:db(db.imageconf).select(db.imageconf.id.max()).first()['MAX(imageconf.id)'],time_expire=60)
-    queuedimg = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60)
-    failedimg = cache.ram('failedimg',lambda:len(db((db.imageconf.status=='2') | (db.imageconf.status=='3')).select()),time_expire=60)
-    successimg = cache.ram('successimg',lambda:totalimg - failedimg,time_expire=60)
-    if json:
-         response.view='default/status.json'
-    return locals()
+### API
 
+@service.json
 def targets():
     targets = get_targets(config.buildroots_dir)
-    response.view = 'default/targets.json'
-    return dict(targets=json.dumps(targets))
+    if targets:
+        return targets
+
+@service.json
+def status():
+    ret = {}
+    ret['status'] = check_queue()
+    ret['loadavg'] = cache.ram('loadavg',lambda:mkutils.loadavg(),time_expire=10)
+    memory = cache.ram('memory',lambda:mkutils.memory_stats(),time_expire=10)
+    ret['memused'], ret['memfree'] = str(memory[1]), str(memory[2])
+    ret['totalimg'] = cache.ram('totalimg',lambda:db(db.imageconf).select(db.imageconf.id.max()).first()['MAX(imageconf.id)'],time_expire=60)
+    ret['queuedimg'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60)
+    ret['failedimg'] = cache.ram('failedimg',lambda:len(db((db.imageconf.status=='2') | (db.imageconf.status=='3')).select()),time_expire=60)
+    ret['successimg'] = cache.ram('successimg',lambda:ret['totalimg'] - ret['failedimg'],time_expire=60)
+    return ret
+
+def api():
+    session.forget()
+    return service()

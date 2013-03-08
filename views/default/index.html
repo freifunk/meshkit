@@ -13,20 +13,22 @@ field_target = formhelpers.formfield()
 field_target.Name = 'target'
 field_target.Label = T('Target')
 field_target.Valuelist = targets
+field_target.Valueselected = request.vars.target
 field_target.Helptext = T('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.')
 field_target = field_target.select()
 
 field_noconf = formhelpers.formfield()
 field_noconf.Name = 'noconf'
 field_noconf.Label = T('No configuration')
+field_noconf.Value = session.noconf
 field_noconf.Helptext = T('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.')
 field_noconf = field_noconf.chkbox()
-
 
 field_expert = formhelpers.formfield()
 field_expert.Name = 'expert'
 field_expert.Label = T('Expert')
 field_expert.Helptext = T('Enable this to show much more options for customizing your firmware.')
+field_expert.Value = session.expert
 field_expert = field_expert.chkbox()
 
 
@@ -34,7 +36,7 @@ field_mail = formhelpers.formfield()
 field_mail.Name = 'mail'
 field_mail.Label = T('Email')
 field_mail.Helptext = T('Enter your email address here. After the images have been built you will receive an email with download links for the firmware.')
-field_mail.Value = form.vars.mail or user_email or ''
+field_mail.Value = request.vars.mail or user_email or ''
 field_mail = field_mail.input()
 }}
 
