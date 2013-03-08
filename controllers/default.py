@@ -21,7 +21,7 @@ def check_queue():
     if queue_status:
         return True
     else:
-        subprocess.call(['python', 'web2py.py', '-S', 'meshkit', '-M', '-N',  '-R', os.path.join(request.folder, 'init', 'build_queue.py')])
+        subprocess.call(['python', 'web2py.py', '-S', 'meshkit', '-M', '-R', os.path.join(request.folder, 'init', 'build_queue.py')])
 
 # We don't use first/lastname, so replace firstname with username to show in navbar
 if auth.user:

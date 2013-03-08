@@ -183,7 +183,7 @@ $ kill <pid>
 === 2.2 manually starting the build queue ===
 
 Change to the web2py folder and execute:
-$ python web2py.py -S meshkit -M -N -R applications/meshkit/private/build_queue.py
+$ python web2py.py -S meshkit -M -R applications/meshkit/private/build_queue.py
 
 == 3. Notes ==
 
