@@ -183,6 +183,7 @@ def wizard():
         session.profile = form.vars.profile
         session.noconf = form.vars.noconf or config.noconf
         session.rand = form.vars.rand
+	session.id = form.vars.id
         redirect(URL('build'))
     elif form.errors:
         errormsg = ''
@@ -237,6 +238,31 @@ def status():
     ret['queuedimg'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60)
     ret['failedimg'] = cache.ram('failedimg',lambda:len(db((db.imageconf.status=='2') | (db.imageconf.status=='3')).select()),time_expire=60)
     ret['successimg'] = cache.ram('successimg',lambda:ret['totalimg'] - ret['failedimg'],time_expire=60)
+    return ret
+
+
+@service.json
+def buildstatus():
+    try:
+        _id = int(request.vars.id)
+    except ValueError:
+        return {'errors': 'Required variable "id" is invalid or missing.'}
+    if not request.vars.rand:
+        return {'errors': 'Required variable "rand" is invalid or missing.'}
+
+    try:
+        row = db(db.imageconf.id == request.vars.id).select()
+        row = row[0]
+    except KeyError:
+        return {'errors': 'Wrong id.'}
+
+    if not row.rand == request.vars.rand:
+        return {'errors': 'Invalid rand number.'}
+
+    ret = {}
+    ret['queued'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=10)
+    ret['status'] = row.status
+    
     return ret
 
 def api():

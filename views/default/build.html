@@ -64,32 +64,37 @@ $.ajax({
 
 } // end function ajax
 
-ajax();
 
 
 </script>
 
 
 <script type="text/javascript">
-/*
+
 function refreshQueue(){
-  $.getJSON('status?json=1', '', function (json, textStatus){
-        var queued = json.queuedimg;
-        var text = ''
+  $.getJSON('api/json/buildstatus?id={{=session.id}}&rand={{=session.rand}}', '', function (json, textStatus){
+        var queued = json.queued;
         if (queued == "0") {
             text = "{{=T('There are no images queued in front of you. Your build will start soon.')}}"
         } else {
-            text = "{{=XML(T('Currently there are %(numqueued)s builds in the build queue.' % dict(numqueued='<span id=\'queued\'>'+queuedimg+'</span>')))}}"
+            text = "{{=T('Builds in queue:')}}" + ' <span id=\'queued\'>' + queued + '</span>';
         }
-        document.getElementById('status').innerHTML = text;
-        document.getElementById('queued').innerHTML = queued;
+
+        var status = json.status;
+        if (status == "0") {
+          ajax();
+        } else if (status == "2") {
+          document.getElementById('status').innerHTML = 'Build failed.';
+        } else {
+          document.getElementById('status').innerHTML = text;
+        }
 
   });
 }
 
 var refreshInterval = setInterval(refreshQueue, 10000);
 refreshQueue();   
-*/
+
 </script>
 
 
