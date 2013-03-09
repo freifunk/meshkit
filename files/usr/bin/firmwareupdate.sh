@@ -1,4 +1,8 @@
 #!/bin/sh
+
+. /usr/share/libubox/jshn.sh
+. /lib/functions.sh
+
 VERSION="0.0.3"
 tab="	"
 
@@ -16,7 +20,7 @@ done
 
 if [ "$help" = 1 ]; then
 echo "
-This script will help you in getting a new image from the imagebuilder.
+This script will help you in getting a new image from the meshkit.
 It knows the following options:
 
 	-c Checks if a new version is available
@@ -28,46 +32,46 @@ It knows the following options:
 " && exit 1
 fi
 
-[ -f /etc/config/imagebuilder ] || (echo "/etc/config/imagebuilder does not exist, exit now."; exit 1)
-
-get_var() {
-	uci -q show $1 | cut -d "." -f 2-100 |grep "\." | sed -e 's/^\([a-z_]*\)\./\1_/g' -e 's/=\(.*\)$/="\1"/g'
+config_load meshkit || (echo "/etc/config/meshkit does not exist, exit now."; exit 1)
+config_get url "update" url || {
+	echo "Update URL not found in /etc/config/meshkit"
+	exit 1;
 }
 
-get_option_failed() {
-	echo "Could not get option '$1' from /etc/config/imagebuilder, abort."
-	exit 1
+config_get target "update" target || {
+	echo "Target not found in /etc/config/meshkit"
+	exit 1;
 }
+
+config_get profile "update" profile
+community="$(uci -q get freifunk.community.name)"
+config_get url "update" url
+server="$(echo $url | cut -d / -f 1-3)"
+
 
 get_version_failed() {
 	echo "Could not get $1, abort"
 	exit 1
 }
 
-while read line; do
-	echo $line > /dev/null
-	export "${line//\"/}"
-done << EOF
-`get_var imagebuilder.update`
-EOF
 
-server="$(echo $update_url | cut -d / -f 1-3)"
-[ -z "$server" ] && get_option_failed url
-targets_url="${update_url/wizard.cgi/targets.cgi}"
-
-
+targets_url="$server/api/json/targets"
 get_target(){
-	target=$(wget -q "$targets_url" -O - 2> /dev/null)
-	echo $target | sed 's/ /\n/g' |grep $1
+	#MSG=$(wget -q "$targets_url" -O - |sed 's/\"/\'/g' 2> /dev/null)
+	MSG=$(wget -q "$targets_url" -O - 2> /dev/null)
+        targets="$(echo $MSG | tr -d '[]" ' | sed 's/,/ /g')"
+	for t in $targets; do
+		echo $t | grep -q $1 && echo $t
+	done
 }
 
-targetmain="$(echo $update_target | cut -d "-" -f 1)"
-[ -z "$targetmain" ] && get_option_failed target
+targetmain="$(echo $target | cut -d "-" -f 1)"
 target=$(get_target $targetmain)
 [ -z "$target" ] && echo "Could not get $targets_url, abort." && exit 1
 targetversion="$(echo $target | grep $targetmain | sed 's/.*-//')"
+
 test $targetversion -ne 0 2> /dev/null || get_version_failed targetversion
-installedversion="$(echo $update_target | sed 's/.*-//')"
+installedversion="$(echo $target | sed 's/.*-//')"
 test $installedversion -ne 0 2> /dev/null || get_version_failed installedversion
 
 compare_versions(){
@@ -78,32 +82,32 @@ compare_versions(){
 	fi
 }
 
-extract_links() {
-	rm -f /tmp/firmwareupdate.links; touch /tmp/firmwareupdate.links
-	while read line; do
-		if [ -n "$(echo $line |grep -e sysupgrade -e trx -e combined)" ]; then
-			echo "$line" | sed -n 's/<li><a href=\"\(.*\)\">.*/\1/p' >> /tmp/firmwareupdate.links
-		fi
-	done << EOF
-$(grep '<li><a href=' /tmp/firmwareupdate.result)
-EOF
-}
-
 select() {
 	n=1
 	echo "Select which firmware image you want to download/flash:"
-	while read line; do
-		line="$(echo $line | sed -n 's/.*\/bin\/\(.*\)$/\1/p')"
-		echo "$n$tab$line"
-		n=$(( $n +1))
-	done < /tmp/firmwareupdate.links
+	for line in $1; do
+                if [ -n "$(echo $line |grep -e sysupgrade -e trx -e combined)" ]; then
+			echo "$n$tab$line"
+			n=$(( $n +1))
+		fi
+	done
 
 	echo -n "#> "
 	read choice
 	test $choice -ne 0 2> /dev/null || (echo "Invalid option selected, use a number from the links above." && select)
 	if [ $choice -ge $n ]; then
-		echo "Invalid option selected, use a number from the links above."; select
+		echo "Invalid option selected, use a number from the links above."; select $1
 	fi
+        n=1
+	for line in $1; do
+		if [ -n "$(echo $line |grep -e sysupgrade -e trx -e combined)" ]; then
+                	if [ $choice -eq $n ]; then
+				firmwareimage="$line"
+			fi
+			n=$(( $n +1))
+		fi
+	done
+
 }
 
 confirm_flash() {
@@ -120,7 +124,7 @@ confirm_flash() {
 if [ "$action" == "versioncheck" ]; then
 	updateavail=$(compare_versions)
 	if [ "$updateavail" == 0 ]; then
-		echo "No new version, $update_target is already the newest."
+		echo "No new version, $target is already the newest."
 		exit 1
 	else
 		echo "New version $targetversion is available."
@@ -130,7 +134,7 @@ fi
 
 download () {
 	rm -f /tmp/flashme.bin
-	wget -q $server/$1 -O /tmp/flashme.bin || (echo "Error: Download of $server/$1 failed, exit."; exit)
+	wget -q $1 -O /tmp/flashme.bin || (echo "Error: Download of $server/$1 failed, exit."; exit)
 }
 
 list_installed() {
@@ -144,28 +148,65 @@ if [ "$action" == "list-installed" ]; then
 	exit 0
 fi
 
-updatestring="$(uci show imagebuilder |grep -v -e 'update=imagebuilder' -e target -e noconf -e url -e extrapackages | sed 's/imagebuilder.update.//g' |tr '\n' '&')"
-[ -z "$updatestring" ] && (echo "No usable config found in /etc/config/imagebuilder, exit now."; exit 1)
 
 if [ "$action" == "keepconf" ]; then
-	echo "I'm trying to generate and download your fírmware image now, this may take some time, please be patient."
-	echo "$update_url?noconf=1&target=$target&$updatestring&extrapackages=$(list_installed)&cgi_formstatus=GENERATE" | sed 's/ /%20/g'> /tmp/firmwareupdate.url
+	echo "firmwareupgrade.sh $VERSION: Starting firmware upgrade, this may take some time, please be patient."
+	echo "$url?noconf=1&target=$target&packages=$(list_installed)&profile=$profile" | sed 's/ /%20/g'> /tmp/firmwareupdate.url
+
 	wget -q $(cat /tmp/firmwareupdate.url) -O /tmp/firmwareupdate.result
+	firmwareimage=""
+
 	if [ ! "$?" == "0" ]; then
 		echo "Sorry, but the download of the firmware failed."
 		echo "The url i tried to fetch was:"
-		echo "$update_url?noconf=1&$updatestring&extrapackages=$(list_installed)&cgi_formstatus=GENERATE"
+		echo "$update_url?noconf=1&target=$target&packages=$(list_installed)"
 		exit
 	fi
-	# extract links from firmwareupdate.result
-	extract_links
-	select
 
-	# Download and flash firmware
-	sedcmd="sed ${choice}q;d /tmp/firmwareupdate.links"
-	firmwarefile=$($sedcmd)
-	echo "Downloading your new firmware now..."
-	download $firmwarefile
-	confirm_flash
-	sysupgrade /tmp/flashme.bin
+	json_load "$(cat /tmp/firmwareupdate.result)"
+	json_get_var "id" id
+	json_get_var "errors" errors
+	json_get_var "rand" rand
+	
+        if [ -z "$id" ]; then
+		json_select "errors"
+			for e in target rand id; do
+		        json_get_var target $e && errormsg="$errormsg $target"
+		done
+		json_select ..
+
+		echo "Error: $errormsg"
+		exit 1
+	fi
+
+        status="1"
+        while [ "$status" == "1" ]; do
+		statusurl="$server/api/json/buildstatus?id=$id&rand=$rand"
+		json="$(wget -q "$statusurl" -O - 2> /dev/null)"
+		json_load "$json"
+                json_get_var status status
+                [ "$status" == "0" ] && {
+			echo "\o/"
+			json_get_var downloaddir downloaddir
+
+			if json_is_a "files" "array"; then
+			        json_select "files"
+			        i=1
+			        while json_is_a $i "string"; do
+			                json_get_var "file" $i
+			                files="$files $file"
+			                i=$(($i + 1))
+			        done
+			fi
+			select "$files"
+			echo "Downloading your new firmware now..."
+			download "$downloaddir/$firmwareimage"
+			confirm_flash
+		        sysupgrade /tmp/flashme.bin
+		}
+                [ "$status" == "1" ] && echo -n .
+                [ "$status" == "2" ] && echo "bError building the image"
+
+		sleep 10
+	done
 fi
