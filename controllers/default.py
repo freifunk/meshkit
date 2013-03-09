@@ -265,6 +265,9 @@ def buildstatus():
 
     if row.status == "0":
         ret['downloaddir'] = config.images_web_dir + '/' + request.vars.rand + '/bin/'
+        ret['files'] = []
+        for filename in os.listdir(config.images_output_dir + '/' + request.vars.rand + '/bin/' ):
+            ret['files'].append(filename)
     
     return ret
 
