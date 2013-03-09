@@ -575,3 +575,7 @@ input.formerror, textarea.formerror {
 .tab-description {
 	margin-bottom: 30px;
 }
+
+#status {
+	margin-bottom:30px;
+}
