@@ -402,7 +402,7 @@ class BuildImages(object):
         #    config_meshkit += '\toption' + '\t' + v + '\n'
 
         config_meshkit = add_section('meshkit', 'update')
-        config_meshkit += add_option('community', self.Community)
+        config_meshkit += add_option('profile', self.Profile)
         config_meshkit += add_option('target', self.Target)
         config_meshkit += add_option('url', self.Url)
 
@@ -423,6 +423,13 @@ class BuildImages(object):
         if builder.createdirectories():
             if not self.Noconf == True:
                 builder.createconfig()
+
+            #handle files in <meshkit>/files
+            mkfilesdir = os.path.join(request.folder, "files")
+            if os.path.exists(mkfilesdir):
+                cptree(mkfilesdir, self.FilesDir) 
+                logger.info("Copied files from " + mkfilesdir)
+
 
             # handle files/ in imagebuilder
             ibfilesdir = os.path.join(config.buildroots_dir, self.Target, "files")
