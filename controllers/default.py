@@ -248,7 +248,7 @@ def buildstatus():
     except ValueError:
         return {'errors': 'Required variable "id" is invalid or missing.'}
     if not request.vars.rand:
-        return {'errors': 'Required variable "rand" is invalid or missing.'}
+        return {'errors': 'Required variable "rand" is missing.'}
 
     try:
         row = db(db.imageconf.id == request.vars.id).select()
@@ -262,7 +262,28 @@ def buildstatus():
     ret = {}
     ret['queued'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=10)
     ret['status'] = row.status
+
+    if row.status == "0":
+        ret['downloaddir'] = config.images_web_dir + '/' + request.vars.rand + '/bin/'
     
+    return ret
+
+@service.json
+def buildimage():
+    import random
+    import datetime
+    import hashlib
+
+    request.vars.rand = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
+    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, host=True)
+    request.vars.status = "1"
+
+    if not request.vars.target:
+        return {'errors': 'Required variable "target" is missing.'}
+
+    ret = db.imageconf.validate_and_insert(**request.vars)
+    ret['rand'] = request.vars.rand
+
     return ret
 
 def api():
