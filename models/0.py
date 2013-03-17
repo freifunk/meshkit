@@ -2,6 +2,7 @@ from gluon.storage import Storage
 settings = Storage()
 
 settings.migrate = True
+settings.fake_migrate = True
 settings.title = 'Meshkit'
 settings.subtitle = 'Freifunk OpenWrt Imagebuilder'
 settings.author = 'soma'
