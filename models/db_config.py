@@ -45,7 +45,7 @@ db.define_table('config',
         requires=IS_MATCH('^[a-zA-Z0-9,\s]*$', error_message=T('%(name)s is invalid') % dict(name=T('Lanprotos')))
     ),
     Field('expandablehelp', 'boolean'),
-    migrate=False,fake_migrate=True
+    migrate=settings.migrate
 )
 
 config = db.config[1]
