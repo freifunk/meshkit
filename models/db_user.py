@@ -44,7 +44,7 @@ if config and config.communitysupport:
         Field('registration_id',default='',
               writable=False,readable=False),
         format='%(username)s',
-    migrate=settings.migrate)
+    migrate=True,fake_migrate=True)
     db.auth_user.name.requires = IS_EMPTY_OR([
             IS_LENGTH(32,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Nickname'), len='32')),
             IS_MATCH('[a-zA-Z0-9:ÜÄÖüöä \.,\-\_\n]+', )
@@ -82,7 +82,7 @@ else:
         Field('registration_id',default='',
               writable=False,readable=False),
         format='%(username)s',
-        migrate=settings.migrate)
+        migrate=True,fake_migrate=True)
 
 db.auth_user.password.requires = CRYPT(key=auth.settings.hmac_key)
 db.auth_user.username.requires = IS_NOT_IN_DB(db, db.auth_user.username)

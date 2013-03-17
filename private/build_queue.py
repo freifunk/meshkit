@@ -402,7 +402,8 @@ class BuildImages(object):
         #    config_meshkit += '\toption' + '\t' + v + '\n'
 
         config_meshkit = add_section('meshkit', 'update')
-        config_meshkit += add_option('profile', self.Profile)
+        if self.Profile:
+            config_meshkit += add_option('profile', self.Profile)
         config_meshkit += add_option('target', self.Target)
         config_meshkit += add_option('url', self.Url)
 

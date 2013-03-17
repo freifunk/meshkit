@@ -60,13 +60,27 @@ get_target(){
 	#MSG=$(wget -q "$targets_url" -O - |sed 's/\"/\'/g' 2> /dev/null)
 	MSG=$(wget -q "$targets_url" -O - 2> /dev/null)
         targets="$(echo $MSG | tr -d '[]" ' | sed 's/,/ /g')"
+	ret=''
 	for t in $targets; do
-		echo $t | grep -q $1 && echo $t
+		#echo $t | grep -q $1 && echo $t
+		if [ -n "$(echo $t | grep $1)" ];then
+			if [ "$ret" = '' ]; then
+				ret="$t"
+			else
+				thisversion="$(echo $t | sed -n 's/.*-\(.*\)$/\1/p')"
+				retversion="$(echo $ret | sed -n 's/.*-\(.*\)$/\1/p')"
+				if [ $retversion -lt $thisversion ]; then
+					ret="$t"
+				fi
+			fi
+		fi
 	done
+	echo $ret
 }
 
 targetmain="$(echo $target | cut -d "-" -f 1)"
 target=$(get_target $targetmain)
+echo target $target
 [ -z "$target" ] && echo "Could not get $targets_url, abort." && exit 1
 targetversion="$(echo $target | grep $targetmain | sed 's/.*-//')"
 
@@ -151,9 +165,9 @@ fi
 
 if [ "$action" == "keepconf" ]; then
 	echo "firmwareupgrade.sh $VERSION: Starting firmware upgrade, this may take some time, please be patient."
-	echo "$url?noconf=1&target=$target&packages=$(list_installed)&profile=$profile" | sed 's/ /%20/g'> /tmp/firmwareupdate.url
+	echo "$url?noconf=1&target=$target&profile=$profile&packages=$(list_installed)" | sed 's/ /%20/g'> /tmp/firmwareupdate.url
 
-	wget -q $(cat /tmp/firmwareupdate.url) -O /tmp/firmwareupdate.result
+	wget -q "$(cat /tmp/firmwareupdate.url)" -O /tmp/firmwareupdate.result
 	firmwareimage=""
 
 	if [ ! "$?" == "0" ]; then
