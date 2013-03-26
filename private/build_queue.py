@@ -248,7 +248,7 @@ class BuildImages(object):
         # section system
         config = "config 'system' 'system'\n"
         config += "\toption 'hostname' '" + self.Hostname + "'\n"
-        config += "\toption 'conloglevel' '6'\n"
+        config += "\toption 'conloglevel' '8'\n"
         config += "\toption 'cronloglevel' '9'\n"
         config += "\toption 'latitude' '" + self.Latitude + "'\n"
         config += "\toption 'longitude' '" + self.Longitude + "'\n"
