@@ -356,9 +356,9 @@ class BuildImages(object):
         # section Lan - static
         if self.Lanproto == 'static':
                 config += "config 'netconfig' 'lan'\n"
-                config += "\toption 'lan_proto' '" + self.Lanproto + "'\n"
-                config += "\toption 'lan_ip4addr' '" + self.Lanipv4addr + "'\n"
-                config += "\toption 'lan_netmask' '" + self.Lannetmask + "'\n"
+                config += "\toption 'proto' '" + self.Lanproto + "'\n"
+                config += "\toption 'ip4addr' '" + self.Lanipv4addr + "'\n"
+                config += "\toption 'netmask' '" + self.Lannetmask + "'\n"
                 config += "\n"
 
         # Section ipv6
