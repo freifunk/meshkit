@@ -10,9 +10,8 @@
 {{=T('For all bugs and questions regarding this specific installation of Meshkit please contact the the admin of this installation:')}} 
 <a href="mailto:{{=adminmail}}">{{=adminmail}}</a>
 
-
-
-
+<h2>{{=T('Where is the source?')}}</h2>
+<p>{{=XML(T('Please visit <a href="http://%(url)s">%(url)s</a> to find instructions for a repository checkout or to browse the source code.' % dict(url='trac.augsburg.freifunk.net')))}}</p>
 
 {{block footer}}
 {{include 'footer.html'}}
