@@ -2,7 +2,8 @@ from gluon.storage import Storage
 settings = Storage()
 
 settings.migrate = True
-settings.fake_migrate = True
+# use fake_migrate to repair broken tables
+settings.fake_migrate = False
 settings.title = 'Meshkit'
 settings.subtitle = 'Freifunk OpenWrt Imagebuilder'
 settings.author = 'soma'
