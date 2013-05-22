@@ -464,6 +464,15 @@ class BuildImages(object):
             else:
                 option_profile = ""
 
+            # Copy community profile
+            if self.Community:
+                communityprofile = os.path.join(config.profiles, 'profile_' + self.Community)
+                if not os.path.exists(communityprofile):
+                    logger.warning('The communityfile %s does not exist!' % communityprofile)
+                else:
+                    logger.debug('Copied %s to %s' % (communityprofile, self.FilesDirConfig))
+                    shutil.copy(communityprofile, self.FilesDirConfig)
+
             # check if there are any files to include in the image
             if len(os.listdir(self.FilesDir)) > 0:
                 option_files = " FILES='" + self.FilesDir + "'"
