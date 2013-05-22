@@ -1,3 +1,6 @@
+Changelog for 0.1.1:
+ * Copy the selected community profile to files/etc/config
+
 Changelog for 0.1.0:
  * Allow IPv6 config if it is enabled in the community profile (using auto-ipv6-ib)
  * Use accordion instead of tabs in wizard to improve usability, especially on mobile devices
