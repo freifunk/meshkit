@@ -1,10 +1,14 @@
 Changelog for 0.1.0:
- * Allow IPv6 config if it is enabled in the community profile
+ * Allow IPv6 config if it is enabled in the community profile (using auto-ipv6-ib)
  * Use accordion instead of tabs in wizard to improve usability, especially on mobile devices
  * Allow to setup VAPs
  * show less fields per default and add expert mode to show everything
  * help/error messages for all form fields
  * language fixes
  * fix building without webinterface
+ * add a simple API to build images, see https://trac.augsburg.freifunk.net/wiki/Meshkit/API
+ * More responsiveness for the build view
+ * copy files from <meshkitfolder>/files into the image
+ * Add firmwareupgrade.sh
  * other bug fixes
  
