@@ -137,6 +137,7 @@ def wizard():
         community_packages  = c.get(community_defaults, 'profile', 'extrapackages', '')
         ipv6 = c.get(community_defaults, 'profile', 'ipv6', '0')
         ipv6_config = c.get(community_defaults, 'profile', 'ipv6_config', False)
+        vap = c.get(community_defaults, 'profile', 'vap', '0')
         session.theme = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
     else:
         session.communitysupport == False
@@ -164,6 +165,11 @@ def wizard():
         session.wifi0ipv6ra = False
         session.wifi1ipv6ra = False
         session.wifi2ipv6ra = False
+
+    if vap == '1':
+        session.wifi0vap = session.wifi1vap = session.wifi2vap = True
+    else:
+        session.wifi0vap = session.wifi1vap = session.wifi2vap = False
 
     if auth.user:
         session.nickname = auth.user.username or ''
@@ -198,6 +204,9 @@ def wizard():
         session.wifi0ipv6ra = form.vars.wifi0ipv6ra or False
         session.wifi1ipv6ra = form.vars.wifi1ipv6ra or False
         session.wifi2ipv6ra = form.vars.wifi2ipv6ra or False
+        session.wifi0vap = form.vars.wifi0vap or False
+        session.wifi1vap = form.vars.wifi1vap or False
+        session.wifi2vap = form.vars.wifi2vap or False
         session.localrestrict = form.vars.localrestrict or False
         user_packagelist = form.vars.packages or ''
         latitude = form.vars.latitude or ''
