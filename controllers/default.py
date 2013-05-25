@@ -122,6 +122,7 @@ def wizard():
     if config.communitysupport == True:
         c = uci.UCI(config.profiles, "profile_" + session.community)
         community_defaults = c.read()
+        nodenumber = ''
         # Add meshwizard to defaultpackages and lucipackages
         defaultpkgs.append('meshwizard')
         lucipackages = config.lucipackages + " luci-app-meshwizard"
@@ -213,7 +214,7 @@ def wizard():
         longitude = form.vars.longitude or ''
         
     hash = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
-    return dict(form=form, packages='',rand=hash, defaultpkgs=defaultpkgs, lucipackages=lucipackages,
+    return dict(form=form, packages='',rand=hash, defaultpkgs=defaultpkgs, lucipackages=lucipackages, nodenumber=nodenumber,
                 lat=latitude, lon=longitude, defchannel=defchannel, defip=defip,
                 community_packages=community_packages  + " " + config.add_defaultpackages,
                 user_packagelist=user_packagelist, addpackages='',
@@ -287,7 +288,7 @@ def buildimage():
     import hashlib
 
     request.vars.rand = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
-    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, host=True)
+    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, f=True)
     request.vars.status = "1"
 
     if not request.vars.target:

@@ -39,10 +39,10 @@ def mkdir_p(path):
 
 def cptree(src,dst):
     try:
-        copy_tree(src, dst, preserve_symlinks=0)
-        logger.debug('Copied "' + src + '" to "' + dst +'"')
+        ct = copy_tree(src, dst, preserve_symlinks=0)
+        logger.debug('Copied "' + src + '" to "' + dst ) 
     except distutils.errors.DistutilsFileError, e:
-        logger.warning("Source directory " + src + " does not exist.")
+        logger.warning("Source directory " + src + " does not exist." + str(e))
     except IOError, e:
         logger.error("Could not create/write to directory " + dst + ". Check permissions.")
 
@@ -61,7 +61,7 @@ class BuildImages(object):
                  pkgs=None, upload=None, mail=None, noconf=True, pubkeys=None,
                  hostname=None, latitude=None, longitude=None,
                  ipv6=False, ipv6_config=None,
-                 location=None, community=None, nickname=None,
+                 location=None, community=None, nodenumber=None, nickname=None,
                  name=None, email=None, phone=None, note=None,
                  theme=None,
                  wifi0ipv4addr=None, wifi0chan=None, wifi0dhcp=None, wifi0dhcprange=None,
@@ -94,6 +94,7 @@ class BuildImages(object):
         self.Ipv6_config = ipv6_config
         self.Location = location or ''
         self.Community = community or 'augsburg'
+        self.nodenumber = nodenumber or '1024'
         self.Nickname = nickname or ''
         self.Name = name or ''
         self.Email = email or '' # this is the email address for contact information
@@ -429,19 +430,30 @@ class BuildImages(object):
             mkfilesdir = os.path.join(request.folder, "files")
             if os.path.exists(mkfilesdir):
                 cptree(mkfilesdir, self.FilesDir) 
-                logger.info("Copied files from " + mkfilesdir)
+                logger.info("Copied files from " + mkfilesdir + " to " + self.FilesDir)
 
 
             # handle files/ in imagebuilder
             ibfilesdir = os.path.join(config.buildroots_dir, self.Target, "files")
             if os.path.exists(ibfilesdir):
                 cptree(ibfilesdir, self.FilesDir) 
-
+            
             # handle community files (custom files uploaded by community)
             if config.communitysupport and config.communityfiles_dir:
-		cfilesdir = os.path.join(config.communityfiles_dir, self.Community, "files")
+                cfilesdir = os.path.join(config.communityfiles_dir, self.Community, "files")
+                logger.info("Copied files from " + cfilesdir + " to " + self.FilesDir)
                 if os.path.exists(cfilesdir):
                     cptree(cfilesdir, self.FilesDir)
+                    if self.Community == 'weimar':
+                        with open(self.FilesDir + "/etc/init.d/apply_profile.code", "r+") as source:
+                            data = source.read()
+                            data1 = data.replace("#SIM_ARG1=\"olympia\"", "SIM_ARG1=\"ffweimar\"")
+                            data2 = data1.replace("#SIM_ARG2=\"adhoc\"", "SIM_ARG2=\"hybrid\"")
+                            logger.info("node number: " + self.nodenumber)
+                            data3 = data2.replace ("#SIM_ARG3=2", "SIM_ARG3=" + self.nodenumber)
+			    source.seek(0)
+			    source.write(data3)
+			    source.close()
                     
             # Handle uploaded archive
             if self.Upload:
@@ -513,7 +525,7 @@ else:
             for row in rows:
                 builder = BuildImages(id=row.id, rand=row.rand, target=row.target, mail=row.mail,
                                       profile=row.profile, pkgs=row.packages, upload=row.upload,
-                                      noconf=row.noconf, pubkeys=row.pubkeys, hostname=row.hostname,
+                                      noconf=row.noconf, pubkeys=row.pubkeys, hostname=row.hostname, nodenumber=row.nodenumber,
                                       latitude=row.latitude, longitude=row.longitude, location=row.location,
                                       ipv6=row.ipv6, ipv6_config=row.ipv6_config,
                                       community=row.community, nickname=row.nickname, name=row.name,
