@@ -66,6 +66,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
         field_nodenumber.Helptext = T('Please enter the Node Number for your weimarnetz node.')
         field_nodenumber.Value = request.vars.nodenumber or ''
         field_nodenumber = field_nodenumber.input()
+        field_nodenumber.Special = 'onchange="RegCheckNumber()"'
         }}
         {{=field_nodenumber}}
 	{{pass}}
@@ -911,6 +912,42 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   update_defaultpkgs();
 </script>
 
+<script>
+
+// REGISTRATOR shit //
+
+cnf = {
+    "base_url": ""
+};
+
+function RegCheckNumber() {
+	
+    var number = document.getElementById('imageconf_nodenumber').value;
+		
+		var settings = {
+			complete: function complete(jqXHR, textStatus) {
+				
+				var answer = {
+					"textStatus": textStatus,
+					"data": JSON.parse(jqXHR.responseText),
+				}
+				
+				if (answer.data.status < 300 ) { // if found
+					answer.result = "TAKEN: Number " + number + " registered to MAC " + answer.data.result.mac || "internal error";
+				} else {
+					answer.result = "FREE: " + answer.data.result || "internal error";
+				}
+				
+				console.log(JSON.stringify(answer));
+				
+				$('#imageconf_nodenumber_status').text(answer.result);
+			}
+		};
+		
+    jQuery.ajax(http://reg.weimarnetz.de/ffweimar/knoten/ + "" + number, settings);
+		
+};
+</script>
 
 
 {{block footer}}
