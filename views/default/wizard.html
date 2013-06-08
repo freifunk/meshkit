@@ -66,7 +66,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
         field_nodenumber.Helptext = T('Please enter the Node Number for your weimarnetz node.')
         field_nodenumber.Value = request.vars.nodenumber or ''
         field_nodenumber = field_nodenumber.input()
-        field_nodenumber.Special = 'onchange="RegCheckNumber()"'
+        field_nodenumber.Special = 'onchange="FFReg.check(this.value, _ffreg_check_callback)"'
         }}
         {{=field_nodenumber}}
 	{{pass}}
@@ -912,44 +912,20 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   update_defaultpkgs();
 </script>
 
-<script>
+  <!-- REGISTRATOR client -->
+  <script src="http://reg.weimarnetz.de/static/jquery-client.js"></script>
+  <script>
+  // define function to handle api answer as a callback
+  function _ffreg_check_callback(answer) {
 
-// REGISTRATOR shit //
-
-cnf = {
-    "base_url": ""
-};
-
-function RegCheckNumber() {
-
-    var RegBaseURL = "http://reg.weimarnetz.de/ffweimar/",
-		number = document.getElementById('imageconf_nodenumber').value;
-
-		var settings = {
-			complete: function complete(jqXHR, textStatus) {
-		
-				var answer = {
-					"textStatus": textStatus,
-					"data": JSON.parse(jqXHR.responseText),
-				}
-		
-				if (answer.data.status < 300 ) { // if found
-					answer.result = "TAKEN: Number " + number + " registered" + (answer.data.result.mac ? (" to MAC " + answer.data.result.mac) : ("")) + "!";
-				} else {
-					answer.result = "FREE: " + answer.data.result + "!";
-				}
-		
-				console.log(JSON.stringify(answer));
-		
-				$('#imageconf_nodenumber_status').text(answer.result);
-			}
-		};
-
-    jQuery.ajax(RegBaseURL + "knoten/" + number, settings);
-
-};
-</script>
-
+    // update the status HTML with the result
+    jQuery('#imageconf_nodenumber_status').text(answer.result);
+        
+    var status_color = "lightgrey";
+    status_color = answer.free ? 'lightgreen' : 'lightsalmon';
+    $('#imageconf_nodenumber').css('background', status_color);
+  }
+  </script>
 
 {{block footer}}
 {{include 'footer.html'}}
