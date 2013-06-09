@@ -13,6 +13,7 @@ config_modellist = {
     "\"TP-Link\"":{
         "WR741":{"target":"ar71xx", "profile":"TLWR741"},
         "WR841":{"target":"ar71xx", "profile":"TLWR841"},
+        "WR842":{"target":"ar71xx", "profile":"TLWR842"},
         "WR1043ND":{"target":"ar71xx", "profile":"TLWR1043"},
         "WDR3600":{"target":"ar71xx", "profile":"TLWDR4300"},
         "WDR4300":{"target":"ar71xx", "profile":"TLWDR4300"},
