@@ -65,8 +65,8 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
         field_nodenumber.Label = T('Node Number')
         field_nodenumber.Helptext = T('Please enter the Node Number for your weimarnetz node.')
         field_nodenumber.Value = request.vars.nodenumber or ''
-        field_nodenumber = field_nodenumber.input()
         field_nodenumber.Special = 'onchange="FFReg.check(this.value, _ffreg_check_callback)"'
+        field_nodenumber = field_nodenumber.input()
         }}
         {{=field_nodenumber}}
 	{{pass}}
@@ -500,7 +500,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- End wifi tab -->
   {{pass}}
       
-  {{if not session.community == 'weimar' or not session.noconf == True:}}
+  {{if session.community <> 'weimar' and not session.noconf == True:}}
   <!-- Start Lan tab -->
   <h3 id="tab-lan" title="{{=T('LAN settings')}}">{{=T('LAN')}}</h3>
   <div>
@@ -601,7 +601,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- End Lan tab -->
   {{pass}}
 
-  {{if not session.noconf == True:}}
+  {{if session.community <> 'weimar' and not session.noconf == True:}}
   <!-- Start Wan tab -->
   <h3 id="tab-wan" title="{{=T('WAN settings')}}">{{=T('WAN')}}</h3>
   <div>
