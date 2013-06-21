@@ -177,6 +177,21 @@ class BuildImages(object):
                 f.close()
         except IOError:
             pass
+            
+    def summary_json(self):
+        summary = { 'community' : self.Community, 'target': self.Target, 'profile' : self.Profile, 'nodenumber' : self.nodenumber, 'location' : self.Location, 'hostname' : self.Hostname, 'packages' : self.Pkgs}
+        r = json.dumps(summary)
+        logger.info("writing summary to file")
+        
+        #write summary to bin directory
+        try:
+            f = open(os.path.join(self.BinDir, "summary.json"), "w")
+            try:
+                f.write(str(r))
+            finally:
+                f.close()
+        except IOError:
+               pass
 
     def SendMail(self, status):
         if status == 0:
@@ -226,12 +241,12 @@ class BuildImages(object):
             status = 1
         if mkdir_p(self.BinDir) == False:
             status = 1
-        if mkdir_p(self.FilesDirConfig) == False:
-            status = 1
         if self.Noconf is not True:
             if mkdir_p(self.FilesDirInit) == False:
                 status = 1
             if mkdir_p(self.FilesDirRc) == False:
+                status = 1
+            if mkdir_p(self.FilesDirConfig) == False:
                 status = 1
         if status == 1:
             return False
@@ -425,6 +440,9 @@ class BuildImages(object):
         if builder.createdirectories():
             if not self.Noconf == True:
                 builder.createconfig()
+            
+            #write summary to output directory
+            builder.summary_json()
 
             #handle files in <meshkit>/files
             mkfilesdir = os.path.join(request.folder, "files")

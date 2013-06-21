@@ -2,6 +2,11 @@
 
 <h1>{{=T('3. Build the images')}}</h1>
 
+<div id="summary">
+<h2>{{=T('Summary')}}</h2>
+{{=session.nodenumber}}
+</div>
+
 <div id="status">
   <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
   {{=T('Generating images...')}}
@@ -100,6 +105,15 @@ var refreshInterval = setInterval(refreshQueue, 10000);
 refreshQueue();   
 
 </script>
+
+<script type="text/javascript">
+    // update the status HTML with the result
+    baseurl = "{{=config.images_web_dir}}/{{=session.rand}}/bin/"
+    $.getJSON(baseurl + 'summary.json', function(summary) {
+        $('div.').text(JSON.stringify(summary));
+    }
+  }
+  </script>
 
 
 {{block footer}}
