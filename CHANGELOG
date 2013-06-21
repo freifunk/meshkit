@@ -1,7 +1,11 @@
-Changelog for 0.1.1:
+Changelog for 0.0.2:
  * Copy the selected community profile to files/etc/config
+ * remove web2py internal cronjob to cleanup imagedirs. Its much more reliable to use a system cronjob for this task
+ * Using VAP for an AP-Mode interface can now be set as default in community profiles
+ * fix a problem with setting up ip address on the LAN interface
+ 
 
-Changelog for 0.1.0:
+Changelog for 0.0.1:
  * Allow IPv6 config if it is enabled in the community profile (using auto-ipv6-ib)
  * Use accordion instead of tabs in wizard to improve usability, especially on mobile devices
  * Allow to setup VAPs

@@ -197,7 +197,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 			document.getElementById('map_container').innerHTML="<div id='map'></div><div style='font-size:0.8em'>Map by <a href='http://www.openstreetmap.org' title='www.openstreetmap.org'>openstreetmap.org</a>, License CC-BY-SA</div>";
 			loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
 			var osm2 = function() {
-                loadScript('{{=URL("static", "js/osm.js")}}',do_map);
+			  loadScript('{{=URL("static", "js/osm.js")}}',do_map);
 			};
 			var do_map = function() {
 			  init(); drawmap();
@@ -756,7 +756,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
     <H2>{{=T('Available Packages')}}</h2>
 
     <div id="packagelist">
-      <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+      <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
       Loading package list...
     </div>
 
