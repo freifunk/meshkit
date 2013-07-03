@@ -179,8 +179,7 @@ class BuildImages(object):
             pass
             
     def summary_json(self):
-        summary = { 'community' : self.Community, 'target': self.Target, 'profile' : self.Profile, 'nodenumber' : self.nodenumber, 'location' : self.Location, 'hostname' : self.Hostname, 'packages' : self.Pkgs}
-        r = json.dumps(summary)
+        r = json.dumps(self.__dict__)
         logger.info("writing summary to file")
         
         #write summary to bin directory
