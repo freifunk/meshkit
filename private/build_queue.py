@@ -200,7 +200,8 @@ class BuildImages(object):
             mailmessage += "\n" + T("Community") + ": " + self.Community
             mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
             mailmessage += "\n" + T("Location") + ": " + self.Location
-            mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+            if self.Community == 'weimar':
+		mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
 	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
         elif status == 3:
             mailsubject = T("Meshkit could not built your images")
@@ -209,7 +210,8 @@ class BuildImages(object):
             mailmessage += "\n" + T("Community") + ": " + self.Community
             mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
             mailmessage += "\n" + T("Location") + ": " + self.Location
-            mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+            if self.Community == 'weimar':
+            	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
 	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
             # also send a email to admin to let him know something went wrong
             if config.adminmail and mail.send(   
@@ -228,7 +230,8 @@ class BuildImages(object):
             mailmessage += "\n" + T("Community") + ": " + self.Community
             mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
             mailmessage += "\n" + T("Location") + ": " + self.Location
-            mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+            if self.Community == 'weimar':
+            	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
 	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
         if self.Mail:
             if mail.send(   
