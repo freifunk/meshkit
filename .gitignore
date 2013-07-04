@@ -1,0 +1,7 @@
+cache
+errors
+databases
+sessions
+uploads
+static/ajax
+*.bak
