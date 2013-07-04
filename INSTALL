@@ -28,7 +28,7 @@ Now change into the just extracted web2py folder and checkout the meshkit
 application into the applications folder:
 
 $ cd web2py/applications
-$ svn co http://svn.augsburg.freifunk.net/meshkit/
+$ git clone https://github.com/freifunk/meshkit.git
 
 === 1.3 Starting/Deploying web2py ===
 

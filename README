@@ -19,12 +19,11 @@ the device has been flashed.
 See the INSTALL file for installing and configuring meshkit.
 
 == DEVELOPMENT ==
-Watch Meshkit development at:
-http://trac.augsburg.freifunk.net/browser/kamikaze/contrib/meshkit
+Watch Meshkit development at: https://github.com/freifunk/meshkit
 
 == BUGTRACKER ==
-Report bugs, feature requests etc. at:
-http://trac.augsburg.freifunk.net/newticket
+Report bugs, feature requests etc. at: https://github.com/freifunk/meshkit/issues
+
 
 == LINKS ==
 [1] http://trac.augsburg.freifunk.net/browser/kamikaze/contrib/imagebuilder
