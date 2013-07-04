@@ -196,9 +196,21 @@ class BuildImages(object):
         if status == 0:
             mailsubject = T("Meshkit has built your images")
             mailmessage = T("Your images were built sucessfully, download them at ") + self.BinDirWeb + "."
+            mailmessage += "\n\n" + T("Remember! You built this image with these settings:")
+            mailmessage += "\n" + T("Community") + ": " + self.Community
+            mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
+            mailmessage += "\n" + T("Location") + ": " + self.Location
+            mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
         elif status == 3:
             mailsubject = T("Meshkit could not built your images")
             mailmessage = T("Your images could not be build because there was a system error.")
+            mailmessage += "\n\n" + T("Remember! You tried to build an image with these settings:")
+            mailmessage += "\n" + T("Community") + ": " + self.Community
+            mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
+            mailmessage += "\n" + T("Location") + ": " + self.Location
+            mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
             # also send a email to admin to let him know something went wrong
             if config.adminmail and mail.send(   
                 to=config.adminmail,
@@ -211,6 +223,13 @@ class BuildImages(object):
         else:
             mailsubject = T("Meshkit could not built your images")
             mailmessage = T("I tried hard, but i was not able to build your images. You will find a log of the build process at ") + self.BinDirWeb + "/build.log."
+            mailmessage = T("Your images could not be build because there was a system error.")
+            mailmessage += "\n\n" + T("Remember! You tried to build an image with these settings:")
+            mailmessage += "\n" + T("Community") + ": " + self.Community
+            mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
+            mailmessage += "\n" + T("Location") + ": " + self.Location
+            mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
         if self.Mail:
             if mail.send(   
                 to=self.Mail,
