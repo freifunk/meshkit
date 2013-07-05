@@ -113,7 +113,7 @@ def wizard():
     # session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
     defaultpkgs = get_defaultpkgs(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
     session.theme = config.defaulttheme
-    # generate a static package list (this is only done once.
+    # generate a static package list (this is only done once).
     # if package lists change delete the cache file in static/package_lists/<target>
     create_package_list(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "package_lists"))
     user_packagelist = ''
@@ -293,6 +293,12 @@ def buildimage():
 
     if not request.vars.target:
         return {'errors': 'Required variable "target" is missing.'}
+
+    # apply some magic (rename packages that have been renamed/merged) so firmwareupdate.sh
+    # keeps working in this case
+    if request.vars.packages:
+        replacement_table = { 'luci-proto-6x4': 'luci-proto-ipv6' }
+        request.vars.packages = replace_obsolete_packages(os.path.join(request.folder, "static", "package_lists", request.vars.target), request.vars.packages, replacement_table)
 
     ret = db.imageconf.validate_and_insert(**request.vars)
     ret['rand'] = request.vars.rand

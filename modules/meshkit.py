@@ -269,3 +269,31 @@ def defip(mesh_network):
     ip_first=mesh_network.split("/")[0]
     octets=ip_first.split(".")
     return octets[0] + "." + octets[1] + "." + octets[2] + "." + str(int(octets[3]) + 1)
+
+def replace_obsolete_packages(available_packages_file, packages, rtable):
+    """Replaces packages in the package list that have been renamed or deleted
+
+    Args:
+        available_packages_file (string): Full path to the json-package list (static/package_lists/<target>)
+        packages (string): List of packages
+        rtable (dict): table containing what should be replaced with what
+    Returns:
+        string with replaced packages
+    """
+
+    if not available_packages_file or not packages or not rtable:
+        return False
+    else:
+        with open(available_packages_file, 'r') as f:
+            available_packages = json.load(f)
+            f.closed
+
+        for pkg in rtable:
+            has_pkg = False   
+            for key in available_packages:
+                if pkg in available_packages[key]:
+                    has_pkg = True
+
+            if not has_pkg:
+                packages = packages.replace(pkg, rtable[pkg])
+        return packages
