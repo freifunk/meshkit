@@ -89,15 +89,18 @@ $.ajax({
 
 function summary(){
 	$.getJSON('api/json/buildstatus?id={{=session.id}}&rand={{=session.rand}}', '', function (json, textStatus){
-        document.getElementById('config').innerHTML = "{{=T('Remember! These were your configuration settings. The entire configuration you can find in the summary.json file.')}}<br/><dl> \
+        var output = "{{=T('Remember! These were your configuration settings. The entire configuration you can find in the summary.json file.')}}<br/><dl> \
 		<dt>{{=T('Community')}}</dt><dd>" + json.community + "</dd>\
         <dt>{{=T('Hostname')}}</dt><dd>" + json.hostname + "</dd>\
-        <dt>{{=T('Location')}}</dt><dd>" + json.location + "</dd>\
-        <dt>{{=T('Nodenumber')}}</dt><dd>" + json.nodenumber + "</dd>\
-        <dt>{{=T('Profile')}}</dt><dd>" + json.profile + "</dd>\
+        <dt>{{=T('Location')}}</dt><dd>" + json.location + "</dd>";
+        if (json.community == "weimar") {
+            output += "<dt>{{=T('Nodenumber')}}</dt><dd>" + json.nodenumber + "</dd>";
+        }
+        output += "<dt>{{=T('Profile')}}</dt><dd>" + json.profile + "</dd>\
         <dt>{{=T('Target')}}</dt><dd>" + json.target + "</dd>\
-    	</dl>"
-    });
+    	</dl>" 
+        document.getElementById('config').innerHTML = output;
+   });
 }
  
 
