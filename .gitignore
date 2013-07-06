@@ -5,3 +5,8 @@ sessions
 uploads
 static/ajax
 *.bak
+*.svn
+*.bak
+*.pyc
+*.pid
+*.log
