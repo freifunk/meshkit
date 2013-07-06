@@ -201,8 +201,10 @@ class BuildImages(object):
             mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
             mailmessage += "\n" + T("Location") + ": " + self.Location
             if self.Community == 'weimar':
-		mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
+                mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
+            mailmessage += "\n" + T("Target") + ": " + self.Target
+            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            mailmessage += "\n\n" + T("Thank you for your cooperation!")
         elif status == 3:
             mailsubject = T("Meshkit could not built your images")
             mailmessage = T("Your images could not be build because there was a system error.")
@@ -212,7 +214,9 @@ class BuildImages(object):
             mailmessage += "\n" + T("Location") + ": " + self.Location
             if self.Community == 'weimar':
             	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
+            mailmessage += "\n" + T("Target") + ": " + self.Target
+            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            mailmessage += "\n\n" + T("Thank you for your cooperation!")
             # also send a email to admin to let him know something went wrong
             if config.adminmail and mail.send(   
                 to=config.adminmail,
@@ -232,7 +236,9 @@ class BuildImages(object):
             mailmessage += "\n" + T("Location") + ": " + self.Location
             if self.Community == 'weimar':
             	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-	    mailmessage += "\n\n" + T("Thank you for you cooperation!")
+            mailmessage += "\n" + T("Target") + ": " + self.Target
+            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            mailmessage += "\n\n" + T("Thank you for your cooperation!")
         if self.Mail:
             if mail.send(   
                 to=self.Mail,
