@@ -57,6 +57,19 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
         ProfilePkgs('{{=URL("static", "ajax/" + session.target)}}', selected);
         update_defaultpkgs();
       </script>
+      
+        {{if session.community == 'weimar':}}
+        {{
+        field_nodenumber = formhelpers.formfield()
+        field_nodenumber.Name = 'nodenumber'
+        field_nodenumber.Label = T('Node Number')
+        field_nodenumber.Helptext = T('Please enter the Node Number for your weimarnetz node.')
+        field_nodenumber.Value = request.vars.nodenumber or ''
+        field_nodenumber.Special = 'onchange="FFReg.check(this.value, _ffreg_check_callback)"'
+        field_nodenumber = field_nodenumber.input()
+        }}
+        {{=field_nodenumber}}
+	{{pass}}
 
       <div class="expert">
         {{
@@ -266,8 +279,8 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   </div>
   <!-- End contact tab -->
   {{pass}}
-			
-  {{if not session.noconf == True:}}
+
+  {{if session.community <> 'weimar' and not session.noconf == True:}}
   <!-- Start wifi tab -->
   <h3 title="{{=T('Wireless')}}">{{=T('Wireless')}}</h3>
   <div>
@@ -486,8 +499,8 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   </div>
   <!-- End wifi tab -->
   {{pass}}
-
-  {{if not session.noconf == True:}}
+      
+  {{if session.community <> 'weimar' and not session.noconf == True:}}
   <!-- Start Lan tab -->
   <h3 id="tab-lan" title="{{=T('LAN settings')}}">{{=T('LAN')}}</h3>
   <div>
@@ -588,7 +601,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   <!-- End Lan tab -->
   {{pass}}
 
-  {{if not session.noconf == True:}}
+  {{if session.community <> 'weimar' and not session.noconf == True:}}
   <!-- Start Wan tab -->
   <h3 id="tab-wan" title="{{=T('WAN settings')}}">{{=T('WAN')}}</h3>
   <div>
@@ -899,7 +912,20 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   update_defaultpkgs();
 </script>
 
+  <!-- REGISTRATOR client -->
+  <script src="http://reg.weimarnetz.de/static/jquery-client.js"></script>
+  <script>
+  // define function to handle api answer as a callback
+  function _ffreg_check_callback(answer) {
 
+    // update the status HTML with the result
+    jQuery('#imageconf_nodenumber_status').text(answer.result);
+        
+    var status_color = "lightgrey";
+    status_color = answer.free ? 'lightgreen' : 'lightsalmon';
+    $('#imageconf_nodenumber').css('background', status_color);
+  }
+  </script>
 
 {{block footer}}
 {{include 'footer.html'}}

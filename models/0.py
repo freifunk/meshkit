@@ -5,7 +5,7 @@ settings.migrate = True
 # use fake_migrate to repair broken tables
 settings.fake_migrate = False
 settings.title = 'Meshkit'
-settings.subtitle = 'Freifunk OpenWrt Imagebuilder'
+settings.subtitle = 'Freifunk OpenWrt Imagebuilder (Weimar edition)'
 settings.author = 'soma'
 settings.author_email = 'freifunk@somakoma.de'
 settings.keywords = 'Freifunk,Mesh,Wireless,Wifi,OpenWrt,Imagebuilder'
