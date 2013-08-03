@@ -3,7 +3,9 @@ Changelog for 0.0.2:
  * remove web2py internal cronjob to cleanup imagedirs. Its much more reliable to use a system cronjob for this task
  * Using VAP for an AP-Mode interface can now be set as default in community profiles
  * fix a problem with setting up ip address on the LAN interface
- 
+ * add summary.json to the build output
+ * Add some information to the build finished page and to the email sent to the user
+ * merge in weimarnetz specific stuff 
 
 Changelog for 0.0.1:
  * Allow IPv6 config if it is enabled in the community profile (using auto-ipv6-ib)
