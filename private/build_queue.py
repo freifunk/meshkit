@@ -179,7 +179,7 @@ class BuildImages(object):
             pass
             
     def summary_json(self):
-        r = json.dumps(self.__dict__)
+        r = json.dumps(self.__dict__, indent=4)
         logger.info("writing summary to file")
         
         #write summary to bin directory
