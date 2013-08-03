@@ -912,6 +912,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   update_defaultpkgs();
 </script>
 
+{{if session.community == 'weimar':}}
   <!-- REGISTRATOR client -->
   <script src="http://reg.weimarnetz.de/static/jquery-client.js"></script>
   <script>
@@ -926,6 +927,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
     $('#imageconf_nodenumber').css('background', status_color);
   }
   </script>
+{{pass}}
 
 {{block footer}}
 {{include 'footer.html'}}
