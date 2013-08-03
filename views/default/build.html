@@ -2,12 +2,28 @@
 
 <h1>{{=T('3. Build the images')}}</h1>
 
+<div id="summary">
+	<h2>{{=T('Summary')}}</h2>
+	<div id="config">
+	</div>
+</div>
+
 <div id="status">
   <img src="{{=URL('static/images', 'loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
   {{=T('Generating images...')}}
 </div>
 
 <div id="imagelist">
+</div>
+
+<div id="nextsteps">
+    <h2>{{=T('Next Steps')}}</h2>
+    <ol>
+        <li>{{=T('When it\'s done, download the appropriate image file for your router. Choose the factory image, if your router uses the vendor firmware. If there\'s already OpenWRT on it, take the sysupgrade file')}}</li>
+        <li>{{=T('Flash your router using your image via web interface or ssh and sysupgrade command, your community might have some docs about it.')}}</li>
+        <li>{{=T('Wait a few minutes and drink a coffee.')}}</li>
+        <li>{{=T('Now you should be able to access your router either via web interface or ssh. If you did a factory install or didn\'t keep your settings, the initial root password is admin.')}}</li>
+    </ol>
 </div>
 
 <script type="text/javascript">
@@ -71,6 +87,22 @@ $.ajax({
 
 <script type="text/javascript">
 
+function summary(){
+	$.getJSON('api/json/buildstatus?id={{=session.id}}&rand={{=session.rand}}', '', function (json, textStatus){
+        var output = "{{=T('Remember! These were your configuration settings. The entire configuration you can find in the summary.json file.')}}<br/><dl> \
+		<dt>{{=T('Community')}}</dt><dd>" + json.community + "</dd>\
+        <dt>{{=T('Hostname')}}</dt><dd>" + json.hostname + "</dd>\
+        <dt>{{=T('Location')}}</dt><dd>" + json.location + "</dd>";
+        if (json.community == "weimar") {
+            output += "<dt>{{=T('Nodenumber')}}</dt><dd>" + json.nodenumber + "</dd>";
+        }
+        output += "<dt>{{=T('Profile')}}</dt><dd>" + json.profile + "</dd>\
+        <dt>{{=T('Target')}}</dt><dd>" + json.target + "</dd>\
+    	</dl>" 
+        document.getElementById('config').innerHTML = output;
+   });
+}
+ 
 
 function refreshQueue(){
   $.getJSON('api/json/buildstatus?id={{=session.id}}&rand={{=session.rand}}', '', function (json, textStatus){
@@ -83,7 +115,7 @@ function refreshQueue(){
         if (status == "0") {
           msgsuccess = "{{=T('Firmware successfully built!')}}"
           jQuery(".flash").html(msgsuccess).slideDown();
-          document.getElementById('status').innerHTML = "{{=T('Your images were sucessfully built. Download the image for your device now and flash it to the device. If in doubt consult the OpenWrt Wiki.')}}";
+            document.getElementById('status').innerHTML = "<h2>{{=T('Results')}}</h2>{{=T('Your images were sucessfully built. Download the image for your device now and flash it to the device. If in doubt consult the OpenWrt Wiki.')}}";
           ajax();
           clearInterval(refreshInterval);
         }
@@ -96,6 +128,8 @@ function refreshQueue(){
         }
   });
 }
+
+summary();
 var refreshInterval = setInterval(refreshQueue, 10000);
 refreshQueue();   
 

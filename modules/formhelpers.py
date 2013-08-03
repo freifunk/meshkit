@@ -91,7 +91,7 @@ class formfield:
             return gluon.html.XML('<div class="error">Missing variables, at least specify name and label for a input field!</div>')
         label = '<label class="form_label" for="imageconf_' + self.Name + '" id="imageconf_' + self.Name + '__label">' + self.Label + '</label>'
         field =  '<div class="form_value">'
-        field += '<input id="imageconf_' + self.Name + '" value="' + str(self.Value) + '" name="' + self.Name + '" type="text">'
+        field += '<input id="imageconf_' + self.Name + '" ' + self.Special + '" value="' + str(self.Value) + '" name="' + self.Name + '" type="text">'
         if self.Helptext:
             field += helptext(self.Helptext)
         field += '</div>'

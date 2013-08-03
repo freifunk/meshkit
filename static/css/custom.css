@@ -1,0 +1,19 @@
+/*DL, DT, DD TAGS LIST DATA*/
+dl {
+    margin-bottom:50px;
+}
+ 
+dl dt {
+    /*background:#5f9be3;
+    color:#fff;*/
+    float:left; 
+    font-weight:bold; 
+    margin-right:10px; 
+    /*padding:2px;  */
+    width:150px; 
+}
+ 
+dl dd {
+    margin:2px 0; 
+    /*padding:2px 0;*/
+}
