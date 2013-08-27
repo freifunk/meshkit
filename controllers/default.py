@@ -295,7 +295,8 @@ def buildimage():
     import hashlib
 
     request.vars.rand = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
-    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, f=True)
+    #request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, f=True)
+    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True)
     request.vars.status = "1"
 
     if not request.vars.target:
@@ -304,7 +305,7 @@ def buildimage():
     # apply some magic (rename packages that have been renamed/merged) so firmwareupdate.sh
     # keeps working in this case
     if request.vars.packages:
-        replacement_table = { 'luci-proto-6x4': 'luci-proto-ipv6' }
+        replacement_table = { 'luci-proto-6x4': 'luci-proto-ipv6', 'luaneightbl': 'luci-lib-luaneightbl' }
         request.vars.packages = replace_obsolete_packages(os.path.join(request.folder, "static", "package_lists", request.vars.target), request.vars.packages, replacement_table)
 
     ret = db.imageconf.validate_and_insert(**request.vars)

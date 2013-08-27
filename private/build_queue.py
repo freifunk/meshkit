@@ -273,8 +273,8 @@ class BuildImages(object):
                 status = 1
             if mkdir_p(self.FilesDirRc) == False:
                 status = 1
-            if mkdir_p(self.FilesDirConfig) == False:
-                status = 1
+        if mkdir_p(self.FilesDirConfig) == False:
+            status = 1
         if status == 1:
             return False
         else:
