@@ -273,12 +273,19 @@ def buildstatus():
     ret['queued'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=10)
     #add some summary information
     ret['status'] = row.status
-    ret['hostname'] = row.hostname
-    ret['nodenumber'] = row.nodenumber
-    ret['community'] = row.community
-    ret['location'] = row.location
-    ret['target'] = row.target
-    ret['profile'] = row.profile
+    if row.hostname:
+        ret['hostname'] = row.hostname
+    elif row.wifi0ipv4addr:
+        ret['hostname'] = row.wifi0ipv4addr.replace(".", "-")
+    else:
+        ret['hostname'] = '-'
+
+    if row.nodenumber:
+	    ret['nodenumber'] = row.nodenumber
+    ret['community'] = row.community or '-'
+    ret['location'] = row.location or '-'
+    ret['target'] = row.target or '-'
+    ret['profile'] = row.profile or '-'
 
     if row.status == "0":
         ret['downloaddir'] = config.images_web_dir + '/' + request.vars.rand + '/bin/'
