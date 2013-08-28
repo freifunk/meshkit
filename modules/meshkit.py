@@ -288,6 +288,8 @@ def replace_obsolete_packages(available_packages_file, packages, rtable):
             available_packages = json.load(f)
             f.closed
 
+	pkgtbl = packages.split(' ')
+
         for pkg in rtable:
             has_pkg = False   
             for key in available_packages:
@@ -295,5 +297,8 @@ def replace_obsolete_packages(available_packages_file, packages, rtable):
                     has_pkg = True
 
             if not has_pkg:
-                packages = packages.replace(pkg, rtable[pkg])
-        return packages
+                # packages = packages.replace(pkg, rtable[pkg])
+		pkgtbl = [item for item in pkgtbl if not item.startswith(pkg)]
+		pkgtbl.append(rtable[pkg])
+
+        return ' '.join(pkgtbl)
