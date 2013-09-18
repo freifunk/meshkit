@@ -203,7 +203,8 @@ class BuildImages(object):
             if self.Community == 'weimar':
                 mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
             mailmessage += "\n" + T("Target") + ": " + self.Target
-            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            if self.Profile:
+                mailmessage += "\n" + T("Profile") + ": " + self.Profile
             mailmessage += "\n\n" + T("Thank you for your cooperation!")
         elif status == 3:
             mailsubject = T("Meshkit could not built your images")
@@ -215,7 +216,8 @@ class BuildImages(object):
             if self.Community == 'weimar':
             	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
             mailmessage += "\n" + T("Target") + ": " + self.Target
-            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            if self.Profile:
+                mailmessage += "\n" + T("Profile") + ": " + self.Profile or "-"
             mailmessage += "\n\n" + T("Thank you for your cooperation!")
             # also send a email to admin to let him know something went wrong
             if config.adminmail and mail.send(   
