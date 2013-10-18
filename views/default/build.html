@@ -41,16 +41,33 @@ $.ajax({
     tryCount : 0,
     retryLimit : retries,
     success : function(json) {
+        function addLinks(name, size) {
+          var size = (o.size/1024/1024).toFixed(2);
+          var addnew = "<a href='" + baseurl + name + "'>" + name + "</a> (" + size + " M)<br/>";
+          files = files + addnew;
+        }
         var files = ""
+	var meta = ""
         baseurl = "{{=config.images_web_dir}}/{{=session.rand}}/bin/"
         for(var i = json.length - 1; i >= 0; --i) {
           var o = json[i];
           var name = o.name;
-          var size = (o.size/1024/1024).toFixed(2);
-          var addnew = "<a href='" + baseurl + name + "'>" + name + "</a> (" + size + " M)<br/>";
-          files = files + addnew;  
+          if (name == "md5sums" || name == "summary.json" || name == "build.log") {
+            var size = (o.size/1024/1024).toFixed(2);
+            var addnew = "<a href='" + baseurl + name + "'>" + name + "</a>";
+            meta = meta + " " + addnew;  
+          } else {
+            if(name.search("openwrt-ar71xx") != -1) {
+              if(name.search("sysupgrade") != -1 || name.search("factory") != -1) {
+                addLinks(name, o.size);
+              }
+            } else {
+              addLinks(name, o.size);
+            }
+          }
         }
-        document.getElementById('imagelist').innerHTML = files;
+        meta = meta + "<br /><a href='" + baseurl + "'>{{=T('Show the whole directory with all files')}}</a>"
+        document.getElementById('imagelist').innerHTML = files + "<br /><strong>{{=T('Metadata:')}}</strong>" + meta + "<br />" ;
     },
     error : function(xhr, textStatus, errorThrown ) {
         if (textStatus == 'timeout') {
