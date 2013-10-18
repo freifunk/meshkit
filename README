@@ -21,6 +21,12 @@ See the INSTALL file for installing and configuring meshkit.
 == DEVELOPMENT ==
 Watch Meshkit development at: https://github.com/freifunk/meshkit
 
+== CONFIG ==
+Different Communities can have different configs. this can be edited via
+http://luci.subsignal.org/trac/browser/luci/trunk/contrib/package/community-profiles/files/etc/config
+and special files here
+https://trac.augsburg.freifunk.net/browser/kamikaze/contrib/imagebuilder/trunk/profiles
+
 == BUGTRACKER ==
 Report bugs, feature requests etc. at: https://github.com/freifunk/meshkit/issues
 
