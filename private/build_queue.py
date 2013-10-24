@@ -239,7 +239,8 @@ class BuildImages(object):
             if self.Community == 'weimar':
             	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
             mailmessage += "\n" + T("Target") + ": " + self.Target
-            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            if self.Profile:
+                mailmessage += "\n" + T("Profile") + ": " + self.Profile
             mailmessage += "\n\n" + T("Thank you for your cooperation!")
         if self.Mail:
             if mail.send(   
