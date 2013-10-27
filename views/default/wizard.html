@@ -266,7 +266,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
       field_note = formhelpers.formfield()
       field_note.Name = 'note'
       field_note.Label = T('Note')
-      field_note.Helptext = T('You may enter a cusom comment here.')
+      field_note.Helptext = T('You may enter a custom comment here.')
       field_note.Value = form.vars.note or session.note or ''
       field_note.Errormsg = form.errors.note
       field_note = field_note.textarea()

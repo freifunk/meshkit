@@ -19,7 +19,14 @@
 <div id="nextsteps">
     <h2>{{=T('Next Steps')}}</h2>
     <ol>
-        <li>{{=T('When it\'s done, download the appropriate image file for your router. Choose the factory image, if your router uses the vendor firmware. If there\'s already OpenWRT on it, take the sysupgrade file')}}</li>
+        <li>{{=T('When it\'s done, download the appropriate image file for your router.')}}</li>
+        {{if "ar71xx" in session.target: }}
+        <li>{{=T('Choose the factory image, if your router uses the vendor firmware. If there\'s already OpenWRT on it, take the sysupgrade file')}}</li>
+        {{pass}}
+        {{if "brcm47xx" in session.target: }}
+        <li>{{=T('Choose the .bin image matching your router if it still uses the vendor firmware. If there\'s already OpenWRT on it, use the .trx file.')}}</li>
+        {{pass}}
+
         <li>{{=T('Flash your router using your image via web interface or ssh and sysupgrade command, your community might have some docs about it.')}}</li>
         <li>{{=T('Wait a few minutes and drink a coffee.')}}</li>
         <li>{{=T('Now you should be able to access your router either via web interface or ssh. If you did a factory install or didn\'t keep your settings, the initial root password is admin.')}}</li>
