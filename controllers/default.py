@@ -272,7 +272,7 @@ def buildstatus():
     ret = {}
     ret['queued'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=10)
     #add some summary information
-    ret['status'] = row.status
+    ret['status'] = int(row.status)
     if row.hostname:
         ret['hostname'] = row.hostname
     elif row.wifi0ipv4addr:
