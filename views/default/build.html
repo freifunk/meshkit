@@ -136,16 +136,18 @@ function refreshQueue(){
             jQuery(".flash").html(msgqueued).slideDown();
         }
         var status = json.status;
-        if (status == "0") {
+        if (status == 0) {
           msgsuccess = "{{=T('Firmware successfully built!')}}"
           jQuery(".flash").html(msgsuccess).slideDown();
             document.getElementById('status').innerHTML = "<h2>{{=T('Results')}}</h2>{{=T('Your images were sucessfully built. Download the image for your device now and flash it to the device. If in doubt consult the OpenWrt Wiki.')}}";
           ajax();
           clearInterval(refreshInterval);
         }
-        if (status == "2") {
+	console.log(status);
+
+        if (status == 2) {
           msgfailed = "{{=T('Firmware generation failed!')}}"
-          jQuery(".flash").html(msgsuccess).slideDown();
+          jQuery(".flash").html(msgfailed).slideDown();
           document.getElementById('status').innerHTML = "{{=T('Building of your images has failed. See the build.log to see what went wrong.')}}";
           ajax();
           clearInterval(refreshInterval);
