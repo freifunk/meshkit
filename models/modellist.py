@@ -20,5 +20,10 @@ config_modellist = {
         "Routerstation Pro":{"target":"ar71xx", "profile":"UBNTRSPRO"},
         "Litestation LS-SR71":{"target":"ar71xx", "profile":"UBNT"},
     },
-
+    "X86":{
+        "Generic":{"target":"x86-generic", "profile":"Generic"},
+        "Virtualbox":{"target":"x86-generic", "profile":"Generic"},
+        "Vmware":{"target":"x86-generic", "profile":"Generic"},
+        "KVM Guest":{"target":"x86-kvm"},
+    },
 }
