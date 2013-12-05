@@ -19,6 +19,9 @@ db.define_table('config',
     Field('images_web_dir',
         requires=IS_URL(error_message=T('%(name)s is invalid') % dict(name=T('Images web directory')))
     ),
+    Field('documentation_url',
+        requires=IS_URL(error_message=T('%(name)s is invalid') % dict(name=T('URL to documentation')))
+    ),
     Field('add_defaultpackages',
         requires=IS_MATCH('^[a-zA-Z0-9\s-]*$', error_message=T('%(name)s is invalid') % dict(name=T('Add_defaultpackages')))
     ),

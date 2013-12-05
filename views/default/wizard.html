@@ -91,7 +91,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
         field_theme.Label = T('Theme')
         field_theme.Valuelist = themes
         field_theme.Valueselected = session.theme
-        field_theme.Helptext = T('Webinterface that will be installed.')
+        field_theme.Helptext = T('Chooses the theme for the web interface. Freifunk-generic is the only one that is customised for communities, so you should probably use this theme.')
         field_theme.Special = 'onchange="themepkgs()"'
         field_theme = field_theme.select()
       }}
@@ -266,7 +266,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
       field_note = formhelpers.formfield()
       field_note.Name = 'note'
       field_note.Label = T('Note')
-      field_note.Helptext = T('You may enter a cusom comment here.')
+      field_note.Helptext = T('You may enter a custom comment here.')
       field_note.Value = form.vars.note or session.note or ''
       field_note.Errormsg = form.errors.note
       field_note = field_note.textarea()
@@ -387,26 +387,6 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 			wifi_ipv6addr = wifi_ipv6addr_label + wifi_ipv6addr_input;
 			{{pass}}
 
-			wifi_ipv6ra = '';
-			{{ if session.ipv6_config == 'auto-ipv6-random' or session.ipv6_config == 'auto-ipv6-fromv4' or session.ipv6_config == 'static':}}
-			wifi_ipv6ra_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6ra__label' ";
-			wifi_ipv6ra_label += "for='imageconf_wifi" + wifi_counter + "ipv6ra' class='expert form_label'>";
-			wifi_ipv6ra_label += "{{=T('Router Advertisement')}}</label>";
-			wifi_ipv6ra_input = "<div class='form_value expert'>";
-			checked = ''
-			for (var i=0; i<wifi_limit; i++) {
-			  var v = eval("v_wifi" + i + "_ipv6ra");
-			  if ((v=="True" || v=="on") && wifi_counter==i)  {
-				checked = ' checked="1" ';
-			  }
-			}
-			wifi_ipv6ra_input += "<input type='checkbox'" + checked;
-			wifi_ipv6ra_input += "name='wifi" + wifi_counter + "ipv6ra' id='imageconf_wifi" + wifi_counter +"ipv6ra'/>";
-			wifi_ipv6ra_input += '{{=formhelpers.helptext(T("Send IPv6 router advertisements."),config.expandablehelp)}}';
-			wifi_ipv6ra_input += "</div>"
-			wifi_ipv6ra = wifi_ipv6ra_label + wifi_ipv6ra_input;
-			{{pass}}
-
 			wifi_chan_label = "<label id='imageconf_wifi" + wifi_counter + "chan__label' ";
 			wifi_chan_label += "for='imageconf_wifi" + wifi_counter + "chan' class='form_label'>";
 			wifi_chan_label += "{{=T('Channel')}}</label>";
@@ -436,25 +416,6 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 
 
 
-			/* VAP */
-			checked = ''
-			for (var i=0; i<wifi_limit; i++) {
-			  var v = eval("v_wifi" + i + "_vap");
-			  if ((v=="True" || v=="on") && wifi_counter==i)  {
-				checked = ' checked="1" ';
-			  }
-			}
-			wifi_vap_label = "<label id='imageconf_wifi" + wifi_counter + "vap__label' ";
-			wifi_vap_label += "for='imageconf_wifi" + wifi_counter + "vap' class='form_label'>";
-			wifi_vap_label += "{{=T('VAP')}}</label>";
-			wifi_vap_input = "<div class='form_value'>";
-			wifi_vap_input += "<input type='checkbox'" + checked;
-			wifi_vap_input += "name='wifi" + wifi_counter + "vap' id='imageconf_wifi" + wifi_counter +"vap'/>";
-			wifi_vap_input += '{{=formhelpers.helptext(T("Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k."),config.expandablehelp)}}';
-			wifi_vap_input += "</div>"
-			wifi_vap = '<div class="expert">' + wifi_vap_label + wifi_vap_input + '</div>';
-
-
 			wifi_dhcp_range_wrap_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "dhcp_range'>";
 			wifi_dhcp_range_label = "<label id='imageconf_wifi" + wifi_counter + "dhcprange__label' ";
 			wifi_dhcp_range_label += "for='imageconf_wifi" + wifi_counter + "dhcprange' class='form_label'>";
@@ -472,8 +433,53 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 			wifi_dhcp_range_input += "</div>";
 			wifi_dhcp_range_wrap_end = "</div>";
 			wifi_dhcp_range = wifi_dhcp_range_wrap_start + wifi_dhcp_range_label + wifi_dhcp_range_input + wifi_dhcp_range_wrap_end;
+
+			/* VAP */
+			checked = ''
+			for (var i=0; i<wifi_limit; i++) {
+			  var v = eval("v_wifi" + i + "_vap");
+			  if ((v=="True" || v=="on") && wifi_counter==i)  {
+				checked = ' checked="1" ';
+			  }
+			}
+
+			wifi_vap_label = "<label id='imageconf_wifi" + wifi_counter + "vap__label' ";
+			wifi_vap_label += "for='imageconf_wifi" + wifi_counter + "vap' class='form_label'>";
+			wifi_vap_label += "{{=T('VAP')}}</label>";
+			wifi_vap_input = "<div class='form_value'>";
+			wifi_vap_input += "<input type='checkbox'" + checked;
+			wifi_vap_input += "name='wifi" + wifi_counter + "vap' id='imageconf_wifi" + wifi_counter +"vap'/>";
+			wifi_vap_input += "<a onclick=\"ToggleDiv('wifi" + wifi_counter + "_ra')\" ";
+			wifi_vap_input += "title='Advanced Options' class='advanced' href='javascript:void(0)'>+/-</a>"
+
+			wifi_vap_input += '{{=formhelpers.helptext(T("Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k."),config.expandablehelp)}}';
+			wifi_vap_input += "</div>"
+			wifi_vap = '<div class="expert">' + wifi_vap_label + wifi_vap_input + '</div>';
+
+			wifi_ipv6ra = '';
+			{{ if session.ipv6_config == 'auto-ipv6-random' or session.ipv6_config == 'auto-ipv6-fromv4' or session.ipv6_config == 'static':}}
+			wifi_ipv6ra_label_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "_ra'>";
+			wifi_ipv6ra_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6ra__label' ";
+			wifi_ipv6ra_label += "for='imageconf_wifi" + wifi_counter + "ipv6ra' class='expert form_label'>";
+			wifi_ipv6ra_label += "{{=T('Router Advertisement')}}</label>";
+			wifi_ipv6ra_input = "<div class='form_value expert'>";
+			checked = ''
+			for (var i=0; i<wifi_limit; i++) {
+			  var v = eval("v_wifi" + i + "_ipv6ra");
+			  if ((v=="True" || v=="on") && wifi_counter==i)  {
+				checked = ' checked="1" ';
+			  }
+			}
+			wifi_ipv6ra_input += "<input type='checkbox'" + checked;
+			wifi_ipv6ra_input += "name='wifi" + wifi_counter + "ipv6ra' id='imageconf_wifi" + wifi_counter +"ipv6ra'/>";
+			wifi_ipv6ra_input += '{{=formhelpers.helptext(T("Send IPv6 router advertisements."),config.expandablehelp)}}';
+			wifi_ipv6ra_input += "</div>";
+			wifi_ipv6ra_input_end = "</div>";
+			wifi_ipv6ra = wifi_ipv6ra_label_start + wifi_ipv6ra_label + wifi_ipv6ra_input + wifi_ipv6ra_input_end;
+			{{pass}}
+
 			wrapper_end = "</fieldset></div>";
-			newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_vap + wifi_dhcp_range + wifi_ipv6ra + wrapper_end;
+			newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_dhcp_range + wifi_vap + wifi_ipv6ra + wrapper_end;
 			document.getElementById(divName).appendChild(newdiv);
 			wifi_counter++;
 			document.getElementById("wifiifsnr").value = wifi_counter;
@@ -495,7 +501,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
 		}
 	  </script>
 
-	  <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
+	  <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');hideAll();"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
   </div>
   <!-- End wifi tab -->
   {{pass}}
@@ -912,6 +918,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   update_defaultpkgs();
 </script>
 
+{{if session.community == 'weimar':}}
   <!-- REGISTRATOR client -->
   <script src="http://reg.weimarnetz.de/static/jquery-client.js"></script>
   <script>
@@ -926,6 +933,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
     $('#imageconf_nodenumber').css('background', status_color);
   }
   </script>
+{{pass}}
 
 {{block footer}}
 {{include 'footer.html'}}

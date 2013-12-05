@@ -34,17 +34,17 @@ def mkdir_p(path):
         if e.errno == errno.EEXIST:
             pass
         else:
-            logger.critical("Error: Could not create directory " + path)
+            logger.critical("Error: Could not create directory %s" % path)
             return False
 
 def cptree(src,dst):
     try:
         ct = copy_tree(src, dst, preserve_symlinks=0)
-        logger.debug('Copied "' + src + '" to "' + dst ) 
+        logger.debug('Copied %s to %s' % (src, dst) ) 
     except distutils.errors.DistutilsFileError, e:
-        logger.warning("Source directory " + src + " does not exist." + str(e))
+        logger.warning('Source directory %s does not exist. %s' % (src, str(e)) )
     except IOError, e:
-        logger.error("Could not create/write to directory " + dst + ". Check permissions.")
+        logger.error('Could not create/write to directory %s. Check permissions.' % dst)
 
 
 class BuildImages(object):
@@ -179,12 +179,13 @@ class BuildImages(object):
             pass
             
     def summary_json(self):
-        r = json.dumps(self.__dict__)
-        logger.info("writing summary to file")
+        r = json.dumps(self.__dict__, indent=4)
+        summaryfile = os.path.join(self.BinDir, "summary.json")
+        logger.debug('Writing summary to %s' % summaryfile)
         
         #write summary to bin directory
         try:
-            f = open(os.path.join(self.BinDir, "summary.json"), "w")
+            f = open(summaryfile, "w")
             try:
                 f.write(str(r))
             finally:
@@ -203,41 +204,51 @@ class BuildImages(object):
             if self.Community == 'weimar':
                 mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
             mailmessage += "\n" + T("Target") + ": " + self.Target
-            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            if self.Profile:
+                mailmessage += "\n" + T("Profile") + ": " + self.Profile
             mailmessage += "\n\n" + T("Thank you for your cooperation!")
         elif status == 3:
             mailsubject = T("Meshkit could not built your images")
             mailmessage = T("Your images could not be build because there was a system error.")
             mailmessage += "\n\n" + T("Remember! You tried to build an image with these settings:")
-            mailmessage += "\n" + T("Community") + ": " + self.Community
-            mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
-            mailmessage += "\n" + T("Location") + ": " + self.Location
+            if self.Community:
+                mailmessage += "\n" + T("Community") + ": " + self.Community
+            if self.Hostname:
+                mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
+            if self.location:
+                mailmessage += "\n" + T("Location") + ": " + self.Location
             if self.Community == 'weimar':
             	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-            mailmessage += "\n" + T("Target") + ": " + self.Target
-            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            if self.Target:
+                mailmessage += "\n" + T("Target") + ": " + self.Target
+            if self.Profile:
+                mailmessage += "\n" + T("Profile") + ": " + self.Profile or "-"
             mailmessage += "\n\n" + T("Thank you for your cooperation!")
             # also send a email to admin to let him know something went wrong
             if config.adminmail and mail.send(   
                 to=config.adminmail,
                 subject="There is a system error with the build queue",
-                message="please inspect the build queue, something is fishy there."
+                message="Please inspect the build queue, something is fishy there."
                 ):
-                logger.debug("Mail to Admin (" + config.adminmail + ") sucessfully sent.")
+                logger.debug('Mail to Admin (%s) sucessfully sent.' % config.adminmail)
             else:
-                logger.error("There was an error sending mail to Admin (" + config.adminmail + ").")
+                logger.error('There was an error sending mail to Admin (%s).' % config.adminmail)
         else:
             mailsubject = T("Meshkit could not built your images")
-            mailmessage = T("I tried hard, but i was not able to build your images. You will find a log of the build process at ") + self.BinDirWeb + "/build.log."
+            mailmessage = T("I tried hard, but i was not able to build your images. You will find a log of the build process at %s" % self.BinDirWeb + "/build.log.")
             mailmessage = T("Your images could not be build because there was a system error.")
             mailmessage += "\n\n" + T("Remember! You tried to build an image with these settings:")
-            mailmessage += "\n" + T("Community") + ": " + self.Community
-            mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
-            mailmessage += "\n" + T("Location") + ": " + self.Location
+            if self.Community:
+                mailmessage += "\n" + T("Community") + ": " + self.Community
+            if self.Hostname:
+                mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
+            if self.Location:
+                mailmessage += "\n" + T("Location") + ": " + self.Location
             if self.Community == 'weimar':
             	mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
             mailmessage += "\n" + T("Target") + ": " + self.Target
-            mailmessage += "\n" + T("Profile") + ": " + self.Profile
+            if self.Profile:
+                mailmessage += "\n" + T("Profile") + ": " + self.Profile
             mailmessage += "\n\n" + T("Thank you for your cooperation!")
         if self.Mail:
             if mail.send(   
@@ -245,9 +256,9 @@ class BuildImages(object):
                 subject=mailsubject,
                 message=mailmessage
                 ):
-                logger.debug("Mail to " + self.Mail + " sucessfully sent.")
+                logger.debug('Mail to %s sucessfully sent.' % self.Mail)
             else:
-                logger.error(" + There was an error sending mail to " + self.Mail + ".")
+                logger.error(' + There was an error sending mail to %s.' % self.Mail)
         else:
             logger.debug("No email sent to user because no email address was given.")
 
@@ -273,8 +284,8 @@ class BuildImages(object):
                 status = 1
             if mkdir_p(self.FilesDirRc) == False:
                 status = 1
-            if mkdir_p(self.FilesDirConfig) == False:
-                status = 1
+        if mkdir_p(self.FilesDirConfig) == False:
+            status = 1
         if status == 1:
             return False
         else:
@@ -463,7 +474,7 @@ class BuildImages(object):
     
 
     def build(self):
-        logger.info("Build started, ID: " + self.Id + ", target: " + self.Target)
+        logger.info('Build started, ID: %s, Target: %s' % (self.Id, self.Target) )
         if builder.createdirectories():
             if not self.Noconf == True:
                 builder.createconfig()
@@ -475,7 +486,7 @@ class BuildImages(object):
             mkfilesdir = os.path.join(request.folder, "files")
             if os.path.exists(mkfilesdir):
                 cptree(mkfilesdir, self.FilesDir) 
-                logger.info("Copied files from " + mkfilesdir + " to " + self.FilesDir)
+                logger.info('Copied files from %s to %s.' % (mkfilesdir, self.FilesDir) )
 
 
             # handle files/ in imagebuilder
@@ -486,7 +497,7 @@ class BuildImages(object):
             # handle community files (custom files uploaded by community)
             if config.communitysupport and config.communityfiles_dir:
                 cfilesdir = os.path.join(config.communityfiles_dir, self.Community, "files")
-                logger.info("Copied files from " + cfilesdir + " to " + self.FilesDir)
+                logger.info('Copied files from %s to %s' % (cfilesdir, self.FilesDir) )
                 if os.path.exists(cfilesdir):
                     cptree(cfilesdir, self.FilesDir)
                     if self.Community == 'weimar':
@@ -504,16 +515,16 @@ class BuildImages(object):
             if self.Upload:
                 uploaded_file = os.path.join(request.folder, "uploads", self.Upload)
                 if os.access(uploaded_file, os.R_OK):
-                    logger.info("extracting " + uploaded_file)
+                    logger.info('extracting %s' % uploaded_file)
                     pu_ret = processupload.extract(uploaded_file, self.FilesDir)
                     if pu_ret:
-                        logger.warning(pu_ret)
+                        logger.warning(str(pu_ret))
                     # delete uploaded file
                     try:
                         os.remove(uploaded_file)
-                        logger.debug("Deleted " + uploaded_file)
+                        logger.debug('Deleted %s' % uploaded_file)
                     except:
-                        logger.warning("Could not delete " + uploaded_file)
+                        logger.warning('Could not delete %s' % uploaded_file)
 
             out = open(self.BinDir + "/build.log", "w")
             if self.Profile:
@@ -527,7 +538,7 @@ class BuildImages(object):
                 if not os.path.exists(communityprofile):
                     logger.warning('The communityfile %s does not exist!' % communityprofile)
                 else:
-                    logger.debug('Copied %s to %s' % (communityprofile, self.FilesDirConfig))
+                    logger.debug('Copied %s to %s' % (communityprofile, self.FilesDirConfig) )
                     shutil.copy(communityprofile, self.FilesDirConfig)
 
             # check if there are any files to include in the image
@@ -546,9 +557,9 @@ class BuildImages(object):
             builder.build_links_json()
             if ret != 0:
                 if ret < 0:
-                    logger.critical("make was killed by signal", -ret)
+                    logger.critical('make was killed by signal %s', str(ret))
                 else:
-                    logger.critical("make failed with return code", ret)
+                    logger.critical('make failed with return code %s', str(ret))
                 return 2
             else:
                 return 0
@@ -594,13 +605,13 @@ else:
                                       )
                 ret = builder.build()
                 if ret == 0:
-                    logger.info("Build finished, ID: " + str(row.id))
+                    logger.info('Build finished, ID: %s ' % str(row.id))
                     status = 0
                 elif ret == 3:
-                    logger.error("Build aborted due to previous errors, ID: " + str(row.id))
+                    logger.error('Build aborted due to previous errors, ID: %s' % str(row.id))
                     status = 3
                 else:
-                    logger.error("Build failed, ID: " + str(row.id))
+                    logger.error('Build failed, ID: %s' % str(row.id))
                     status = 2
                 builder.SendMail(status)
                 row.update_record(status=status)

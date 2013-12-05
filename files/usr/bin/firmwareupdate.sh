@@ -57,12 +57,10 @@ get_version_failed() {
 
 targets_url="$server/api/json/targets"
 get_target(){
-	#MSG=$(wget -q "$targets_url" -O - |sed 's/\"/\'/g' 2> /dev/null)
 	MSG=$(wget -q "$targets_url" -O - 2> /dev/null)
         targets="$(echo $MSG | tr -d '[]" ' | sed 's/,/ /g')"
 	ret=''
 	for t in $targets; do
-		#echo $t | grep -q $1 && echo $t
 		if [ -n "$(echo $t | grep $1)" ];then
 			if [ "$ret" = '' ]; then
 				ret="$t"
@@ -77,7 +75,7 @@ get_target(){
 	done
 	echo $ret
 }
-
+installedtarget="$target"
 targetmain="$(echo $target | cut -d "-" -f 1)"
 target=$(get_target $targetmain)
 echo target $target
@@ -85,9 +83,9 @@ echo target $target
 targetversion="$(echo $target | grep $targetmain | sed 's/.*-//')"
 
 test $targetversion -ne 0 2> /dev/null || get_version_failed targetversion
-installedversion="$(echo $target | sed 's/.*-//')"
-test $installedversion -ne 0 2> /dev/null || get_version_failed installedversion
 
+installedversion="$(echo $installedtarget | sed 's/.*-//')"
+test $installedversion -ne 0 2> /dev/null || get_version_failed installedversion
 compare_versions(){
 	if [ "$targetversion" -gt "$installedversion" ]; then
 		echo 1
@@ -181,7 +179,7 @@ if [ "$action" == "keepconf" ]; then
 	json_get_var "id" id
 	json_get_var "errors" errors
 	json_get_var "rand" rand
-	
+
         if [ -z "$id" ]; then
 		json_select "errors"
 			for e in target rand id; do
@@ -195,6 +193,7 @@ if [ "$action" == "keepconf" ]; then
 
         status="1"
         while [ "$status" == "1" ]; do
+
 		statusurl="$server/api/json/buildstatus?id=$id&rand=$rand"
 		json="$(wget -q "$statusurl" -O - 2> /dev/null)"
 		json_load "$json"

@@ -19,7 +19,14 @@
 <div id="nextsteps">
     <h2>{{=T('Next Steps')}}</h2>
     <ol>
-        <li>{{=T('When it\'s done, download the appropriate image file for your router. Choose the factory image, if your router uses the vendor firmware. If there\'s already OpenWRT on it, take the sysupgrade file')}}</li>
+        <li>{{=T('When it\'s done, download the appropriate image file for your router.')}}</li>
+        {{if "ar71xx" in session.target: }}
+        <li>{{=T('Choose the factory image, if your router uses the vendor firmware. If there\'s already OpenWRT on it, take the sysupgrade file')}}</li>
+        {{pass}}
+        {{if "brcm47xx" in session.target: }}
+        <li>{{=T('Choose the .bin image matching your router if it still uses the vendor firmware. If there\'s already OpenWRT on it, use the .trx file.')}}</li>
+        {{pass}}
+
         <li>{{=T('Flash your router using your image via web interface or ssh and sysupgrade command, your community might have some docs about it.')}}</li>
         <li>{{=T('Wait a few minutes and drink a coffee.')}}</li>
         <li>{{=T('Now you should be able to access your router either via web interface or ssh. If you did a factory install or didn\'t keep your settings, the initial root password is admin.')}}</li>
@@ -41,16 +48,33 @@ $.ajax({
     tryCount : 0,
     retryLimit : retries,
     success : function(json) {
+        function addLinks(name, size) {
+          var size = (o.size/1024/1024).toFixed(2);
+          var addnew = "<a href='" + baseurl + name + "'>" + name + "</a> (" + size + " M)<br/>";
+          files = files + addnew;
+        }
         var files = ""
+	var meta = ""
         baseurl = "{{=config.images_web_dir}}/{{=session.rand}}/bin/"
         for(var i = json.length - 1; i >= 0; --i) {
           var o = json[i];
           var name = o.name;
-          var size = (o.size/1024/1024).toFixed(2);
-          var addnew = "<a href='" + baseurl + name + "'>" + name + "</a> (" + size + " M)<br/>";
-          files = files + addnew;  
+          if (name == "md5sums" || name == "summary.json" || name == "build.log") {
+            var size = (o.size/1024/1024).toFixed(2);
+            var addnew = "<a href='" + baseurl + name + "'>" + name + "</a>";
+            meta = meta + " " + addnew;  
+          } else {
+            if(name.search("openwrt-ar71xx") != -1) {
+              if(name.search("sysupgrade") != -1 || name.search("factory") != -1) {
+                addLinks(name, o.size);
+              }
+            } else {
+              addLinks(name, o.size);
+            }
+          }
         }
-        document.getElementById('imagelist').innerHTML = files;
+        meta = meta + "<br /><a href='" + baseurl + "'>{{=T('Show the whole directory with all files')}}</a>"
+        document.getElementById('imagelist').innerHTML = files + "<br /><strong>{{=T('Metadata:')}}</strong>" + meta + "<br />" ;
     },
     error : function(xhr, textStatus, errorThrown ) {
         if (textStatus == 'timeout') {
@@ -112,16 +136,18 @@ function refreshQueue(){
             jQuery(".flash").html(msgqueued).slideDown();
         }
         var status = json.status;
-        if (status == "0") {
+        if (status == 0) {
           msgsuccess = "{{=T('Firmware successfully built!')}}"
           jQuery(".flash").html(msgsuccess).slideDown();
             document.getElementById('status').innerHTML = "<h2>{{=T('Results')}}</h2>{{=T('Your images were sucessfully built. Download the image for your device now and flash it to the device. If in doubt consult the OpenWrt Wiki.')}}";
           ajax();
           clearInterval(refreshInterval);
         }
-        if (status == "2") {
+	console.log(status);
+
+        if (status == 2) {
           msgfailed = "{{=T('Firmware generation failed!')}}"
-          jQuery(".flash").html(msgsuccess).slideDown();
+          jQuery(".flash").html(msgfailed).slideDown();
           document.getElementById('status').innerHTML = "{{=T('Building of your images has failed. See the build.log to see what went wrong.')}}";
           ajax();
           clearInterval(refreshInterval);

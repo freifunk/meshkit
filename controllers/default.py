@@ -272,13 +272,20 @@ def buildstatus():
     ret = {}
     ret['queued'] = cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=10)
     #add some summary information
-    ret['status'] = row.status
-    ret['hostname'] = row.hostname
-    ret['nodenumber'] = row.nodenumber
-    ret['community'] = row.community
-    ret['location'] = row.location
-    ret['target'] = row.target
-    ret['profile'] = row.profile
+    ret['status'] = int(row.status)
+    if row.hostname:
+        ret['hostname'] = row.hostname
+    elif row.wifi0ipv4addr:
+        ret['hostname'] = row.wifi0ipv4addr.replace(".", "-")
+    else:
+        ret['hostname'] = '-'
+
+    if row.nodenumber:
+	    ret['nodenumber'] = row.nodenumber
+    ret['community'] = row.community or '-'
+    ret['location'] = row.location or '-'
+    ret['target'] = row.target or '-'
+    ret['profile'] = row.profile or '-'
 
     if row.status == "0":
         ret['downloaddir'] = config.images_web_dir + '/' + request.vars.rand + '/bin/'
@@ -295,7 +302,8 @@ def buildimage():
     import hashlib
 
     request.vars.rand = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
-    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, f=True)
+    #request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True, f=True)
+    request.vars.url = URL(request.application, request.controller, 'wizard', scheme=True)
     request.vars.status = "1"
 
     if not request.vars.target:
@@ -304,7 +312,7 @@ def buildimage():
     # apply some magic (rename packages that have been renamed/merged) so firmwareupdate.sh
     # keeps working in this case
     if request.vars.packages:
-        replacement_table = { 'luci-proto-6x4': 'luci-proto-ipv6' }
+        replacement_table = { 'luci-proto-6x4': 'luci-proto-ipv6', 'luaneightbl': 'luci-lib-luaneightbl' }
         request.vars.packages = replace_obsolete_packages(os.path.join(request.folder, "static", "package_lists", request.vars.target), request.vars.packages, replacement_table)
 
     ret = db.imageconf.validate_and_insert(**request.vars)

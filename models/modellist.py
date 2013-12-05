@@ -1,14 +1,10 @@
 # coding: utf8
 # A list of common models
 config_modellist = {
-    "Linksys":{
-        "WRT54G":{"target":"brcm47xx", "profile":"Broadcom-b43"},
-    },
     "Netgear": {
         "WGT634U":{"target":"brcm47xx", "profile":"WGT634U"},
-    },
-    "Siemens":{
-        "SE505v2":{"target":"brcm47xx", "profile":"Broadcom-b43"},
+        "WNDR3700v1":{"target":"ar71xx", "profile":"WNDR3700"},
+        "WNDR3700v2":{"target":"ar71xx", "profile":"WNDR3700"},
     },
     "\"TP-Link\"":{
         "WR741":{"target":"ar71xx", "profile":"TLWR741"},
@@ -24,5 +20,10 @@ config_modellist = {
         "Routerstation Pro":{"target":"ar71xx", "profile":"UBNTRSPRO"},
         "Litestation LS-SR71":{"target":"ar71xx", "profile":"UBNT"},
     },
-
+    "X86":{
+        "Generic":{"target":"x86-generic", "profile":"Generic"},
+        "Virtualbox":{"target":"x86-generic", "profile":"Generic"},
+        "Vmware":{"target":"x86-generic", "profile":"Generic"},
+        "KVM Guest":{"target":"x86-kvm"},
+    },
 }
