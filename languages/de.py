@@ -1,4 +1,4 @@
-# coding: utf8
+# coding: utf-8
 {
 '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN': '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN',
 '%(name)s can only be up to %(len)s characters long': '%(name)s darf höchstens %(len)s Zeichen lang sein',
@@ -286,6 +286,7 @@
 'There are no images queued in front of you. Your build will start soon.': 'Es sind keine weiteren Builds vor dir in der Warteschlange, deine Firmware wird jetzt erstellt.',
 'There was a problem parsing the package list, is it really valid json?': 'Fehler beim Parsen der Paketliste.',
 'There was another problem loading the package list.': 'Fehler beim Laden der Paketliste.',
+'This email already has an account': 'This email already has an account',
 'This sets a profile for your router model. If your device is not listed try something generic (default) if available.': 'Profil für deinen Router. Ist dieser hier nicht gelistet dann wähle etwas generischen wie z.B. "default".',
 'Timestamp': 'Timestamp',
 'Total images generated': 'Images gesamt',
