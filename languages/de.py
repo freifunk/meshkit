@@ -1,4 +1,4 @@
-# coding: utf8
+# coding: utf-8
 {
 '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN': '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN',
 '%(name)s can only be up to %(len)s characters long': '%(name)s darf höchstens %(len)s Zeichen lang sein',

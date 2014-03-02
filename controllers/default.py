@@ -147,8 +147,10 @@ def wizard():
         vap = c.get(community_defaults, 'profile', 'vap', '0')
         session.theme = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
     else:
-        session.communitysupport == False
+        session.communitysupport = False
         lucipackages = config.lucipackages
+        vap = 0
+        nodenumber = False
         community_defaults = dict()
         
     session.localrestrict=True
