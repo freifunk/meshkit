@@ -533,7 +533,7 @@ class BuildImages(object):
                 option_profile = ""
 
             # Copy community profile
-            if self.Community:
+            if config.communitysupport and self.Community:
                 communityprofile = os.path.join(config.profiles, 'profile_' + self.Community)
                 if not os.path.exists(communityprofile):
                     logger.warning('The communityfile %s does not exist!' % communityprofile)
