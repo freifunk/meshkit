@@ -7,9 +7,10 @@ if not config == None:
         ),
         Field('status',
             requires=IS_EMPTY_OR(
-                IS_IN_SET([ '0', '1', '2', '3' ], error_message=T('%(name)s is invalid') % dict(name=T('Status')))
+                IS_IN_SET([ 0, 1, 2, 3 ], error_message=T('%(name)s is invalid') % dict(name=T('Status')))
             )
         ),
+        #Field.Virtual('routerinfo', ''),
         Field('noconf', 'boolean'),
         Field('expert', 'boolean'),
         Field('mail',

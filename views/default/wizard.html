@@ -10,6 +10,7 @@
 <script type="text/javascript">user_packagelist = '{{=user_packagelist}}'</script>
 <script type="text/javascript">addpackages = '{{=addpackages}}'</script>
 
+
 {{if session.expert:}}
 <style type="text/css">
 .expert{
@@ -26,6 +27,8 @@ $(function() {
 $( "#accordion" ).accordion({ heightStyle: "content" });
 });
 </script>
+
+{{=session.routerinfo}}
 
 <h1>{{=T('2. Image configuration')}}</h1>
 

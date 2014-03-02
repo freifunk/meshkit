@@ -77,6 +77,12 @@ def index():
     else:
         startpage = ''
 
+    if request.vars.routerinfo:
+        session.routerinfo = request.vars.routerinfo
+    else:
+        session.routerinfo = "foo"
+
+
     if form.process(session=None, formname='step1', keepvalues=True).accepted:
         response.flash="form accepted"
         session.community = form.vars.community
@@ -222,7 +228,13 @@ def wizard():
                 )
 
 def build():
-    queuedimg = str(cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60))
+    #queuedimg = str(cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60))
+    try:
+        queuedimg = str(len(db(db.imageconf.status=='1').select()))
+    except TypeError:
+        queuedimg = '0'
+
+    print(queuedimg)
     return locals()
     
 def about():
@@ -261,10 +273,13 @@ def buildstatus():
         return {'errors': 'Required variable "rand" is missing.'}
 
     try:
-        row = db(db.imageconf.id == request.vars.id).select()
+        row = db(db.imageconf.id == _id).select()
         row = row[0]
+
     except KeyError:
         return {'errors': 'Wrong id.'}
+
+
 
     if not row.rand == request.vars.rand:
         return {'errors': 'Invalid rand number.'}

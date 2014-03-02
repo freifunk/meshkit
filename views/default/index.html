@@ -1,10 +1,14 @@
 {{extend 'layout.html'}}
 {{footer_enable=True}}
+
+
+
 <h1>{{=T('1. Basic configuration')}}</h1>
 
 <div id="custom_text_start">
 	{{=XML(startpage)}}
 </div>
+
 
 {{if config.documentation_url:}}
 <div id="docurl">
@@ -12,8 +16,6 @@
          dict(url='<a href="' + config.documentation_url + '">' + T('Meshkit Documentation') + '</a>'))}}
 </div>
 {{pass}}
-
-
 
 
     <form method="post" name="step1" enctype="multipart/form-data" action="">
@@ -80,6 +82,7 @@ field_mail = field_mail.input()
             
         <input type="submit" value="SUBMIT"/>
         <input type="hidden" name="profile" id="imageconf_profile"/>
+        <input type="hidden" name="routerinfo" id="imageconf_routerinfo" />
         <input type="hidden" name="_formname" value="step1" />
     </form>
 <div style="height:35px"></div>
@@ -147,6 +150,131 @@ list += "</table";
 
 
 document.getElementById('modellist').innerHTML = list
+
+</script>
+
+<h2>Experimental Model list (WIP)</h2>
+<strong>This is work in process. So it may or may not work.</strong>
+
+<div class="row-fluid">
+  <div class="span6">
+    First select the manufacturer of your router:<br />
+    <select id="select_manufacturer" onchange='get_model()'></select><br />
+    then select the router model:<br />
+    <select id="select_model" onchange='show_info_selected()'></select><br />
+    <div id="routerinfo"></div>
+  </div>
+  <div class="span6">
+    <div id="routerimage"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+var routerinfo = [];
+
+function get_manufacturer(){
+    $.getJSON('/routerdb/api.json?get=manufacturer', '', function (data, textStatus){
+        var html = '<option value="">-- Select manufacturer --</option>';
+        var len = data['result'].length;
+        for (var i = 0; i< len; i++) {
+            html += '<option value="' + data['result'][i].id + '">' + data['result'][i].manufacturer + '</option>';
+        }
+        $('#select_manufacturer').append(html);
+        //get_model();
+    });
+};
+
+function get_model(){
+    document.getElementById('select_model').innerHTML = '';
+
+    $.getJSON('/routerdb/api.json?get=router&search=router.id_manufacturer=' + $("#select_manufacturer option:selected").val() + '', function (data, textStatus){
+        var data = data['result']
+        var html = '<option value="">-- Select model --</option>';
+
+        var rinfo = '';
+        var rimage = '';
+        var len = data.length;
+        var version = 'Attitude Adjustment 12.09';
+        var target, subtarget, profile;
+
+        for (var i = 0; i< len; i++) {
+            //get target/subtarget/profile
+            var firmware = data[i]['firmware'];
+            for (var j = 0; j< firmware.length; j++) {
+                if (firmware[j].release == version) {
+                    target = firmware[j].target;
+                    profile = firmware[j].profile;
+                    subtarget = firmware[j].subtarget;
+                    factory = firmware[j].factory;
+                    sysupgrade = firmware[j].sysupgrade;
+
+                }
+            }
+
+            if (data[i].rev) {
+                html += '<option value="' + data[i].id + '">' + data[i].model + ' - ' + data[i].rev + '</option>';
+            } else {
+                html += '<option value="' + data[i].id + '">' + data[i].model + '</option>';
+            }
+            rinfo += '<div style="display:none" id="rinfo-' + data[i].id + '">';
+            rinfo += '<h4>' + data[i].manufacturer + ' ' + data[i].model + ' ' + data[i].rev + '</h4>';
+            rinfo += '<table>'
+            rinfo += '<tr><td><strong>RAM</strong></td><td>' + data[i].ramsize + ' MB</td></tr>';
+            rinfo += '<tr><td><strong>Flash</strong></td><td>' + data[i].flashsize + ' MB</td></tr>';
+            rinfo += '<tr><td><strong>Target</strong></td><td>' + target + '</td></tr>';
+            rinfo += '<tr><td><strong>Subtarget</strong></td><td>' + subtarget + '</td></tr>';
+            rinfo += '<tr><td><strong>Profile</strong></td><td>' + profile + '</td></tr>';
+            rinfo += '</table>';
+
+            routerinfo[data[i].id] = {
+                                         'model': data[i].model,
+                                         'rev': data[i].rev,
+                                         'factory': factory,
+                                         'sysupgrade': sysupgrade,
+                                     };
+
+            //this rewrites target to the latest version
+            var full_target = target_rewrite(target);
+            var msg = '{{=T('Selected')}} ' + data[i].model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
+            rinfo += "<a href='javascript:void(0)' onclick='set_routerinfo(); set_target(\"" + full_target + "\");";
+            rinfo += "set_profile(\"" + profile + "\");";
+            rinfo += "jQuery(\".flash\").html(" + "\"" + msg + "\"" + ").slideDown()'>Apply settings</a>";
+            rinfo += '</div>';
+
+            if (data[i].thumbnail) {
+                rimage += '<div style="display:none" id="rimage-' + data[i].id + '">';
+                rimage += '<img style="width:100%" src="/routerdb/download/' + data[i].thumbnail + '"><br />';
+                rimage += '</div>';
+            }
+
+        }
+
+        $('#routerinfo').append(rinfo);
+        $('#routerimage').append(rimage);
+        $('#select_model').append(html);
+        //show_info_selected();
+    });
+};
+
+function show_info_selected() {
+    $('#routerinfo div').hide();
+    $('#routerimage div').hide()
+    var selectedID = $("#select_model option:selected").val();
+    $('#rinfo-' + selectedID).fadeIn('slow');
+    $('#rimage-' + selectedID).fadeIn('slow');
+}
+
+function set_routerinfo() {
+    var selectedID = $("#select_model option:selected").val();
+    var routerinfoselected = routerinfo[selectedID];
+    //$('input[name="routerinfo"]').val(escape(JSON.stringify(routerinfoselected)));
+    $('input[name="routerinfo"]').val(JSON.stringify(routerinfoselected));
+}
+
+get_manufacturer();
+
+
 
 </script>
 

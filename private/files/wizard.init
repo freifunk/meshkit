@@ -6,8 +6,8 @@
 START=99
 boot() {
 	logger -t wizard.notice \"the meshwizard is starting his work\"
-	/usr/bin/meshwizard/wizard.sh
 	/etc/init.d/wizard disable
 	cp -r /rom/etc/config/meshkit /etc/config/
+	/usr/bin/meshwizard/wizard.sh
 	logger -t wizard.notice \"The meshwizard has finished\"
 }
