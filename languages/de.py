@@ -1,4 +1,4 @@
-# coding: utf8
+# -*- coding: utf-8 -*-
 {
 '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN': '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN',
 '%(name)s can only be up to %(len)s characters long': '%(name)s darf höchstens %(len)s Zeichen lang sein',
@@ -44,7 +44,7 @@
 "Choose the .bin image matching your router if it still uses the vendor firmware. If there's already OpenWRT on it, use the .trx file.": 'Wenn der Router noch die Originalfirmware hat, dann benutze das für deinen Router passende .bin Image. Ist schon OpenWrt auf dem Router installiert dann benutze das .trx Image.',
 "Choose the factory image, if your router uses the vendor firmware. If there's already OpenWRT on it, take the sysupgrade file": 'Wenn der Router noch die Originalfirmware hat, dann benutze das factory Image. Ist schon OpenWrt auf dem Router installiert dann benutze das sysupgrade Image.',
 'Chooses the theme for the web interface. Freifunk-generic is the only one that is customised for communities, so you should probably use this theme.': 'Wählt das zu installierende Theme. Freifunk-Generic ist das einzige Theme, das für verschiedene Communities angepasst ist. Daher solltest du normalerweise dieses wählen.',
-'Click on the link %(link)s to reset your password': 'Click on the link %(link)s to reset your password',
+'Click on the link %(link)s to reset your password': 'Benutze den Link %(link)s zum zurücksetzen deines Passwortes',
 'Client IP': 'Client IP',
 'Community': 'Community',
 'Community files directory': 'Community files directory',
@@ -81,7 +81,7 @@
 'done!': 'fertig!',
 'Edit current record': 'Aktuellen Datensatz bearbeiten',
 'Email': 'Email',
-'Email sent': 'Email sent',
+'Email sent': 'Email gesendet',
 'en': 'Englisch',
 'Enable DHCP': 'DHCP aktivieren',
 'Enable DHCP and allow guests to connect to the network without using olsrd.': 'DHCP erlaubt Gästen ohne olsr eine Verbindung zum Netzwerk',
@@ -89,6 +89,7 @@
 'Enable this to show much more options for customizing your firmware.': 'Expertenmodus: Aktiviere diese Option um wesentlich mehr Einstellungsmöglichkeiten zu haben.',
 'Enable/Disable IPv6 globally.': 'IPv6 global (de)aktivieren',
 'enter an integer between %(min)g and %(max)g': 'Gib eine Ganzzahl zwischen %(min)g und %(max)g an',
+'Enter an integer between %(min)g and %(max)g': 'Gib eine Ganzzahl zwischen %(min)g und %(max)g an',
 'Enter the coordinates and location for your node here. This is used to show your node on maps of the mesh network.': 'Gib hier den Standort und Koordinaten für deinen Knoten ein. Diese Daten werden benutzt, um deinen Knoten auf Karten des Mesh-Netzwerks anzuzeigen.',
 'Enter your email address here.': 'Gib hier deine Emailadresse ein.',
 'Enter your email address here. After the images have been built you will receive an email with download links for the firmware.': 'Gib hier deine Emailadresse ein. Nachdem die Firmware erstellt wurde erhältst du eine Email mit einem Link zum Download der Firmware.',
@@ -286,6 +287,7 @@
 'There are no images queued in front of you. Your build will start soon.': 'Es sind keine weiteren Builds vor dir in der Warteschlange, deine Firmware wird jetzt erstellt.',
 'There was a problem parsing the package list, is it really valid json?': 'Fehler beim Parsen der Paketliste.',
 'There was another problem loading the package list.': 'Fehler beim Laden der Paketliste.',
+'This email already has an account': 'This email already has an account',
 'This sets a profile for your router model. If your device is not listed try something generic (default) if available.': 'Profil für deinen Router. Ist dieser hier nicht gelistet dann wähle etwas generischen wie z.B. "default".',
 'Timestamp': 'Timestamp',
 'Total images generated': 'Images gesamt',
