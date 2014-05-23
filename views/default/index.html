@@ -17,30 +17,31 @@
 
 
     <form method="post" name="step1" enctype="multipart/form-data" action="">
-
-{{
-field_target = formhelpers.formfield()
-field_target.Name = 'target'
-field_target.Label = T('Target')
-field_target.Valuelist = targets
-field_target.Valueselected = request.vars.target
-field_target.Helptext = T('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.')
-field_target = field_target.select()
-
+{{if len(targets) == 1:
+	field_target = formhelpers.formfield()
+	field_target.Name = 'target'
+	field_target.Label = T('Target')
+	field_target.Valuetext = targets[0]
+	field_target.Inputtype = 'hidden'
+	field_target.Value = targets[0]
+	field_target = field_target.input()
+else:
+	field_target = formhelpers.formfield()
+	field_target.Name = 'target'
+	field_target.Label = T('Target')
+	field_target.Valuelist = targets
+	field_target.Valueselected = request.vars.target
+	field_target.Helptext = T('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.')
+	field_target = field_target.select()
+}}
+{{pass}}
+{{	
 field_noconf = formhelpers.formfield()
 field_noconf.Name = 'noconf'
 field_noconf.Label = T('No configuration')
 field_noconf.Value = session.noconf
 field_noconf.Helptext = T('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.')
 field_noconf = field_noconf.chkbox()
-
-field_expert = formhelpers.formfield()
-field_expert.Name = 'expert'
-field_expert.Label = T('Expert')
-field_expert.Helptext = T('Enable this to show much more options for customizing your firmware.')
-field_expert.Value = session.expert
-field_expert = field_expert.chkbox()
-
 
 field_mail = formhelpers.formfield()
 field_mail.Name = 'mail'
@@ -51,16 +52,24 @@ field_mail = field_mail.input()
 }}
 
 {{if config.communitysupport == True:
-    field_community = formhelpers.formfield()
-    field_community.Name = 'community'
-    field_community.Label = T('Community')
-    field_community.Valuelist = communities
-    field_community.Valueselected = session.community
-    field_community.Helptext = T('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.')
-    field_community = field_community.select()
-      
+    if len(communities) > 1:
+    	field_community = formhelpers.formfield()
+    	field_community.Name = 'community'
+    	field_community.Label = T('Community')
+    	field_community.Valuelist = communities
+    	field_community.Valueselected = session.community
+    	field_community.Helptext = T('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.')
+    	field_community = field_community.select()
+    else:
+	    field_community = formhelpers.formfield()
+        field_community.Name = 'community'
+        field_community.Label = T('Community')
+        field_community.Value = communities[0]
+        field_community.Valuetext = communities[0]
+	    field_community.Inputtype = 'hidden'
+        field_community = field_community.input()
 }}
- 
+{{pass}} 
 {{=field_community}}
 {{pass}}
 
@@ -69,8 +78,16 @@ field_mail = field_mail.input()
         
 
 {{=field_target}}
-
+{{if config.showexpertmode == True:
+	field_expert = formhelpers.formfield()
+	field_expert.Name = 'expert'
+	field_expert.Label = T('Expert')
+	field_expert.Helptext = T('Enable this to show much more options for customizing your firmware.')
+	field_expert.Value = session.expert
+	field_expert = field_expert.chkbox()
+}}
 {{=field_expert}}
+{{pass}}
 
 {{if not config.noconf == True:}}
     {{=field_noconf}}
@@ -78,7 +95,7 @@ field_mail = field_mail.input()
         
 {{=field_mail}}
             
-        <input type="submit" value="SUBMIT"/>
+        <!-- input type="submit" value="SUBMIT"/ -->
         <input type="hidden" name="profile" id="imageconf_profile"/>
         <input type="hidden" name="_formname" value="step1" />
     </form>
@@ -94,6 +111,7 @@ field_mail = field_mail.input()
 
 var modellist = {{=XML(modellist)}};
 var target_options = document.getElementById('imageconf_target').options;
+var target_hiddenvalue = document.getElementById('imageconf_target').value;
 
 function target_rewrite(target) {
     for(option in target_options) {
@@ -103,6 +121,9 @@ function target_rewrite(target) {
              ret = target_options[option].value;
           }
 	}
+    }
+    if (typeof ret == "undefined") {
+       ret = target_hiddenvalue
     }
     return ret;
 }
@@ -130,7 +151,7 @@ for(var manufacturer in modellist) {
     var full_target = target_rewrite(target);
     msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
     link = "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");";
-    link += "set_profile(\"" + profile + "\");";
+    link += "set_profile(\"" + profile + "\");document.step1.submit();";
     link += "jQuery(\".flash\").html(" + "\"" + msg + "\"" + ").slideDown()'>" + model + "</a>";
     if( typeof full_target != "undefined") {
       if(i < len) {
