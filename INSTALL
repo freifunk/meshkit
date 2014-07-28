@@ -165,6 +165,11 @@ Wanprotos:		Protocols to offer in the Protocol selectbox for WAN
 Expandablehelp:		If set helptexts will be expandable. If not they are always
 			shown.
 
+Showexpertmode:		Show a checkbox to enable expert mode in step 1
+
+AutoSubmit:		auto-submit the step 1 form after selection of a model from the list.
+			This will also hide the submit button in step 1
+
 Click to delete:	This would delete this config row. Do NOT check this!
 
 == 2. Build queue ==

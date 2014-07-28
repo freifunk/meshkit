@@ -94,8 +94,9 @@ field_mail = field_mail.input()
 {{pass}}
         
 {{=field_mail}}
-            
-        <!-- input type="submit" value="SUBMIT"/ -->
+        {{ if config.autosubmit != True: }}
+            <input type="submit" value="SUBMIT"/ >
+        {{pass}}
         <input type="hidden" name="profile" id="imageconf_profile"/>
         <input type="hidden" name="_formname" value="step1" />
     </form>
@@ -150,8 +151,11 @@ for(var manufacturer in modellist) {
     var profile = modellist[manufacturer][model]['profile'];
     var full_target = target_rewrite(target);
     msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
-    link = "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");";
-    link += "set_profile(\"" + profile + "\");document.step1.submit();";
+    link = "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");"
+    link += "set_profile(\"" + profile + "\");";
+    {{ if config.autosubmit == True: }}
+        link += "document.step1.submit();";
+    {{pass}}
     link += "jQuery(\".flash\").html(" + "\"" + msg + "\"" + ").slideDown()'>" + model + "</a>";
     if( typeof full_target != "undefined") {
       if(i < len) {

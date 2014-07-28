@@ -49,6 +49,7 @@ db.define_table('config',
     ),
     Field('expandablehelp', 'boolean'),
     Field('showexpertmode', 'boolean'),
+    Field('autosubmit', 'boolean'),
     migrate=settings.migrate, fake_migrate=settings.fake_migrate
 )
 
