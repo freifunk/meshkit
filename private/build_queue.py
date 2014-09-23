@@ -414,7 +414,7 @@ class BuildImages(object):
             config += "\n"
 
         # section Lan - static
-        if self.Lanproto == 'static':
+        if self.Lanproto == 'static' and self.Lanipv4addr and self.Lannetmask:
                 config += "config 'netconfig' 'lan'\n"
                 config += "\toption 'proto' '" + self.Lanproto + "'\n"
                 config += "\toption 'ip4addr' '" + self.Lanipv4addr + "'\n"
