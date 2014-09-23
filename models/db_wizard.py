@@ -152,6 +152,9 @@ if not config == None:
         Field('wan_allow_web','boolean'),
         Field('sharenet','boolean'),
         Field('localrestrict','boolean'),
+        Field('wan_qos', 'boolean'),
+        Field('wan_qos_down', 'integer'),
+        Field('wan_qos_up', 'integer'),
         Field('lanproto',
             requires=IS_EMPTY_OR(
                 IS_IN_SET(config.lanprotos, error_message=T('%(name)s is invalid') % dict(name='LAN ' +T('Protocol')))

@@ -73,7 +73,8 @@ class BuildImages(object):
                  lanproto=None, lanipv4addr=None, lannetmask=None, landhcp=None,
                  landhcprange=None, wanproto=None, wanipv4addr=None, wannetmask=None,
                  wangateway=None, wandns=None, wan_allow_ssh=None, wan_allow_web=None,
-                 localrestrict=None, sharenet=None, url=None
+                 localrestrict=None, sharenet=None, url=None,
+                 wan_qos=None, wan_qos_down=None, wan_qos_up=None
                  ):
         self.Id = str(id)
         self.Rand = rand
@@ -139,6 +140,11 @@ class BuildImages(object):
         self.Wan_allow_web = wan_allow_web and 1 or 0
         self.Localrestrict = localrestrict and "1" or "0"
         self.Sharenet = sharenet and "1" or "0"
+        self.Wan_qos = wan_qos and 1 or 0
+        self.Wan_qos_down = wan_qos_down or "1024"
+        self.Wan_qos_up = wan_qos_up or "128"
+        
+        
         self.Hostname = hostname
         if not self.Hostname:
             if self.Wifi0ipv4addr:
@@ -427,7 +433,13 @@ class BuildImages(object):
         config += "\toption 'sharenet' '"+ self.Sharenet + "'\n"
         config += "\toption 'localrestrict' '" + self.Localrestrict + "'\n"
         config += "\n"
-
+        
+        # Section qos
+        if self.Wan_qos == 1:
+            config += "config 'qos' 'wan'\n"
+            config += "\toption 'down' '"+ str(self.Wan_qos_down) + "'\n"
+            config += "\toption 'up' '"+ str(self.Wan_qos_up) + "'\n"
+            config += "\n"
 
         # Write config to etc/config/meshwizard
         try:
@@ -601,7 +613,8 @@ else:
                                       wanipv4addr=row.wanipv4addr, wannetmask=row.wannetmask,
                                       wangateway=row.wangateway, wandns=row.wandns,
                                       wan_allow_ssh=row.wan_allow_ssh, wan_allow_web=row.wan_allow_web,
-                                      localrestrict=row.localrestrict, sharenet=row.sharenet, url=row.url
+                                      localrestrict=row.localrestrict, sharenet=row.sharenet, url=row.url,
+                                      wan_qos=row.wan_qos, wan_qos_down=row.wan_qos_down, wan_qos_up=row.wan_qos_up
                                       )
                 ret = builder.build()
                 if ret == 0:
