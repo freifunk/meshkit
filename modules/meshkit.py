@@ -217,9 +217,17 @@ def create_package_list(ibpath, target, savedir):
 
     """
     def _generate_packagelist_json(ibpath, target, savedir):
-        with open(os.path.join(ibpath, target, 'packages', 'Packages'), 'r') as f:
-            info = str(f.read())
-            f.closed
+        info = ""
+        if os.path.exists(ibpath + target + '/packages/Packages') :
+            with open(os.path.join(ibpath, target, 'packages', 'Packages'), 'r') as f:
+                info = str(f.read())
+                f.closed
+        else :
+            for directory in os.listdir(os.path.join(ibpath, target, 'packages')):
+                if os.path.exists(ibpath + target + '/packages/' + directory + '/Packages') :
+                    with open(os.path.join(ibpath, target, 'packages', directory, 'Packages'), 'r') as f:
+                        info += str(f.read())
+                        f.closed
         infolist = re.split('\n\n', info)
         tmplist = {}
         for block in infolist:
