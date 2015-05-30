@@ -199,13 +199,21 @@ def get_luci_themes(ibpath, target):
         [ 'luci-theme-bootstrap', 'luci-theme-fledermaus' ]
 
     """
+	
     themes = []
-    for filename in glob.glob(ibpath + "/" + target + "/packages/luci-theme-*"):
-        if not re.match(".*luci-theme-base.*", filename):
-            filename=filename[filename.find("luci-theme"):len(filename)]
-            filename=filename.split("_")[0]
-            themes.append(filename)
+    luci_packages = (
+        ibpath + "/" + target + "/packages/luci-theme-*", 
+        ibpath + "/" + target + "/packages/luci/luci-theme-*"
+    )
+
+    for package_dir in luci_packages:
+        for filename in glob.glob(package_dir):
+            if not re.match(".*luci-theme-base.*", filename):
+                filename=filename[filename.find("luci-theme"):len(filename)]
+                filename=filename.split("_")[0]
+                themes.append(filename)
     return sorted(themes)
+
 
 def create_package_list(ibpath, target, savedir):
     """Generates a static package list and saves it to disk.
