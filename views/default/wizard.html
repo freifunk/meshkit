@@ -250,6 +250,13 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
       field_name.Value = form.vars.name or session.name or ''
       field_name.Errormsg = form.errors.name
       field_name = field_name.input()
+      field_homepage = formhelpers.formfield()
+      field_homepage.Name = 'homepage'
+      field_homepage.Label = T('Homepage')
+      field_homepage.Helptext = T('If you have a homepage, then you can add it here.')
+      field_homepage.Value = form.vars.homepage or session.homepage or ''
+      field_homepage.Errormsg = form.errors.homepage
+      field_homepage = field_homepage.input()
       field_email = formhelpers.formfield()
       field_email.Name = 'email'
       field_email.Label = T('Mail')
@@ -274,6 +281,7 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
     }}
     {{=field_nickname}}
     {{=field_name}}
+    {{=field_homepage}}
     {{=field_email}}
     {{=field_phone}}
     {{=field_note}}

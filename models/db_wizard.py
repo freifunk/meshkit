@@ -126,6 +126,11 @@ if not config == None:
                 IS_LENGTH(64,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Location'), len='64'))
             )
         ),
+        Field('homepage',
+            requires=IS_EMPTY_OR(
+                IS_URL(error_message=T("%(name)s isn't a valid URL") % dict(name=T('Homepage'), len='255'))
+            )
+        ),
         Field('note',
             requires=IS_EMPTY_OR(
                     IS_LENGTH(512,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Note'), len='512'))

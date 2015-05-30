@@ -62,7 +62,7 @@ class BuildImages(object):
                  hostname=None, latitude=None, longitude=None,
                  ipv6=False, ipv6_config=None,
                  location=None, community=None, nodenumber=None, nickname=None,
-                 name=None, email=None, phone=None, note=None,
+                 name=None, homepage=None, email=None, phone=None, note=None,
                  theme=None,
                  wifi0ipv4addr=None, wifi0chan=None, wifi0dhcp=None, wifi0dhcprange=None,
                  wifi0vap=False, wifi0ipv6addr=None, wifi0ipv6ra=False,
@@ -98,12 +98,13 @@ class BuildImages(object):
         self.nodenumber = nodenumber or '1024'
         self.Nickname = nickname or ''
         self.Name = name or ''
+        self.Homepage = homepage or ''
         self.Email = email or '' # this is the email address for contact information
         self.Phone = phone or ''
         self.Note = note or ''
         if theme:
             self.Theme = theme.replace("luci-theme-", "") or 'freifunk-generic'
-	else:
+        else:
             self.Theme = 'freifunk-generic'
         self.Wifi0ipv4addr = wifi0ipv4addr
         self.Wifi0ipv6addr = wifi0ipv6addr
@@ -339,6 +340,7 @@ class BuildImages(object):
         config += "config 'public' 'contact'\n"
         config += "\toption 'nickname' '" + self.Nickname + "'\n"
         config += "\toption 'name' '" + self.Name + "'\n"
+        config += "\toption 'homepage' '" + self.Homepage + "'\n"
         config += "\toption 'mail' '" + self.Email + "'\n"
         config += "\toption 'phone' '" + self.Phone + "'\n"
         config += "\toption 'note' '" + self.Note + "'\n"
@@ -596,7 +598,7 @@ else:
                                       noconf=row.noconf, pubkeys=row.pubkeys, hostname=row.hostname, nodenumber=row.nodenumber,
                                       latitude=row.latitude, longitude=row.longitude, location=row.location,
                                       ipv6=row.ipv6, ipv6_config=row.ipv6_config,
-                                      community=row.community, nickname=row.nickname, name=row.name,
+                                      community=row.community, nickname=row.nickname, name=row.name, homepage=row.homepage,
                                       email=row.email, phone=row.phone, note=row.note, theme=row.theme,
                                       wifi0ipv4addr=row.wifi0ipv4addr, wifi0chan=row.wifi0chan,
                                       wifi0ipv6addr=row.wifi0ipv6addr, wifi0ipv6ra=row.wifi0ipv6ra,

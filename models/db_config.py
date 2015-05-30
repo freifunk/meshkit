@@ -22,20 +22,20 @@ db.define_table('config',
     Field('documentation_url',
         requires=IS_URL(error_message=T('%(name)s is invalid') % dict(name=T('URL to documentation')))
     ),
-    Field('add_defaultpackages',
+    Field('add_defaultpackages', type='text', 
         requires=IS_MATCH('^[a-zA-Z0-9\s-]*$', error_message=T('%(name)s is invalid') % dict(name=T('Add_defaultpackages')))
     ),
     Field('keep_images', 'integer'),
     Field('webifs',
         requires=IS_MATCH('^[a-zA-Z0-9,\s]*$', error_message=T('%(name)s is invalid') % dict(name=T('Webinterfaces')))
     ),
-    Field('lucipackages',
+    Field('lucipackages', type='text',
         requires=IS_MATCH('^[a-zA-Z0-9\s-]*$', error_message=T('%(name)s is invalid') % dict(name=T('Lucipackages')))
     ),
     Field('defaulttheme',
         requires=IS_MATCH('^[a-zA-Z0-9-]*$', error_message=T('%(name)s is invalid') % dict(name=T('Defaulttheme')))
     ),
-    Field('ipv6packages',
+    Field('ipv6packages', type='text',
         requires=IS_MATCH('^[a-zA-Z0-9\s-]*$', error_message=T('%(name)s is invalid') % dict(name=T('IPv6Packages')))
     ),
     Field('adminmail',

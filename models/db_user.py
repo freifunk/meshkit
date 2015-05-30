@@ -21,6 +21,11 @@ if config and config.communitysupport:
               label=T('Location')),
         Field('note', type='text',
               label=T('Note')),
+        Field('homepage',
+            requires=IS_EMPTY_OR(
+                IS_URL(error_message=T("%(name)s isn't a valid URL") % dict(name=T('Homepage'), len='255'))
+            )
+        ),
         Field('email', type='string',
               label=T('Email')),
         Field('pubkeys', type='text',
