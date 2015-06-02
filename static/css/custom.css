@@ -27,3 +27,12 @@ dl dd {
     word-wrap: normal;
     overflow-x: auto;
 }
+
+input.pass-edit.match {
+    background-color: #5cb85c;
+}
+input.pass-edit.mismatch {
+    background-color: #d9534f;
+}
+
+

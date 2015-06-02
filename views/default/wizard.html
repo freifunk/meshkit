@@ -62,14 +62,12 @@
         <!-- SYSTEM TAB -->
         <h3 title="{{=T('Basic system settings')}}">{{=T('System')}}</h3>
         <div>
-            <div>
-                {{=T('Set a password here. Only the hash is transferred to and stored on the server. But you should change the password after the first login nevertheless.')}}
-                {{=form.custom.widget.password_hash}}
-            </div>
             <div class="tab-description">
                 {{=T('Basic system settings.')}}
             </div>
 
+            {{=fh.field("password_hash")}}
+            
             {{if session.profiles:}}
             {{=fh.field("profile")}}
             {{pass}}

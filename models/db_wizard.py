@@ -40,10 +40,12 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_DECIMAL_IN_RANGE(1, 1000, error_message=T('%(name)s is invalid') % dict(name=T('Node Number'))))
         ),
         Field('password_hash', type='string', default=None,
-              requires=IS_EMPTY_OR(
+            label = T('Password'),
+            comment = T('Set a password here. Only the hash is transferred to and stored on the server. But you should change the password after the first login nevertheless.'),
+            requires=IS_EMPTY_OR(
                 IS_MD5CRYPT()
-              ),
-              label=T('Password Hash'), widget=password_md5crypt
+            ),
+            widget=password_md5crypt
         ),
         Field('pubkeys',type='text', label=T('Public Keys'),
             comment=T('Add ssh public keys, one per line.'),

@@ -233,14 +233,49 @@ function update_defaultpkgs() {
 /* End package list */
 
 
+function pass_status(field_hash) {
+    var status = field_hash.data("pass_empty");
+    if (field_hash.val().length > 0) {
+        status = field_hash.data("pass_set");
+        //status += ' (' + field_hash.val() + ')';
+    }
+    return status
+}
+
+function pass_init() {
+    $(".password-hash-container").each(function(){
+        var container = $(this);
+        var field_hash = $(this).children(".password-hash").first();
+        var btn_toggle = $(this).children(".password-edit-toggle").first();
+        
+
+        var status = pass_status(field_hash);
+        container.append('<span class="pass-status">' + status + '</span>');
+        
+        btn_toggle.click(function(){
+            if ($(this).hasClass("open")) {
+                container.children(".pass-options").remove();
+                $(this).removeClass("open").html(field_hash.data('edit'));
+                //close
+            } else {
+                //open
+                $(this).addClass("open").html(field_hash.data('cancel'));
+                pass_edit(container);
+            }
+        });
+    });
+}
+
 /* md5 crypt a password */
 function pass_md5crypt(id) {
     var input = $("#" + id);
     var container = $("#" + id + "_container");
-    var pw_plain = container.children('.pass-edit-pw1').val();
+    var pw_plain = container.find('.pass-edit-pw1').val();
+    console.log(pw_plain)
     if (pw_plain.length > 0) {
         var salt = random_salt(8);
         var hash = md5crypt(pw_plain, salt);
+        console.log(hash);
         if (hash.substr(0, 3) === "$1$") {
             input.val(hash);
         } else {
@@ -251,17 +286,67 @@ function pass_md5crypt(id) {
         alert(input.data("removed"));
         input.val('');
     }
-    container.children(".pass-edit-pw1").remove();
+    console.log("foo" + input.val());
+    status = pass_status(input);
+    container.find(".pass-status").first().html(status);
+    container.find(".password-edit-toggle").click();
 }
 
-function pass_edit(target) {
-    var onblur = 'pass_md5crypt(\'' + target + '\')';
-    var input = $("#" + target);
-    var container = $("#" + target + "_container");
-    var input = '<input placeholder="' + input.data("placeholder") + '" class="string pass-edit-pw1" value="" type="text" onblur="' + onblur + ';" />';
-    if (container.children(".pass-edit-pw1").length < 1) {
-        container.append(input).slideDown();
-        container.children(".pass-edit-pw1").css({"display": "block", "float": "none" }).focus();
+function pass_verify(container) {
+    var pw1 = container.find(".pass-edit-pw1");
+    var pw2 = container.find(".pass-edit-pw2");
+    
+    if (pw1.val().length < 1 && pw2.val().length < 1) {
+        pw1.removeClass("match mismatch");
+        pw1.removeClass("match mismatch");
+    } else {
+        if (pw1.val() === pw2.val()) {
+            pw1.removeClass("mismatch").addClass("match");
+            pw2.removeClass("mismatch").addClass("match");
+        } else {
+            pw1.removeClass("match").addClass("mismatch");
+            pw2.removeClass("match").addClass("mismatch");
+        }
+    }  
+}
+
+function pass_edit(container) {
+    console.log("hi");
+    var field_hash = container.children(".password-hash").first();
+    
+    var pw1 = $('<input type="password" />')
+           .addClass("string pass-edit pass-edit-pw1")
+           .attr("placeholder", field_hash.data("placeholder"))
+           .keyup(function() {
+               pass_verify(container);
+           });
+  
+   
+    var pw2 = $('<input type="password" />')
+           .addClass("string pass-edit pass-edit-pw2")
+           .attr("placeholder", field_hash.data("placeholder_confirm"))
+           .keyup(function() {
+               pass_verify(container);
+           });
+   
+    var pass_options = $('<div></div>')
+            .addClass("pass-options")
+    
+    var btn_set = $('<button type="button"></button>')
+            .html(field_hash.data("apply"))
+            .attr("disabled", "1")
+            .click(function(){
+                pass_md5crypt(field_hash.attr('id'));
+            });
+            
+    pass_options.append(pw1);
+    pass_options.append(pw2);
+    pass_options.append(btn_set);
+   
+    if (container.children(".pass-options").length < 1) {
+        container.append(pass_options).slideDown();
+        //container.children(".pass-options").css({"display": "block", "float": "none" })
+        container.find(".pass-edit-pw1").focus();
     }
 }
 
@@ -509,5 +594,10 @@ function init_step2() {
         }
     });
 }
+
+$( document ).ready(function() {
+    pass_init();
+});
+
 
 /* end wizard step2 */
