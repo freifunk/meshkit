@@ -14,92 +14,40 @@
 {{pass}}
 
 
-
-
-    <form method="post" name="step1" enctype="multipart/form-data" action="">
-{{if len(targets) == 1:
-	field_target = formhelpers.formfield()
-	field_target.Name = 'target'
-	field_target.Label = T('Target')
-	field_target.Valuetext = targets[0]
-	field_target.Inputtype = 'hidden'
-	field_target.Value = targets[0]
-	field_target = field_target.input()
-else:
-	field_target = formhelpers.formfield()
-	field_target.Name = 'target'
-	field_target.Label = T('Target')
-	field_target.Valuelist = targets
-	field_target.Valueselected = request.vars.target
-	field_target.Helptext = T('For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.')
-	field_target = field_target.select()
-}}
-{{pass}}
-{{	
-field_noconf = formhelpers.formfield()
-field_noconf.Name = 'noconf'
-field_noconf.Label = T('No configuration')
-field_noconf.Value = session.noconf
-field_noconf.Helptext = T('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.')
-field_noconf = field_noconf.chkbox()
-
-field_mail = formhelpers.formfield()
-field_mail.Name = 'mail'
-field_mail.Label = T('Email')
-field_mail.Helptext = T('Enter your email address here. After the images have been built you will receive an email with download links for the firmware.')
-field_mail.Value = request.vars.mail or user_email or ''
-field_mail = field_mail.input()
+{{
+    fh = formhelpers.customField(form, "imageconf")
 }}
 
-{{if config.communitysupport == True:
-    if len(communities) > 1:
-    	field_community = formhelpers.formfield()
-    	field_community.Name = 'community'
-    	field_community.Label = T('Community')
-    	field_community.Valuelist = communities
-    	field_community.Valueselected = session.community
-    	field_community.Helptext = T('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.')
-    	field_community = field_community.select()
-    else:
-	    field_community = formhelpers.formfield()
-        field_community.Name = 'community'
-        field_community.Label = T('Community')
-        field_community.Value = communities[0]
-        field_community.Valuetext = communities[0]
-	    field_community.Inputtype = 'hidden'
-        field_community = field_community.input()
-}}
-{{pass}} 
-{{=field_community}}
-{{pass}}
 
-        
+<!-- form start -->
 
-        
+<form method="post" name="step1" enctype="multipart/form-data" action="">
+    {{if config.communitysupport == True:}}
+        {{=fh.field("community")}}
+    {{pass}} 
 
-{{=field_target}}
-{{if config.showexpertmode == True:
-	field_expert = formhelpers.formfield()
-	field_expert.Name = 'expert'
-	field_expert.Label = T('Expert')
-	field_expert.Helptext = T('Enable this to show much more options for customizing your firmware.')
-	field_expert.Value = session.expert
-	field_expert = field_expert.chkbox()
-}}
-{{=field_expert}}
-{{pass}}
+    {{=fh.field("target")}}
 
-{{if not config.noconf == True:}}
-    {{=field_noconf}}
-{{pass}}
-        
-{{=field_mail}}
-        {{ if config.autosubmit != True: }}
-            <input type="submit" value="SUBMIT"/ >
-        {{pass}}
-        <input type="hidden" name="profile" id="imageconf_profile"/>
-        <input type="hidden" name="_formname" value="step1" />
-    </form>
+    {{if config.showexpertmode == True:}}
+        {{=fh.field("expert")}}
+    {{pass}}
+
+    {{if not config.noconf == True:}}
+        {{=fh.field("noconf")}}
+    {{pass}}
+
+    {{=fh.field("mail")}}
+
+
+    {{ if config.autosubmit != True: }}
+    <input type="submit" value="SUBMIT"/ >
+    {{pass}}
+    
+    <input type="hidden" name="profile" id="imageconf_profile"/>
+    <input type="hidden" name="_formname" value="step1" />
+</form>
+<!-- form end -->
+
 <div style="height:35px"></div>
 
 <h2>{{=T('Select by model')}}</h2>

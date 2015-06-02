@@ -1,5 +1,7 @@
 import gluon
 from gluon import *
+if hasattr(current, 'T'):
+        T = current.T
 
 def errormsg(key, error, custom=None):
     """ This returns a formatted div containing the errormessage if field was invalid
@@ -34,14 +36,78 @@ def helptext(text, expandable=True):
         A web2py html helper (in fact this is like returning html)
 
     """
+    
     config = current.config
     help = ""
 
-    if config.expandablehelp is True:
-        help = TAG[''](SPAN("?",_class='helpLink'), DIV(text, _class='helptext'))
-    else:
-        help = DIV(text, _class='helptext')
+    if text:
+        if config.expandablehelp is True:
+            help = TAG[''](SPAN("?",_class='helpLink'), DIV(text, _class='helptext'))
+        else:
+            help = DIV(text, _class='helptext')
+        
     return XML(help)
+
+class customField:
+    """
+    Class that outputs form fields
+
+    Args:
+        form -- Web2py form object
+        tablename -- table name (string) 
+    """
+    
+    def __init__(self, form=None, tablename=None):
+        self.form = form
+        self.tablename = tablename
+     
+    def field(self, col, advanced=None, suboption=False):
+        """ Create a form field
+        
+        Args:
+            col -- a database column (string)
+            advanced -- id of a div with advanced options
+            
+        """
+        id = "%s_%s" % (self.tablename, col)
+        label = self.form.custom.label[col]
+        widget = self.form.custom.widget[col]
+        comment = self.form.custom.comment[col]
+        
+        advancedToggle = ''
+        
+        if advanced:
+            advancedToggle = SPAN(
+                "+/-",
+                _title=T("Advanced Options"),
+                _class="advanced",
+                _onclick="ToggleDiv(\'%s\')" % advanced
+            )
+        
+        fieldset = CAT(
+            LABEL (
+                label,
+                _class="form_label",
+                _for=id
+            ),
+            DIV(
+                CAT(
+                    widget,
+                    helptext(comment),
+                    advancedToggle
+                ),
+                _class="form_value"
+            )
+        )
+        
+        if suboption:
+            fieldset = DIV (
+                fieldset,
+                _id=suboption,
+                _class="suboptions"
+            )
+        
+        return fieldset
 
 class formfield:
     """

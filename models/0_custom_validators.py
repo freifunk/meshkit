@@ -49,7 +49,7 @@ class IS_IPV6CIDR(object):
     ('2000::1/128', None)
     >>> IS_IPV6CIDR()('2000:1')
     ('2000:1', 'enter valid IPv6 address/network in CIDR Notation')
-    >>> IS_IPV4CIDR()('xyz::1/128')
+    >>> IS_IPV6CIDR()('xyz::1/128')
     ('xyz::/128', 'enter valid IPv6 address/network in CIDR Notation')
 
     """
@@ -58,6 +58,37 @@ class IS_IPV6CIDR(object):
     )
     
     def __init__(self, error_message='enter valid IPv6 address/network in CIDR Notation'):
+        self.error_message = error_message
+
+    def __call__(self, value):
+        if self.regex.match(value):
+            return (value, None)
+        else:
+            return (value, self.error_message)
+
+class IS_MD5CRYPT(object):
+    """
+    Checks if field's value is a salted MD5 hash (aka md5-crypt).
+
+    Arguments:
+        none
+
+    Examples::
+
+        #Check if a input is a salted md5 hast:
+        INPUT(_type='text', _name='name', requires=IS_MD5CRYPT())
+
+    >>> IS_MD5CRYPT()('$1$kDi8Tc2a$scZHT.RbmDEfcMZNoIAPA0')
+    ('$1$kDi8Tc2a$scZHT.RbmDEfcMZNoIAPA0', None)
+    >>> IS_MD5CRYPT()('$foo$bar')
+    ('$foo$bar', 'enter valid md5-crypt hash')
+
+    """
+    regex = re.compile(
+        '^\$1\$[./0-9A-Za-z]*\$[./0-9A-Za-z]{22}$'
+    )
+    
+    def __init__(self, error_message='enter valid md5-crypt hash'):
         self.error_message = error_message
 
     def __call__(self, value):

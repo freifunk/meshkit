@@ -28,6 +28,11 @@ if config and config.communitysupport:
         ),
         Field('email', type='string',
               label=T('Email')),
+        Field('default_password', type='string', default=None,
+              requires=IS_EMPTY_OR(
+                IS_MD5CRYPT()
+              ),
+              label=T('Default password'), widget=password_md5crypt),
         Field('pubkeys', type='text',
             requires=IS_EMPTY_OR([
                     IS_LENGTH(32768,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Pubkeys'), len='32768')),

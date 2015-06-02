@@ -25,26 +25,6 @@ function themepkgs() {
 	update_defaultpkgs();
 }
 
-/*
-function themeselect(themeoptions) {
-	var e = document.getElementById('imageconf_webif');
-	var selected = e.options[e.selectedIndex].value;
-	if ( selected == 'none' ) {
-		document.getElementById('theme_options').innerHTML = '';
-		lucipackages = '';
-		themepackages= '';
-		update_defaultpkgs();
-		};
-	if ( selected == 'luci' ) {
-		document.getElementById('theme_options').innerHTML = themeoptions;
-		lucipackages = themeoptions;
-		themepkgs();
-		update_defaultpkgs();
-		hideAll();
-	};
-}
-*/  
-
 /* Help link toggle */
 /* from http://www.websemantics.co.uk/resources/accessible_form_help/scripts/showhide.js */
 
@@ -224,7 +204,6 @@ function update_defaultpkgs() {
 			addpackages += " " + user_packagelist;
 		}
 	}
-
 	if( typeof lucipackages != "undefined") { addpackages += " " + lucipackages };
 	if( typeof themepackages != "undefined") { addpackages += " " + themepackages };
 	if( typeof defaultpackages != "undefined") { packages += " " + defaultpackages };
@@ -252,3 +231,283 @@ function update_defaultpkgs() {
 
 
 /* End package list */
+
+
+/* md5 crypt a password */
+function pass_md5crypt(id) {
+    var input = $("#" + id);
+    var container = $("#" + id + "_container");
+    var pw_plain = container.children('.pass-edit-pw1').val();
+    if (pw_plain.length > 0) {
+        var salt = random_salt(8);
+        var hash = md5crypt(pw_plain, salt);
+        if (hash.substr(0, 3) === "$1$") {
+            input.val(hash);
+        } else {
+            input.val('');
+            alert(input.data("error"));
+        }   
+    } else {
+        alert(input.data("removed"));
+        input.val('');
+    }
+    container.children(".pass-edit-pw1").remove();
+}
+
+function pass_edit(target) {
+    var onblur = 'pass_md5crypt(\'' + target + '\')';
+    var input = $("#" + target);
+    var container = $("#" + target + "_container");
+    var input = '<input placeholder="' + input.data("placeholder") + '" class="string pass-edit-pw1" value="" type="text" onblur="' + onblur + ';" />';
+    if (container.children(".pass-edit-pw1").length < 1) {
+        container.append(input).slideDown();
+        container.children(".pass-edit-pw1").css({"display": "block", "float": "none" }).focus();
+    }
+}
+
+/* wizard step2 */
+
+function set_packages() {
+    var selected = $("#imageconf_profile").val();
+    ProfilePkgs(ajaxUrl + session.target, selected);
+}
+
+function themeselect() {
+    var selected = $("#imageconf_webif").val();
+    if (selected === "none") {
+        $("#theme_options").html('');
+        lucipackages = "";
+        themepackages = "";
+        update_defaultpkgs();
+    }
+    if (selected === "luci") {
+        var newdiv = fields.theme;
+        document.getElementById("theme_options").innerHTML = newdiv;
+        lucipackages = luci_default_packages;
+        themepkgs();
+        update_defaultpkgs();
+        hideAll();
+    };
+}
+
+function lanselect() {
+    var extra_fields = []
+    var lan_options = ""
+    var selected = $("#imageconf_lanproto").val();
+    
+    if (selected === "static") {
+        $("#lan_options").empty();
+    }
+    
+    if (selected === "olsr") {
+        extra_fields = [ "lan_ipv6addr", "landhcp", "landhcprange" ];   
+    }
+    
+    $.each(extra_fields, function( index, value ) {
+        if (typeof fields[value] !== 'undefined') {
+            lan_options += fields[value];
+        }
+    });
+    
+    $("#lan_options").html(lan_options);
+    hideAll();
+}
+
+function wanselect() {
+    var selected = $('#imageconf_wanproto').val();
+    var extra_fields = []
+    var wan_options = ""
+    
+    if (selected == 'dhcp') {
+        extra_fields = [ "wan_allow_ssh", "wan_allow_web", "localrestrict", "sharenet", "wan_qos" ];
+    };
+    
+    if (selected == 'static') {
+        extra_fields = [ "wanipv4addr",  "wannetmask", "wangateway", "wandns", "localrestrict", "sharenet", "wan_allow_ssh", "wan_allow_web", "wan_qos" ];
+    }
+    if (selected == 'olsr') {
+        extra_fields = [ "wanipv4addr",  "wannetmask" ];
+    };
+    
+    $.each(extra_fields, function( index, value ) {
+        if (typeof fields[value] !== 'undefined') {
+            wan_options += fields[value];
+        }
+    });
+    $('#wan_options').html(wan_options);
+    hideAll();
+}
+;
+wanselect();
+
+function toggle_map_container(cmd, target) {
+    if (cmd == 'show') {
+        var osm1 = function() {
+            loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
+        };
+        $(target).html("<div id='map'></div><div style='font-size:0.8em'>Map by <a href='http://www.openstreetmap.org' title='www.openstreetmap.org'>openstreetmap.org</a>, License CC-BY-SA</div>");
+        loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
+        var osm2 = function() {
+            loadScript(assets_js + "osm.js", do_map);
+        };
+        var do_map = function() {
+            init();
+            drawmap();
+        };
+
+    } else {
+        $(target).html("");
+    }
+}
+
+function nosharepkgs() {
+    if (document.getElementById("imageconf_sharenet").checked) {
+        nosharepackages = '';
+        update_defaultpkgs();
+    }
+    else {
+        nosharepackages = 'freifunk-policyrouting luci-app-freifunk-policyrouting luci-i18n-freifunk-policyrouting-de';
+        update_defaultpkgs();
+    }
+}
+
+function qospkgs() {
+    if (document.getElementById("imageconf_wan_qos").checked) {
+        console.log("checked");
+        qospackages = 'qos-scripts';
+        $("#qos-options").html(wan_qos_down + wan_qos_up);
+        hideAll();
+        update_defaultpkgs();
+    }
+    else {
+        qospackages = '';
+        $("#qos-options").html('');
+        update_defaultpkgs();
+    }
+}
+
+function ajax_packagelist() {
+    $.ajax({
+        url: package_vars.ajaxUrl,
+        type: 'get',
+        dataType: 'json',
+        timeout: 10000,
+        tryCount: 0,
+        retryLimit: 10,
+        success: function(json) {
+            var packagelist = "";
+            for (var section in json) {
+                packagelist += "<h3>" + section + "</h3>";
+                packagelist += "<div><table><thead><tr>";
+                packagelist += "<th></th>";
+                packagelist += "<th width='300px'>" + package_vars.lang.Package + "</th>";
+                packagelist += "<th width='450px'>" + package_vars.lang.Version + "</th>";
+                packagelist += "<th width='100px'>" + package_vars.lang.Size + "</th>";
+                packagelist += "</tr></thead>";
+                d = json[section];
+                for (var pkg in d) {
+                    size = json[section][pkg]['size'];
+                    version = json[section][pkg]['version'];
+                    packagelist += "<tr>";
+                    packagelist += "<td><input type='button' value='+' style='margin:0px 10px 0 0; border:0px' onClick='addpackage(\"" + pkg + "\");'></td>";
+                    packagelist += "<td>" + pkg + "</td>";
+                    packagelist += "<td>" + version + "</td>";
+                    packagelist += "<td>" + size + "</td>";
+                    packagelist += "</tr>";
+                }
+                packagelist += "</table></div>"
+            }
+            document.getElementById('packagelist').innerHTML = packagelist;
+            $(function() {
+                $("#packagelist").accordion({heightStyle: "content", collapsible: true, active: false});
+            });
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            if (textStatus == 'parsererror') {
+                $('#packagelist').html(package_vars.errors.parseError);
+                return;
+            }
+            if (textStatus == 'timeout') {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                $('packagelist').html = package_vars.errors.timeout;
+                return;
+            }
+            if (xhr.status == 500) {
+                $('packagelist').html = package_vars.errors.serverError;
+            }
+            else {
+                $('packagelist').html = package_vars.errors.unspecified;
+            }
+        }
+    });
+}
+
+function ipv6pkgs() {
+    if (document.getElementById("imageconf_ipv6")) {
+        if (document.getElementById("imageconf_ipv6").checked) {
+            ipv6packages = ipv6packages_default;
+            update_defaultpkgs();
+        } else {
+            ipv6packages = '';
+            update_defaultpkgs();
+        }
+    }
+}
+
+function init_step2() {
+    $("#accordion").accordion({ heightStyle: "content" });
+    set_packages();
+    update_defaultpkgs();
+    themeselect();
+    themepkgs();
+    lanselect();
+    wanselect();
+    nosharepkgs();
+    ipv6pkgs();
+    update_defaultpkgs();
+    ajax_packagelist();  
+    $("#imageconf_profile").change(function() {
+        set_packages();
+    });
+    $("#imageconf_webif").change(function() {
+        themeselect();
+    });
+    $("#imageconf_theme").change(function() {
+        themepkgs();
+    });
+    $("#imageconf_ipv6").change(function() {
+        ipv6pkgs();
+    });
+    $("#imageconf_nodenumber").change(function() {
+        FFReg.check(this.value, _ffreg_check_callback);
+    });
+    $("#imageconf_lanproto").change(function() {
+        lanselect();
+    });
+    $("#imageconf_wanproto").change(function() {
+        wanselect();
+    });
+    $("#imageconf_sharenet").change(function() {
+        nosharepkgs();
+    });
+    $("#imageconf_wan_qos").change(function() {
+        qospkgs();
+    });
+    $("#showmap").click(function() {
+        var button = $(this);
+        if (button.html() === button.data("hidden")) {
+                button.html(button.data("visible"));
+                toggle_map_container('show', "#map-container");
+        } else {
+            button.html(button.data("hidden"));
+            toggle_map_container('hide', "#map-container");
+        }
+    });
+}
+
+/* end wizard step2 */

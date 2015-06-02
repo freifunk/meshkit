@@ -511,6 +511,7 @@ input.formerror, textarea.formerror {
 }
 
 .suboptions {
+    display: none;
 	padding-left: 2em;
 	margin-right: -2em;
 	font-size: 85%;
@@ -570,6 +571,13 @@ input.formerror, textarea.formerror {
 }
 #tab-lan, #tab-wan, #tab-packages, #tab-upload {
         display: none;
+}
+
+.expert-mode .expert{
+    display: inline !important;
+}
+.expert-mode #tab-lan, .expert-mode  #tab-wan, .expert-mode  #tab-packages, .expert-mode #tab-upload {
+    display: block !important;
 }
 
 .tab-description {

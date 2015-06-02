@@ -21,3 +21,9 @@ dl dd {
 #docurl {
     margin-bottom: 25px;
 }
+
+#imageconf_pubkeys {
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: auto;
+}

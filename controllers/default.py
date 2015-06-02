@@ -41,6 +41,7 @@ def index():
     if not config:
         response.flash = "No config found, redirecting you to create one"
         redirect(URL(request.application, request.controller,'config_not_found'))
+
     # Get a list of communities we know
     if config.communitysupport == True:
         if not config.profiles or not os.access(config.profiles, os.R_OK):
@@ -48,24 +49,39 @@ def index():
         else:
             communities = get_communities(config.profiles)
     else:
+        db.imageconf.community.requires=IS_EMPTY()
         communities = []
             
     targets = get_targets(config.buildroots_dir)
+    if len(targets) == 1:
+        pass
+        #db.imageconf.target.default = targets[0]
+        #db.imageconf.target.writable = False
+        
+        
+    if len(communities) == 1:
+        db.imageconf.community.default = communities[0]
+        db.imageconf.community.writable = False
     
     if auth.user:
-        user_email = auth.user.email
         session.community = auth.user.community
+        db.imageconf.community.default = session.community
+        db.imageconf.mail.default = auth.user.email
     else:
-        user_email = ''
         session.community = ''
+      
         
-    form = SQLFORM.factory(db.imageconf)
+    form = SQLFORM.factory(db.imageconf, table_name='imageconf')
+    
+    
     modellist = '{'
     i = 1
     for k in sorted(config_modellist.keys()):
         modellist += k + ":" + str(config_modellist[k]) + ","
     modellist += '}'
 
+    # TODO. rework. Use wiki?
+    
     lang = T.accepted_language or 'en'
     if lang == "de" and content_de:
         content = content_de
@@ -94,8 +110,8 @@ def index():
             errormsg = errormsg + "<li>" + str(form.errors[i]) + "</li>"
             response.flash = XML(T('Form has errors:') + "</br><ul>" + errormsg + "</ul>")
 
-    return dict(form=form,communities=communities, targets=targets, user_email=user_email,
-                formhelpers=formhelpers, vars=form.vars, modellist=modellist, startpage=startpage)
+    return dict(form=form, formhelpers=formhelpers, modellist=modellist,
+                startpage=startpage)
     
 # coding: utf8
 # try something like
@@ -109,7 +125,64 @@ def wizard():
     # todo
     # list of profiles
     session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
-    form = SQLFORM(db.imageconf)
+    
+    # overwrite field defaults and requires before creating the SQLFORM
+    
+    if auth.user:
+        db.imageconf.pubkeys.default = auth.user.pubkeys
+        db.imageconf.location.default = auth.user.location
+        db.imageconf.nickname.default = auth.user.username
+        db.imageconf.name.default = auth.user.name
+        db.imageconf.email.default = auth.user.email
+        db.imageconf.homepage.default = auth.user.homepage
+        db.imageconf.phone.default = auth.user.phone
+        db.imageconf.note.default = auth.user.note
+        
+    
+    db.imageconf.profile.requires = IS_IN_SET(
+        session.profiles,
+        zero=None,
+        error_message=T('%(name)s is invalid') % dict(name=T('Profile'))
+    )
+    db.imageconf.profile.default=session.profile
+    
+    db.imageconf.webif.requires = IS_IN_SET(
+        config.webifs,
+        error_message=T('%(name)s is invalid') % dict(name=T('Webinterface')),
+        zero=None,
+    )
+    
+    db.imageconf.theme.requires = IS_IN_SET(
+        themes,
+        error_message=T('%(name)s is invalid') % dict(name=T('Theme')),
+        zero=None,
+    )
+    
+    db.imageconf.lanproto.requires = IS_IN_SET(
+        config.lanprotos,
+        error_message=T('%(name)s is invalid') % dict(name='LAN ' +T('Protocol')),
+        zero=None
+    )
+    
+    db.imageconf.wanproto.requires = IS_IN_SET(
+        config.wanprotos,
+        error_message=T('%(name)s is invalid') % dict(name=T('Wan Protocol')),
+        zero=None
+    )
+    
+    c = None
+    community = None
+    if config.communitysupport == True:
+        c = uci.UCI(config.profiles, "profile_" + session.community)
+        community_defaults = c.read()
+        db.imageconf.theme.default = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
+        db.imageconf.ipv6.default = c.get(community_defaults, 'profile', 'ipv6', '0') and True or False
+        db.imageconf.latitude.default = c.get(community_defaults, 'profile', 'latitude', '48')
+        db.imageconf.longitude.default = c.get(community_defaults, 'profile', 'longitude', '10')
+        
+    
+    
+    form = SQLFORM(db.imageconf, table_name='imageconf')
     # session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
     defaultpkgs = get_defaultpkgs(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
     session.theme = config.defaulttheme
@@ -117,18 +190,14 @@ def wizard():
     # if package lists change delete the cache file in static/package_lists/<target>
     create_package_list(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "package_lists"))
     user_packagelist = ''
-    latitude = longitude = defchannel = mesh_network = defip = community_packages = ipv6 = ipv6_config = ipv6_packages = ""
+    defchannel = mesh_network = defip = community_packages = ipv6 = ipv6_config = ipv6_packages = ""
     session.url = URL(request.application, request.controller, 'api/json/buildimage', scheme=True, host=True)
     if config.communitysupport == True:
-        c = uci.UCI(config.profiles, "profile_" + session.community)
-        community_defaults = c.read()
         nodenumber = ''
         # Add meshwizard to defaultpackages and lucipackages
         defaultpkgs.append('meshwizard')
         lucipackages = config.lucipackages + " luci-app-meshwizard"
         session.communitysupport = True
-        latitude = c.get(community_defaults, 'profile', 'latitude', '48')
-        longitude = c.get(community_defaults, 'profile', 'longitude', '10')
         defchannel = c.get(community_defaults, 'wifi_device', 'channel', '1')
         mesh_network = c.get(community_defaults, 'profile', 'mesh_network', '10.0.0.0/8')
         if mesh_network:
@@ -139,7 +208,7 @@ def wizard():
         ipv6 = c.get(community_defaults, 'profile', 'ipv6', '0')
         ipv6_config = c.get(community_defaults, 'profile', 'ipv6_config', False)
         vap = c.get(community_defaults, 'profile', 'vap', '0')
-        session.theme = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
+        #session.theme = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
     else:
         session.communitysupport = False
         lucipackages = config.lucipackages
@@ -147,8 +216,6 @@ def wizard():
         nodenumber = False
         community_defaults = dict()
         
-    session.localrestrict=True
-
     if not session.mail:
         session.mail = ''
     if ipv6 == '1':
@@ -179,17 +246,13 @@ def wizard():
         session.name = auth.user.name or ''
         session.homepage = auth.user.homepage or ''
         session.phone = auth.user.phone or ''
-        session.location = auth.user.location or ''
         session.note = auth.user.note or ''
-        session.pubkeys = auth.user.pubkeys or ''
     else:
         session.nickname = ''
         session.name = ''
         session.homepage = ''
         session.phone = ''
-        session.location = ''
         session.note = ''
-        session.pubkeys = ''
     if form.process(session=None, formname='step2', keepvalues=True).accepted:
         session.profile = form.vars.profile
         session.noconf = form.vars.noconf or config.noconf
@@ -205,24 +268,21 @@ def wizard():
         session.webif = form.vars.webif or ''
         session.theme = form.vars.theme or config.defaulttheme
         session.wifiifsnr = form.vars.wifiifsnr or 1
-        session.ipv6 = form.vars.ipv6 or False
         session.wifi0ipv6ra = form.vars.wifi0ipv6ra or False
         session.wifi1ipv6ra = form.vars.wifi1ipv6ra or False
         session.wifi2ipv6ra = form.vars.wifi2ipv6ra or False
         session.wifi0vap = form.vars.wifi0vap or False
         session.wifi1vap = form.vars.wifi1vap or False
         session.wifi2vap = form.vars.wifi2vap or False
-        session.localrestrict = form.vars.localrestrict or False
         user_packagelist = form.vars.packages or ''
-        latitude = form.vars.latitude or ''
-        longitude = form.vars.longitude or ''
         
     hash = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
     return dict(form=form, packages='',rand=hash, defaultpkgs=defaultpkgs, lucipackages=lucipackages, nodenumber=nodenumber,
-                lat=latitude, lon=longitude, defchannel=defchannel, defip=defip,
+                defchannel=defchannel, defip=defip,
                 community_packages=community_packages  + " " + config.add_defaultpackages,
                 user_packagelist=user_packagelist, addpackages='',
-                ipv6_packages=ipv6_packages, formhelpers=formhelpers
+                ipv6_packages=ipv6_packages, formhelpers=formhelpers,
+                fh = formhelpers.customField(form, "imageconf"),
                 )
 
 def build():

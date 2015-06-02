@@ -1,293 +1,140 @@
 {{extend 'layout.html'}}
 
-<script type="text/javascript">profilepackages=''</script>
-<script type="text/javascript">defaultpackages='{{for pkg in defaultpkgs:}}{{=pkg}} {{pass}}'</script>
-<script type="text/javascript">extrapackages=''</script>
-<script type="text/javascript">communitypackages = '{{=community_packages}}'</script>
-<script type="text/javascript">nosharepackages = ''</script>
-<script type="text/javascript">lucipackages = ''</script>
-<script type="text/javascript">qospackages = ''</script>
-<script type="text/javascript">ipv6packages = '{{=ipv6_packages}}'</script>
-<script type="text/javascript">user_packagelist = '{{=user_packagelist}}'</script>
-<script type="text/javascript">addpackages = '{{=addpackages}}'</script>
-
-{{if session.expert:}}
-<style type="text/css">
-.expert{
-	display: inline !important;
-}
-#tab-lan, #tab-wan, #tab-packages, #tab-upload {
-	display: block !important;
-}
-</style>
-{{pass}}
-
 <script>
-$(function() {
-$( "#accordion" ).accordion({ heightStyle: "content" });
-});
+    var profilepackages = '',
+        defaultpackages = '{{for pkg in defaultpkgs:}}{{=pkg}} {{pass}}',
+        extrapackages = '',
+        communitypackages = '{{=community_packages}}',
+        nosharepackages = '',
+        luci_default_packages = '{{=lucipackages}}',
+        lucipackages = '',
+        qospackages = '',
+        ipv6packages_default = '{{=ipv6_packages}}',
+        ipv6packages = '{{=ipv6_packages}}',
+        user_packagelist = '{{=user_packagelist}}',
+        addpackages = '{{=addpackages}}',
+        ajaxUrl = '{{=URL("static", "ajax/")}}',
+        assets_js = '{{=URL("static", "js/")}}',
+        session = new Object();
+        session.target = '{{=session.target}}';
+        
+    fields = {
+        wanipv4addr: '{{=fh.field("wanipv4addr")}}',
+        wannetmask: '{{=fh.field("wannetmask")}}',
+        localrestrict: '{{=fh.field("localrestrict")}}',
+        sharenet: '{{=fh.field("sharenet")}}',
+        wan_allow_ssh: '{{=fh.field("wan_allow_ssh")}}',
+        wan_allow_web: '{{=fh.field("wan_allow_web")}}',
+        wan_qos: '{{=fh.field("wan_qos")}}' + '<div id="qos-options"></div>',
+        wan_qos_down: '{{=fh.field("wan_qos_down")}}',
+        wan_qos_up: '{{=fh.field("wan_qos_up")}}',
+        wangateway: '{{=fh.field("wangateway")}}',
+        wandns: '{{=fh.field("wandns")}}',
+        landhcp: '{{=fh.field("landhcp", advanced="lan_dhcp_range")}}',
+        landhcprange: '{{=fh.field("landhcprange", suboption="lan_dhcp_range")}}',
+        theme: '{{=fh.field("theme")}}',
+    };
+    {{ if session.ipv6_config == 'static':}}
+    fields.lan_ipv6addr = '{{=fh.field("lanipv6addr")}}';
+    {{pass}}
+    
+    var package_vars = {
+          ajaxUrl: '{{=URL('static/package_lists', session.target)}}',
+          lang: {
+              Package: "{{=T('Package')}}",
+              Version: "{{=T('Version')}}",
+              Size: "{{=T('Size')}}"
+          },
+          errors: {
+              parseError: "{{=T('There was a problem parsing the package list, is it really valid json?')}}",
+              timeout: "{{=T('Loading the package list timed out.')}}",
+              serverError: "{{=T('The server returned status 500 and the package list could not be loaded, please try again later.')}}",
+              unspecified: "{{=T('There was another problem loading the package list.')}}"
+          }
+      }
+    
 </script>
 
 <h1>{{=T('2. Image configuration')}}</h1>
 
-<form action="" name="MAINFORM" enctype="multipart/form-data" method="POST">
-  <div id="accordion">
-  <!-- Start system tab -->
-    <h3 title="{{=T('Basic system settings')}}">{{=T('System')}}</h3>
-    <div>
-      <div class="tab-description">
-        {{=T('Basic system settings.')}}
-      </div>
-      {{if session.profiles:}}
-        {{
-        field_profile = formhelpers.formfield()
-        field_profile.Name = 'profile'
-        field_profile.Label = T('Profile')
-        field_profile.Valuelist = session.profiles
-        field_profile.Valueselected = session.profile
-        field_profile.Helptext = T('This sets a profile for your router model. If your device is not listed try something generic (default) if available.')
-        field_profile.Special = 'onchange="var e = document.getElementById(\'imageconf_profile\'); var selected = e.options[e.selectedIndex].value; ProfilePkgs(\'' + URL('static', 'ajax/' + session.target) + '\', selected);"'
-        field_profile = field_profile.select()
-        }}
-        {{=field_profile}}
-      {{pass}}
+<form action="" name="MAINFORM" enctype="multipart/form-data" method="POST"{{if session.expert:}} class="expert-mode"{{pass}}>
+    <div id="accordion">
+        <!-- SYSTEM TAB -->
+        <h3 title="{{=T('Basic system settings')}}">{{=T('System')}}</h3>
+        <div>
+            <div>
+                {{=T('Set a password here. Only the hash is transferred to and stored on the server. But you should change the password after the first login nevertheless.')}}
+                {{=form.custom.widget.password_hash}}
+            </div>
+            <div class="tab-description">
+                {{=T('Basic system settings.')}}
+            </div>
 
-      <script type="text/javascript">
-        var e = document.getElementById('imageconf_profile');
-        var selected = e.options[e.selectedIndex].value;
-        ProfilePkgs('{{=URL("static", "ajax/" + session.target)}}', selected);
-        update_defaultpkgs();
-      </script>
-      
-        {{if session.community == 'weimar':}}
-        {{
-        field_nodenumber = formhelpers.formfield()
-        field_nodenumber.Name = 'nodenumber'
-        field_nodenumber.Label = T('Node Number')
-        field_nodenumber.Helptext = T('Please enter the Node Number for your weimarnetz node.')
-        field_nodenumber.Value = request.vars.nodenumber or ''
-        field_nodenumber.Special = 'onchange="FFReg.check(this.value, _ffreg_check_callback)"'
-        field_nodenumber = field_nodenumber.input()
-        }}
-        {{=field_nodenumber}}
-	{{pass}}
-
-      <div class="expert">
-        {{
-        field_webif = formhelpers.formfield()
-        field_webif.Name = 'webif'
-        field_webif.Label = T('Webinterface')
-        field_webif.Valuelist = config.webifs
-        field_webif.Valueselected = form.vars.webif
-        field_webif.Helptext = T('Webinterface that is installed. This may remove or add packages depending on your selection.')
-        field_webif.Special = 'onchange="themeselect()"'
-        field_webif = field_webif.select()
-        }}
-        {{=field_webif}}
-      </div>
-
-      {{
-        field_theme = formhelpers.formfield()
-        field_theme.Name = 'theme'
-        field_theme.Label = T('Theme')
-        field_theme.Valuelist = themes
-        field_theme.Valueselected = session.theme
-        field_theme.Helptext = T('Chooses the theme for the web interface. Freifunk-generic is the only one that is customised for communities, so you should probably use this theme.')
-        field_theme.Special = 'onchange="themepkgs()"'
-        field_theme = field_theme.select()
-      }}
-
-      <div id="theme_options" class="expert">
-        <!-- this will be replaced by the js below -->
-      </div>
+            {{if session.profiles:}}
+            {{=fh.field("profile")}}
+            {{pass}}
 
 
+            {{if session.community == 'weimar':}}
+            {{=fh.field("nodenumber")}}
+            {{pass}}
 
-      {{if not session.noconf == True:}}
-        {{
-        field_hostname = formhelpers.formfield()
-        field_hostname.Name = 'hostname'
-        field_hostname.Label = T('Hostname')
-        field_hostname.Helptext = T('Hostname. If left empty it will be autogenerated from the IPv4 address')
-        field_hostname.Value = request.vars.hostname or ''
-        field_hostname = field_hostname.input()
-        }}
-        {{=field_hostname}}
+            <div class="expert">
+                {{=fh.field("webif")}}
+            </div>
 
+            <div id="theme_options" class="expert">
+                <!-- this will be inserted by the themeselect() function -->
+            </div>
 
-        {{if session.ipv6conf == True:}}
-        <div class="expert">
-          {{
-          field_ipv6 = formhelpers.formfield()
-          field_ipv6.Name = 'ipv6'
-          field_ipv6.Label = T('IPv6')
-          field_ipv6.Helptext = T('Enable/Disable IPv6 globally.')
-          field_ipv6.Value = session.ipv6
-          field_ipv6.Special = 'onchange="ipv6pkgs();"'
-          field_ipv6 = field_ipv6.chkbox()
-          }}
-          {{=field_ipv6}}
+            {{=fh.field("hostname")}}
+
+            {{if session.ipv6conf == True:}}
+            <div class="expert">
+                {{=fh.field("ipv6")}}
+            </div>
+            {{pass}}
+
+            <div class="expert">
+                {{=fh.field("pubkeys")}}
+            </div>
+            {{pass}}
+        </div>
+
+        <!-- LOCATION TAB -->
+        {{if not session.noconf == True and session.communitysupport == True:}}
+        <h3 title="{{=T('Location for this node')}}">{{=T('Location')}}</h3>
+        <div>
+            <div class="tab-description">
+                {{=T('Enter the coordinates and location for your node here. This is used to show your node on maps of the mesh network.')}}
+            </div>
+            <div id='osm'>
+                {{=fh.field("location")}}
+                {{=fh.field("latitude")}}
+                {{=fh.field("longitude")}}
+                <button type="button" data-hidden="{{=T('Show map')}}" data-visible="{{=T('Hide map')}}" id="showmap">{{=T('Show map')}}</button>
+            </div>
+            <div id='map-container'></div>
         </div>
         {{pass}}
 
+        
+        <!-- CONTACT TAB -->
+        {{if not session.noconf == True and session.communitysupport == True:}}
 
-        <div class="expert">
-          {{
-          field_pubkeys = formhelpers.formfield()
-          field_pubkeys.Name = 'pubkeys'
-          field_pubkeys.Label = T('Public Keys')
-          field_pubkeys.Helptext = T('Add ssh public keys, one per line.')
-          field_pubkeys.Special = 'wrap="off"'
-          field_pubkeys.Value = form.vars.pubkeys or session.pubkeys
-          field_pubkeys = field_pubkeys.textarea()
-          }}
-          {{=field_pubkeys}}
+        <h3 title="{{=T('Contact')}}">{{=T('Contact')}}</h3>
+        <div>
+            <div class="tab-description">
+                {{=T('Please enter some personal informations here so others can contact you. Please have at least one valid contact option (email or phone).')}}
+            </div>
+            {{=fh.field("nickname")}}
+            {{=fh.field("name")}}
+            {{=fh.field("homepage")}}
+            {{=fh.field("email")}}
+            {{=fh.field("phone")}}
+            {{=fh.field("note")}}
         </div>
-      {{pass}}
-    </div>
-
-    <!-- Start location tab -->
-    {{if not session.noconf == True and session.communitysupport == True:}}
-    <h3 title="{{=T('Location for this node')}}">{{=T('Location')}}</h3>
-    <div>
-      <div class="tab-description">
-        {{=T('Enter the coordinates and location for your node here. This is used to show your node on maps of the mesh network.')}}
-      </div>
-      <span id='osm'>
-        {{
-        field_latitude = formhelpers.formfield()
-        field_latitude.Name = 'latitude'
-        field_latitude.Label = T('Latitude')
-        field_latitude.Helptext = T('Latitude') + " " + T('in decimal notation.')
-        field_latitude.Value = request.vars.latitude or lat or ''
-        if form.errors.latitude:
-            field_latitude.Errormsg = T('Latitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.')
-        pass
-        field_latitude = field_latitude.input()
-
-        field_longitude = formhelpers.formfield()
-        field_longitude.Name = 'longitude'
-        field_longitude.Label = T('Longitude')
-        field_longitude.Helptext = T('Longitude') + " " + T('in decimal notation.')
-        field_longitude.Value = lon or ''
-        if form.errors.longitude:
-            field_longitude.Errormsg = T('Longitude') + ' ' + T('must be a decimal value between -180 and 180, e.g. 12.34567.')
-        pass
-        field_longitude = field_longitude.input()
-
-        field_location = formhelpers.formfield()
-        field_location.Name = 'location'
-        field_location.Label = T('Location')
-        field_location.Helptext = T('Location of your node.')
-        field_location.Value = form.vars.location or session.location
-        field_location.Errormsg = form.errors.location
-        field_location = field_location.input()
-        }}
-        {{=field_location}}
-        {{=field_latitude}}
-        {{=field_longitude}}
-        <input type="button" id="showmap" value="{{=T('Show map')}}" style="cursor:pointer" onclick="toggle_button()">
-      </span>
-
-	  <script type='text/javascript'>
-		function toggle_container(cmd) {
-		  if ( cmd == 'show' ) {
-			var osm1 = function() {
-			  loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
-			};
-			document.getElementById('map_container').innerHTML="<div id='map'></div><div style='font-size:0.8em'>Map by <a href='http://www.openstreetmap.org' title='www.openstreetmap.org'>openstreetmap.org</a>, License CC-BY-SA</div>";
-			loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
-			var osm2 = function() {
-			  loadScript('{{=URL("static", "js/osm.js")}}',do_map);
-			};
-			var do_map = function() {
-			  init(); drawmap();
-			};
-
-			} else {
-			  document.getElementById('map_container').innerHTML = '';
-			}
-		  }
-
-		  function toggle_button() {
-			var val = document.getElementById('showmap').value;
-			if (val == '{{=T('Show map')}}' ) {
-			  var val = document.getElementById('showmap').value = '{{=T("Hide map")}}';
-			  toggle_container('show');
-			}
-			else
-			{
-			  var val = document.getElementById('showmap').value = '{{=T("Show map")}}';
-			  toggle_container('hide');
-			}
-		  }
-	</script>
-
-	  <div id='map_container'></div>
-    </div>
-  {{pass}}
-  <!-- End location tab -->
-
-  {{if not session.noconf == True and session.communitysupport == True:}}
-  <!-- Start contact tab -->
-  <h3 title="{{=T('Contact')}}">{{=T('Contact')}}</h3>
-  <div>
-      <div class="tab-description">
-        {{=T('Please enter some personal informations here so others can contact you. Please have at least one valid contact option (email or phone).')}}
-      </div>
-    {{
-      field_nickname = formhelpers.formfield()
-      field_nickname.Name = 'nickname'
-      field_nickname.Label = T('Nickname')
-      field_nickname.Helptext = T('Enter your nickname here.')
-      field_nickname.Value = form.vars.nickname or session.nickname or ''
-      field_nickname.Errormsg = form.errors.nickname
-      field_nickname = field_nickname.input()
-      field_name = formhelpers.formfield()
-      field_name.Name = 'name'
-      field_name.Label = T('Name')
-      field_name.Helptext = T('Enter your name here.')
-      field_name.Value = form.vars.name or session.name or ''
-      field_name.Errormsg = form.errors.name
-      field_name = field_name.input()
-      field_homepage = formhelpers.formfield()
-      field_homepage.Name = 'homepage'
-      field_homepage.Label = T('Homepage')
-      field_homepage.Helptext = T('If you have a homepage, then you can add it here.')
-      field_homepage.Value = form.vars.homepage or session.homepage or ''
-      field_homepage.Errormsg = form.errors.homepage
-      field_homepage = field_homepage.input()
-      field_email = formhelpers.formfield()
-      field_email.Name = 'email'
-      field_email.Label = T('Mail')
-      field_email.Helptext = T('Enter your email address here.')
-      field_email.Value = form.vars.email or session.mail or ''
-      field_email.Errormsg = form.errors.email
-      field_email = field_email.input()
-      field_phone = formhelpers.formfield()
-      field_phone.Name = 'phone'
-      field_phone.Label = T('Phone')
-      field_phone.Helptext = T('Enter your phone number here.')
-      field_phone.Value = form.vars.phone or session.phone or ''
-      field_phone.Errormsg = form.errors.phone
-      field_phone = field_phone.input()
-      field_note = formhelpers.formfield()
-      field_note.Name = 'note'
-      field_note.Label = T('Note')
-      field_note.Helptext = T('You may enter a custom comment here.')
-      field_note.Value = form.vars.note or session.note or ''
-      field_note.Errormsg = form.errors.note
-      field_note = field_note.textarea()
-    }}
-    {{=field_nickname}}
-    {{=field_name}}
-    {{=field_homepage}}
-    {{=field_email}}
-    {{=field_phone}}
-    {{=field_note}}
-  </div>
-  <!-- End contact tab -->
-  {{pass}}
+        {{pass}}
 
   {{if session.community <> 'weimar' and not session.noconf == True:}}
   <!-- Start wifi tab -->
@@ -514,382 +361,69 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   </div>
   <!-- End wifi tab -->
   {{pass}}
-      
+
   {{if session.community <> 'weimar' and not session.noconf == True:}}
-  <!-- Start Lan tab -->
+  <!-- LAN TAB -->
   <h3 id="tab-lan" title="{{=T('LAN settings')}}">{{=T('LAN')}}</h3>
   <div>
       <div class="tab-description">
-        {{=T('You can change the settings for the LAN interface here.')}}</p>
-        <ul>
-          <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
-          <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
-        </ul>
+          {{=T('You can change the settings for the LAN interface here.')}}</p>
+          <ul>
+              <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
+              <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
+          </ul>
       </div>
-    {{
-      field_lanproto = formhelpers.formfield()
-      field_lanproto.Name = 'lanproto'
-      field_lanproto.Label = T('LAN Protocol')
-      field_lanproto.Valuelist = config.lanprotos
-      field_lanproto.Valueselected = form.vars.lanproto
-      field_lanproto.Helptext = T('Protocol to use for the LAN interface.')
-      field_lanproto.Special = 'onchange="lanselect()"'
-      field_lanproto = field_lanproto.select()
-      field_lanipv4addr = formhelpers.formfield()
-      field_lanipv4addr.Name = 'lanipv4addr'
-      field_lanipv4addr.Label = T('IPv4 Address')
-      field_lanipv4addr.Helptext = T('IPv4 address for the LAN interface')
-      field_lanipv4addr.Value = form.vars.lanipv4addr or '192.168.1.1'
-      field_lanipv4addr.Errormsg = form.errors.lanipv4addr
-      field_lanipv4addr = field_lanipv4addr.input()
-      field_lannetmask = formhelpers.formfield()
-      field_lannetmask.Name = 'lannetmask'
-      field_lannetmask.Label = T('Netmask')
-      field_lannetmask.Helptext = T('IPv4 netmask for the LAN interface')
-      field_lannetmask.Value = form.vars.lannetmask or '255.255.255.0'
-      field_lannetmask.Errormsg = form.errors.lannetmask
-      field_lannetmask = field_lannetmask.input()
-    }}
-    {{=field_lanproto}}
-    {{=field_lanipv4addr}}
-    {{=field_lannetmask}}
+      {{=fh.field("lanproto")}}
+      {{=fh.field("lanipv4addr")}}
+      {{=fh.field("lannetmask")}}
 
-    <div id="lan_options">
-      <!--This will be replaced by the javascript below -->
-    </div>
-
-    <script type="text/javascript">
-      function lanselect() {
-        var e = document.getElementById("imageconf_lanproto");
-        var selected = e.options[e.selectedIndex].value;
-        if ( selected == "static" ) {
-          document.getElementById("lan_options").innerHTML = '';
-        };
-        if ( selected == "olsr" ) {
-          lan_ipv6addr = ''
-          {{ if session.ipv6_config == 'static':}}
-          {{
-            field_lanipv6addr = formhelpers.formfield()
-            field_lanipv6addr.Name = 'lanipv6addr'
-            field_lanipv6addr.Label = T('IPv6 Address')
-            field_lanipv6addr.Helptext = T('IPv6 address for the LAN interface')
-            field_lanipv6addr.Value = form.vars.lanipv6addr or ''
-            field_lanipv6addr.Errormsg = form.errors.lanipv6addr
-            field_lanipv6addr = field_lanipv6addr.input()
-          }}
-          lan_ipv6addr = {{=field_lanipv6addr}};
-        {{pass}}
-
-          {{
-            field_landhcp = formhelpers.formfield()
-            field_landhcp.Name = 'landhcp'
-            field_landhcp.Label = T('Enable DHCP')
-            field_landhcp.Helptext = T('Enable DHCP-Server for the LAN interface.')
-            field_landhcp.Value = form.vars.landhcp or False
-            field_landhcp.Errormsg = form.errors.landhcp
-            field_landhcp.Advanced = '<a href="javascript:void(0)" class="advanced" title="Advanced Options" onclick=ToggleDiv("lan_dhcp_range")>+/-</a>'
-            field_landhcp = field_landhcp.chkbox()
-          }}
-          landhcp = '{{=field_landhcp}}'
-
-          {{
-            field_landhcprange = formhelpers.formfield()
-            field_landhcprange.Name = 'landhcprange'
-            field_landhcprange.Label = T('DHCP Range')
-            field_landhcprange.Helptext = T('The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8.')
-            field_landhcprange.Value = form.vars.landhcprange or ''
-            field_landhcprange.Errormsg = form.errors.landhcprange
-            field_landhcprange = field_landhcprange.input()
-          }}
-
-          landhcprangewrapstart = '<div id="lan_dhcp_range" class="suboptions" style="display:none">';
-          landhcprangewrapend = '</div>';
-          landhcprange = landhcprangewrapstart + '{{=field_landhcprange}}' + landhcprangewrapend;
-          lanolsr = lan_ipv6addr + landhcp + landhcprange;
-          document.getElementById("lan_options").innerHTML = lanolsr
-          hideAll();
-        };
-      }
-      lanselect();
-    </script>
+      <div id="lan_options">
+          <!--This will be inserted by the lanselect() function -->
+      </div>
   </div>
-  <!-- End Lan tab -->
   {{pass}}
 
+  
   {{if session.community <> 'weimar' and not session.noconf == True:}}
-  <!-- Start Wan tab -->
+  <!-- WAN TAB -->
   <h3 id="tab-wan" title="{{=T('WAN settings')}}">{{=T('WAN')}}</h3>
   <div>
     <div class="tab-description">
       {{=T('Configure your wan interface here. The OpenWrt Default is to use "dhcp".')}}
     </div>
-    {{
-      field_wanproto = formhelpers.formfield()
-      field_wanproto.Name = 'wanproto'
-      field_wanproto.Label = T('WAN Protocol')
-      field_wanproto.Valuelist = config.wanprotos
-      field_wanproto.Valueselected = form.vars.wanproto
-      field_wanproto.Helptext = T('Protocol to use for the WAN interface.')
-      field_wanproto.Special = 'onchange="wanselect()"'
-      field_wanproto = field_wanproto.select()
-
-      field_wanipv4addr = formhelpers.formfield()
-      field_wanipv4addr.Name = 'wanipv4addr'
-      field_wanipv4addr.Label = T('IPv4 Address')
-      field_wanipv4addr.Helptext = T('IPv4 address for the wan interface')
-      field_wanipv4addr.Value = form.vars.wanipv4addr or ''
-      field_wanipv4addr.Errormsg = form.errors.wanipv4addr
-      field_wanipv4addr = field_wanipv4addr.input()
-
-      field_wangateway = formhelpers.formfield()
-      field_wangateway.Name = 'wangateway'
-      field_wangateway.Label = T('Gateway')
-      field_wangateway.Helptext = T('Internet gateway')
-      field_wangateway.Value = form.vars.wangateway or ''
-      field_wangateway.Errormsg = form.errors.wangateway
-      field_wangateway = field_wangateway.input()
-
-      field_wandns = formhelpers.formfield()
-      field_wandns.Name = 'wandns'
-      field_wandns.Label = T('DNS')
-      field_wandns.Helptext = T('DNS server(s). Seperate by space if you want to use multiple DNS servers.')
-      field_wandns.Value = form.vars.wandns or ''
-      field_wandns.Errormsg = form.errors.wandns
-      field_wandns = field_wandns.input()
-
-      field_wannetmask = formhelpers.formfield()
-      field_wannetmask.Name = 'wannetmask'
-      field_wannetmask.Label = T('Netmask')
-      field_wannetmask.Helptext = T('IPv4 netmask for the wan interface')
-      field_wannetmask.Value = form.vars.wannetmask or ''
-      field_wannetmask.Errormsg = form.errors.wannetmask
-      field_wannetmask = field_wannetmask.input()
-
-      field_localrestrict = formhelpers.formfield()
-      field_localrestrict.Name = 'localrestrict'
-      field_localrestrict.Label = T('Protect local network')
-      field_localrestrict.Helptext = T('Protect the network behind wan from being accessed from the mesh.')
-      field_localrestrict.Value = session.localrestrict or True
-      field_localrestrict.Errormsg = form.errors.localrestrict
-      field_localrestrict = field_localrestrict.chkbox()
-
-      field_sharenet = formhelpers.formfield()
-      field_sharenet.Name = 'sharenet'
-      field_sharenet.Label = T('Share internet')
-      field_sharenet.Special = 'onchange="nosharepkgs();"'
-      field_sharenet.Helptext = T('Allow others in the mesh to use your internet connection. This makes use of the olsrd dyngw_plain plugin, which checks for available internet connectivity and starts to announce it as hna as soon as it is detected.')
-      field_sharenet.Value = form.vars.sharenet or False
-      field_sharenet.Errormsg = form.errors.sharenet
-      field_sharenet = field_sharenet.chkbox()
-
-      field_wan_allow_ssh = formhelpers.formfield()
-      field_wan_allow_ssh.Name = 'wan_allow_ssh'
-      field_wan_allow_ssh.Label = T('Allow ssh')
-      field_wan_allow_ssh.Helptext = T('Add firewall rule to allow ssh access from the wan interface.')
-      field_wan_allow_ssh.Value = form.vars.wan_allow_ssh or False
-      field_wan_allow_ssh.Errormsg = form.errors.wan_allow_ssh
-      field_wan_allow_ssh = field_wan_allow_ssh.chkbox()
-
-      field_wan_allow_web = formhelpers.formfield()
-      field_wan_allow_web.Name = 'wan_allow_web'
-      field_wan_allow_web.Label = T('Allow web')
-      field_wan_allow_web.Helptext = T('Add firewall rule to allow web access from the wan interface.')
-      field_wan_allow_web.Value = form.vars.wan_allow_web or False
-      field_wan_allow_web.Errormsg = form.errors.wan_allow_web
-      field_wan_allow_web = field_wan_allow_web.chkbox()
-      
-      field_wan_qos = formhelpers.formfield()
-      field_wan_qos.Name = 'wan_qos'
-      field_wan_qos.Label = T('QOS')
-      field_wan_qos.Helptext = T('Adds traffic shaping with a fixed down- and upload limit to the WAN-Interface.')
-      field_wan_qos.Value = form.vars.wan_qos or False
-      field_wan_qos.Special = 'onchange="qospkgs();"'
-      field_wan_qos.Errormsg = form.errors.wan_qos
-      field_wan_qos = field_wan_qos.chkbox()
-      
-      field_wan_qos_down = formhelpers.formfield()
-      field_wan_qos_down.Name = 'wan_qos_down'
-      field_wan_qos_down.Label = T('Download speed')
-      field_wan_qos_down.Helptext = T('Download speed in kbit/s. Set it about 10% lower than your actual internet download speed.')
-      field_wan_qos_down.Value = form.vars.wan_qos_down or '1024'
-      field_wan_qos_down.Errormsg = form.errors.wan_qos_down
-      field_wan_qos_down = field_wan_qos_down.input()
-      
-      field_wan_qos_up = formhelpers.formfield()
-      field_wan_qos_up.Name = 'wan_qos_up'
-      field_wan_qos_up.Label = T('Upload speed')
-      field_wan_qos_up.Helptext = T('Upload speed in kbit/s. Set it about 10% lower than your actual internet upload speed.')
-      field_wan_qos_up.Value = form.vars.wan_qos_up or '128'
-      field_wan_qos_up.Errormsg = form.errors.wan_qos_up
-      field_wan_qos_up = field_wan_qos_up.input()
-      
- 
-      
-    }}
-    {{=field_wanproto}}	
+    {{=fh.field("wanproto")}}
+    
     <div id="wan_options">
-      <!-- This will be replaced by javascript -->
+      <!-- This will be inserted by the wanselect() function -->
     </div>
-
-    <script type="text/javascript">
-      function wanselect() {
-        var e = document.getElementById('imageconf_wanproto');
-        var selected = e.options[e.selectedIndex].value;
-
-        wanipv4addr = '{{=field_wanipv4addr}}';
-        wannetmask = '{{=field_wannetmask}}';
-        localrestrict = '{{=field_localrestrict}}';
-        sharenet = '{{=field_sharenet}}';
-        wan_allow_ssh = '{{=field_wan_allow_ssh}}';
-        wan_allow_web = '{{=field_wan_allow_web}}';
-        wan_qos = '{{=field_wan_qos}}';
-        wan_qos_down = '{{=field_wan_qos_down}}';
-        wan_qos_up = '{{=field_wan_qos_up}}';
-        wan_qos = wan_qos + '<div id="qos-options"></div>';
-        
-
-        if ( selected == 'dhcp' ) {
-          document.getElementById('wan_options').innerHTML = wan_allow_ssh + wan_allow_web + localrestrict + sharenet + wan_qos;
-        };
-        if ( selected == 'static' ) {
-          wangateway = '{{=field_wangateway}}';
-          wandns = '{{=field_wandns}}';
-          document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask + wangateway + wandns + localrestrict + sharenet + wan_allow_ssh + wan_allow_web + wan_qos;
-        };
-        if ( selected == 'olsr' ) {
-          document.getElementById('wan_options').innerHTML = wanipv4addr + wannetmask;
-        };
-        hideAll();
-      };
-      wanselect();
-
-      function nosharepkgs() {
-        if(document.getElementById("imageconf_sharenet").checked) {
-          nosharepackages='';
-          update_defaultpkgs();
-        }
-        else {
-          nosharepackages = 'freifunk-policyrouting';
-          update_defaultpkgs();
-        }
-      };
- 
-      function qospkgs() {
-        if(document.getElementById("imageconf_wan_qos").checked) {
-          qospackages= 'qos-scripts' ;
-          $( "#qos-options").html(wan_qos_down + wan_qos_up);
-          hideAll();
-          update_defaultpkgs();
-        }
-        else {
-          qospackages = '';
-          $( "#qos-options").html('');
-          update_defaultpkgs();
-        }
-      };
-      qospkgs();
-      nosharepkgs();
-    </script>
   </div>
-  <!-- End Wan tab -->
   {{pass}}
 
 
 
-  <!-- Start packages tab -->
+  <!-- PACKAGES TAB -->
   <h3 id="tab-packages" title="{{=T('Packages')}}">{{=T('Packages')}}</h3>
   <div>
-    <div class="tab-description">
-      {{=T('Add or remove packages which are going to be installed into your firmware image here.')}}
-    </div>
+      <div class="tab-description">
+          {{=T('Add or remove packages which are going to be installed into your firmware image here.')}}
+      </div>
 
-    <strong>{{=T('Default Packages')}}:</strong> 
-    <span id='default_packages'></span>
-    <script type='text/javascript'>update_defaultpkgs();</script>
-    <div style="clear:both"></div>
+      <strong>{{=T('Default Packages')}}:</strong> 
+      <span id='default_packages'></span>
+      <div style="clear:both"></div>
 
-    {{
-      field_packages = formhelpers.formfield()
-      field_packages.Name = 'packages'
-      field_packages.Label = T('Packages')
-      field_packages = field_packages.textarea()
-    }}
-    {{=field_packages}}
+      {{=fh.field("packages")}}
 
-    <H2>{{=T('Available Packages')}}</h2>
 
-    <div id="packagelist">
-      <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
-      Loading package list...
-    </div>
+      <H2>{{=T('Available Packages')}}</h2>
 
-    <script type="text/javascript">
-      function ajax_packagelist() {
-        $.ajax({
-          url : '{{=URL('static/package_lists', session.target)}}',
-          type : 'get',
-          dataType : 'json',
-          timeout : 10000,
-          tryCount : 0,
-          retryLimit : 10,
-          success : function(json) {
-            var packagelist = "";
-              for(var section in json) {
-                packagelist += "<h3>" + section + "</h3>";
-                packagelist += "<div><table><thead>";
-                packagelist += "<tr><th></th><th width='300px'>{{=T('Package')}}</th><th width='450px'>{{=T('Version')}}</th><th width='100px'>{{=T('Size')}}</th></tr></thead>";
-                d = json[section];
-                for(var pkg in d) {
-                  size = json[section][pkg]['size'];
-                  version = json[section][pkg]['version'];
-                  packagelist += "<tr>";
-                  packagelist += "<td><input type='button' value='+' style='margin:0px 10px 0 0; border:0px' onClick='addpackage(\"" + pkg + "\");'></td>";
-                  packagelist += "<td>" + pkg + "</td>";
-                  packagelist += "<td>" + version + "</td>";
-                  packagelist += "<td>" + size + "</td>";
-                  packagelist += "</tr>";
-                }
-                packagelist += "</table></div>"
-              }
-             document.getElementById('packagelist').innerHTML = packagelist; 
-             $(function() {
-               $( "#packagelist" ).accordion({ heightStyle: "content", collapsible: true, active: false });
-             });
-           },
-           error : function(xhr, textStatus, errorThrown ) {
-           if (textStatus == 'parsererror') {
-             var error = "{{=T('There was a problem parsing the package list, is it really valid json?')}}";
-                                document.getElementById('packagelist').innerHTML = error;
-             return;
-           }        
-           if (textStatus == 'timeout') {
-             this.tryCount++;
-             if (this.tryCount <= this.retryLimit) {
-               //try again
-               $.ajax(this);
-               return;
-             }
-             var error = "{{=T('Loading the package list timed out.')}}";
-             document.getElementById('packagelist').innerHTML = error;
-             return;
-           }
-           if (xhr.status == 500) {
-             error = "{{=T('The server returned status 500 and the package list could not be loaded, please try again later.')}}";
-                            document.getElementById('packagelist').innerHTML = error;
-           }
-           else {
-             error = "{{=T('There was another problem loading the package list.')}}";
-             document.getElementById('packagelist').innerHTML = error;
-           }
-         }
-       });
-     } 
-     ajax_packagelist();         
-    </script>        
+      <div id="packagelist">
+          <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+          Loading package list...
+      </div>
   </div>
-  <!-- End packages tab -->
 
-  <!-- Start upload tab -->
+  <!-- UPLOAD TAB -->
   <h3 id="tab-upload" title="{{=T('>Upload')}}" class="tab">{{=T('Upload')}}</h3>
   <div>
     <div class="tab-description">
@@ -901,7 +435,6 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
       <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
     {{pass}}
   </div>
-  <!-- End upload tab -->
 
   <!-- Start submit tab -->
   <h3 title="{{=T('Submit')}}">{{=T('Submit')}}</h3>
@@ -934,46 +467,6 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   </div>
 </form>
 
-<script type="text/javascript">
-  function themeselect() {
-    var e = document.getElementById("imageconf_webif");
-    var selected = e.options[e.selectedIndex].value;
-    if ( selected == "none" ) {
-      document.getElementById("theme_options").innerHTML = '';
-      lucipackages = "";
-      themepackages= "";
-      update_defaultpkgs();
-    };
-    if ( selected == "luci" ) {
-      var newdiv = '{{=field_theme}}'
-      document.getElementById("theme_options").innerHTML = newdiv;
-      lucipackages = "{{=lucipackages}}";
-      themepkgs();
-      update_defaultpkgs();
-      hideAll();
-    };
-  }
-  themeselect();
-  themepkgs();
-</script>
-
-
-<script type="text/javascript">
-  function ipv6pkgs() {
-    if(document.getElementById("imageconf_ipv6")) {
-      if(document.getElementById("imageconf_ipv6").checked) {
-        ipv6packages='{{=ipv6_packages}}';
-        update_defaultpkgs();
-      } else {
-        ipv6packages = '';
-        update_defaultpkgs();
-      }
-    }
-  };
-
-  ipv6pkgs();
-  update_defaultpkgs();
-</script>
 
 {{if session.community == 'weimar':}}
   <!-- REGISTRATOR client -->
@@ -991,6 +484,12 @@ $( "#accordion" ).accordion({ heightStyle: "content" });
   }
   </script>
 {{pass}}
+
+<script>
+    $( document ).ready(function() {
+        init_step2();
+    });
+</script>
 
 {{block footer}}
 {{include 'footer.html'}}

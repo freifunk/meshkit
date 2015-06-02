@@ -1,9 +1,26 @@
 from gluon.storage import Storage
 settings = Storage()
 
-settings.migrate = True
+migrate = False
+fake_migrate = False
+
+app_mode = "development"
+if app_mode == "development":
+    # enable reloading of modules when their code was modified
+    from gluon.custom_import import track_changes
+    track_changes(True)
+    # migration settings
+    migrate=True
+    #fake_migrate=True
+    #fake_migrate_all=True
+else:
+    # process js and css files
+    response.optimize_css = 'concat,minify'
+    response.optimize_js = 'concat,minify'
+
+settings.migrate = migrate
 # use fake_migrate to repair broken tables
-settings.fake_migrate = False
+settings.fake_migrate = fake_migrate
 settings.title = 'Meshkit'
 settings.subtitle = 'Freifunk OpenWrt Imagebuilder'
 settings.author = 'soma'
@@ -23,3 +40,5 @@ settings.plugins = []
 
 response.title = settings.title
 response.subtitle = settings.subtitle
+
+
