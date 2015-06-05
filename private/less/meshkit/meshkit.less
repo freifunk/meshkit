@@ -166,99 +166,27 @@ input {
     }
 }
 
-// Tabs
-
-.tab {
-	display: none;
-}
-
-.tab-description {
-	margin-bottom: 30px;
-}
-
-.tab-content {
-	background: none repeat scroll 0 0 white;
-	border-bottom: 1px solid #CCCCCC;
-	border-right: 1px solid #CCCCCC;
-	color: black;
-	min-height: 400px;
-	opacity: 0.95;
-	outline: 1px solid #EEEEEE;
-	padding: 2em;
-}
-
-.tab-header {
-	height: 3em;
-	margin-bottom: 0;
-	padding-bottom: 0;
-	position: relative;
-	width: 60em;
-
-    ul.tab-list {
-        bottom: -1px;
-        margin: 0;
-        padding: 0;
-        position: absolute;
-        width: 60em;
-    
-        li {
-            display: inline;
-            list-style: none outside none;
-            margin: 0;
-        }
-        
-        a, span, a.tab-active {
-            border-top-right-radius: 9px;
-            color: #333333;
+// Bootstrap accordion
+.panel-group {
+    .panel-title {
+        a {
             display: block;
-            float: left;
-            font-family: tahoma,verdana,sans-serif;
-            font-size: 85%;
-            margin: 1px 2px 0 0;
-            padding: 4px 0;
-            text-align: center;
-            text-decoration: none;
-            width: 8em;
-        }
-    }
-    ul.tab-list span, ul.tab-list a.tab-active, ul.tab-list a.tab-active:hover {
-        background: #F5F5F5 url(/static/images/tabmenu-grey.gif) repeat-x;
-        border-color: #DDDDDD #DDDDDD -moz-use-text-color;
-        border-style: solid solid none;
-        border-left: 1px solid #DDDDDD;
-        border-width: 1px 1px medium;
-        color: black;
-        margin-top: 0;
-        padding-bottom: 6px;
-    }
-    .tab-header  {
-        ul.tab-list {
-            span, a.tab-active, a.tab-active:hover {
-                background: #F5F5F5 url(/static/images/tabmenu-grey.gif) repeat-x;
-                border-color: #DDDDDD #DDDDDD -moz-use-text-color;
-                border-style: solid solid none;
-                border-left: 1px solid #DDDDDD;
-                border-width: 1px 1px medium;
-                color: black;
-                margin-top: 0;
-                padding-bottom: 6px;
-                a {
-                    background-color: #E5E5E5;
-                    border-color: #F5F5F5 #F5F5F5 -moz-use-text-color;
-                    border-style: solid solid none;
-                    border-width: 1px 1px medium;
-                    &:hover {
-                        background: none repeat scroll 0 0 #D5D5D5;
-                        border-color: #F5F5F5;
-                        color: black;
-                        margin-top: 0;
-                        padding-bottom: 5px;
-                    }
-                }
+            &:hover {
+                text-decoration: none;
+                color: @ff-magenta;
             }
         }
     }
+    .panel-description {
+        margin-bottom: @baseUnit;
+    }
 }
+
+
+
+// Tabs
+
+
 
 /* Forms & Inputs */
 

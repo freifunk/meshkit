@@ -304,6 +304,7 @@
 'Statistics': 'Statistiken',
 'Status': 'Status',
 'Submit': 'Abschicken',
+'Submit the form and build your images. Note: root password will be "admin" if not set.': 'Submit the form and build your images. Note: root password will be "admin" if not set.',
 'Submit the form and build your images. Note: root password will be "admin".': 'Sendet das Formular ab und erstellt dein Firmwareimage. Hinweis: Das root passwort für die Weboberfläche und SSH lautet "admin".',
 'Successful': 'Erfolgreich',
 'Summary': 'Zusammenfassung',

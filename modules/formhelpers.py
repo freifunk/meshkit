@@ -48,6 +48,57 @@ def helptext(text, expandable=True):
         
     return XML(help)
 
+def panel_start(id, title, description, collapsed=False):
+    """ Output html to start a bootstrap 3 accordion panel
+    
+    Args:
+        id:     id for the panel. This will be prefixed with "tab-"
+        title:  Title for the panel heading
+        description:    Short text describing the panel
+        collapsed:  this panel is open if value is True
+        
+    Returns:
+        HTML to start a bootstrap 3 accordion panel
+        
+    """
+    
+    aria_open = "false"
+    open = ""
+    class_collapsed = "collapsed"
+    id_heading = "%s-header" % id
+    
+    
+    if collapsed:
+        aria_open="true"
+        open = " in"
+        class_collapsed = ""
+        
+
+    p_start = XML("""
+        <div class="panel panel-default" id="tab-%s">
+            <div class="panel-heading" role="tab" id="%s">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" class="%s" href="#panel-%s" aria-expanded="%s" aria-controls="panel-%s">
+                        %s
+                    </a>
+                </h4>
+            </div>
+        <div id="panel-%s" class="panel-collapse collapse%s" role="tabpanel" aria-labelledby="%s">
+            <div class="panel-body">
+                <div class="panel-description">%s</div>
+    """ % (id, id_heading, class_collapsed, id, aria_open, id, title, id, open, id_heading, description)
+    )
+
+    return p_start
+
+def panel_end():
+    """ End a bootstrap 3 accordion panel """
+    return XML("""
+            </div>
+        </div>
+    </div>
+    """)
+
 class customField:
     """
     Class that outputs form fields

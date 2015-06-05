@@ -482,8 +482,14 @@ function ajax_packagelist() {
         success: function(json) {
             var packagelist = "";
             for (var section in json) {
-                packagelist += "<h3>" + section + "</h3>";
-                packagelist += "<div><table><thead><tr>";
+                packagelist += '<div class="panel panel-default">';
+                packagelist += '<div class="panel-heading" role="tab" id="' + section + '-heading">';
+                var panel_title_link = '<a data-toggle="collapse" data-parent="#packagelist" href="#packages-' + section + '" aria-expanded="false" aria-controls="packages-' + section + '">' + section + '</a>';
+                packagelist += '<h4 class="panel-title">' + panel_title_link + '</h4>';
+                packagelist += '</div>';
+                packagelist += '<div id="packages-' + section + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="' + section + '-heading">';
+                packagelist += '<div class="panel-body">';
+                packagelist += "<table><thead><tr>";
                 packagelist += "<th></th>";
                 packagelist += "<th width='300px'>" + package_vars.lang.Package + "</th>";
                 packagelist += "<th width='450px'>" + package_vars.lang.Version + "</th>";
@@ -500,12 +506,9 @@ function ajax_packagelist() {
                     packagelist += "<td>" + size + "</td>";
                     packagelist += "</tr>";
                 }
-                packagelist += "</table></div>"
+                packagelist += "</table></div></div></div>"
             }
             document.getElementById('packagelist').innerHTML = packagelist;
-            $(function() {
-                $("#packagelist").accordion({heightStyle: "content", collapsible: true, active: false});
-            });
         },
         error: function(xhr, textStatus, errorThrown) {
             if (textStatus == 'parsererror') {
@@ -545,9 +548,9 @@ function ipv6pkgs() {
 }
 
 function init_step2() {
-    $("#accordion").accordion({
-        heightStyle: "content" }
-    );
+//    $("#accordion").accordion({
+//        heightStyle: "content" }
+//    );
     set_packages();
     update_defaultpkgs();
     themeselect();
