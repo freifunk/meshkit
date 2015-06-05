@@ -35,8 +35,13 @@ html, body {
 
 .navbar.navbar-default {
     margin-bottom: 0;
-    li.web2py-menu-first > a {
-        padding-left: 0;
+    .user-menu {
+        [class^="icon-"], [class*=" icon-"] {
+            &:before {
+                margin-left: 0;
+                margin-right: 1em;
+            }
+        }
     }
 }
 
@@ -44,6 +49,30 @@ html, body {
 	white-space: nowrap;
     &> li > .dropdown-menu {
         background-color: rgba(255,255,255,0.95);
+    }
+}
+
+.caret {
+    .icon-base();
+    .icon-down-open-big();
+    margin-left: 0.5em;
+}
+
+.dropdown {
+    .dropdown-toggle {
+        .caret:before {
+            .transition(transform 0.4s);
+        }
+    }
+    
+    &.open {
+        .dropdown-toggle {
+            .caret {
+                &:before {
+                    .rotateX(180deg);
+                }
+            }
+        }
     }
 }
 
@@ -172,21 +201,30 @@ input {
         a {
             display: block;
             &:hover {
-                text-decoration: none;
                 color: @ff-magenta;
             }
+            &:hover, &:active, &:focus {
+                text-decoration: none;
+            }
+            .icon-base();
+            .icon-up-open-big();
+            &:before {
+                float: right;
+                .transition(transform 0.4s);
+            }
+            
+            &.collapsed {
+                &:before {
+                    .rotateX(180deg);
+                }
+            }
+            
         }
     }
     .panel-description {
         margin-bottom: @baseUnit;
     }
 }
-
-
-
-// Tabs
-
-
 
 /* Forms & Inputs */
 
@@ -236,6 +274,10 @@ form input.btn-default {
 	-webkit-border-radius: 4px;
 	border-top-right-radius: 0px;
 	cursor:pointer;
+}
+
+#default-packages {
+    margin-bottom: @baseUnit;
 }
 
 .packages_table{
@@ -354,6 +396,15 @@ form input.btn-default {
     margin-bottom: @baseUnit;
 }
 
+
+@media (min-width: @screen-sm) {
+    .navbar.navbar-default {
+        margin-bottom: 0;
+            li.web2py-menu-first > a {
+                padding-left: 0;
+            }
+    }
+}
 
 
 

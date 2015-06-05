@@ -219,8 +219,8 @@ function update_defaultpkgs() {
 	addpackages = sort_unique(addpackages);
 	addpackages = trim(addpackages.join(" "));
 
-	if (document.getElementById('default_packages')) {
-		document.getElementById('default_packages').innerHTML = "<code>" + packages + "</code>";
+	if (document.getElementById('default-packages')) {
+		document.getElementById('default-packages').innerHTML = "<code>" + packages + "</code>";
 	}
 
 	if (document.getElementById('imageconf_packages')) {

@@ -5,9 +5,9 @@
   <tr>
     <td width="30%">{{=T('Buildqueue running?')}}</td>
     {{if status:}}
-    <td><img src="{{=URL('static', 'images/icons/check.gif')}}" alt="Yes" title="Yes"></td>
+    <td><span class='icon-status-ok'><span class="sr-only">{{=T("Yes")}}</span></span></td>
     {{else:}}
-    <td><img src="{{=URL('static', 'images/icons/cross.gif')}}" alt="No" title="No"></td>
+    <td><span class='icon-status-notok'><span class="sr-only">{{=T("No")}}</span></span></td>
     {{pass}}
   </tr>
   <tr>

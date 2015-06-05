@@ -56,8 +56,10 @@
                     </div>
                     <div class="collapse navbar-collapse navbar-ex1-collapse">
                         <ul class="nav navbar-nav navbar-right">
-                            {{='auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
+                            {{# 'auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
+                            {{='auth' in globals() and custom.navbar(auth.navbar(mode='bare')) or ''}}
                         </ul>
+                        
                         {{if response.menu:}}
                         {{=MENU(response.menu, _class='nav navbar-nav',li_class='dropdown',ul_class='dropdown-menu')}}
                         {{pass}}

@@ -34,4 +34,7 @@ response.generic_patterns = ['*'] if request.is_local else []
 
 response.formstyle = 'bootstrap3_inline' # or 'bootstrap3_stacked' or 'bootstrap2' or other
 
+# custom user login controls in navbar
+import custom_layout as custom
+
 #current.db = db
