@@ -250,17 +250,14 @@ function pass_init() {
         
 
         var status = pass_status(field_hash);
-        container.append('<span class="pass-status">' + status + '</span>');
+        btn_toggle.append('<span class="pass-status">' + status + '</span>');
         
-        btn_toggle.click(function(){
-            if ($(this).hasClass("open")) {
-                container.children(".pass-options").remove();
-                $(this).removeClass("open").html(field_hash.data('edit'));
-                //close
-            } else {
-                //open
-                $(this).addClass("open").html(field_hash.data('cancel'));
+        btn_toggle.click(function(e){
+            if (! $(this).hasClass("open")) {
+                e.preventDefault();
+                $(this).addClass("open");
                 pass_edit(container);
+                return false;
             }
         });
     });
@@ -271,11 +268,10 @@ function pass_md5crypt(id) {
     var input = $("#" + id);
     var container = $("#" + id + "_container");
     var pw_plain = container.find('.pass-edit-pw1').val();
-    console.log(pw_plain)
+
     if (pw_plain.length > 0) {
         var salt = random_salt(8);
         var hash = md5crypt(pw_plain, salt);
-        console.log(hash);
         if (hash.substr(0, 3) === "$1$") {
             input.val(hash);
         } else {
@@ -286,15 +282,12 @@ function pass_md5crypt(id) {
         alert(input.data("removed"));
         input.val('');
     }
-    console.log("foo" + input.val());
-    status = pass_status(input);
-    container.find(".pass-status").first().html(status);
-    container.find(".password-edit-toggle").click();
 }
 
 function pass_verify(container) {
     var pw1 = container.find(".pass-edit-pw1");
     var pw2 = container.find(".pass-edit-pw2");
+    var btn_toggle = container.children(".password-edit-toggle").first();
     
     if (pw1.val().length < 1 && pw2.val().length < 1) {
         pw1.removeClass("match mismatch");
@@ -303,19 +296,21 @@ function pass_verify(container) {
         if (pw1.val() === pw2.val()) {
             pw1.removeClass("mismatch").addClass("match");
             pw2.removeClass("mismatch").addClass("match");
+            btn_toggle.find("button").removeAttr("disabled");
         } else {
             pw1.removeClass("match").addClass("mismatch");
             pw2.removeClass("match").addClass("mismatch");
+            btn_toggle.find("button").attr("disabled", "disabled");
         }
     }  
 }
 
 function pass_edit(container) {
-    console.log("hi");
     var field_hash = container.children(".password-hash").first();
+    var btn_toggle = container.children(".password-edit-toggle").first();
     
     var pw1 = $('<input type="password" />')
-           .addClass("string pass-edit pass-edit-pw1")
+           .addClass("string form-control pass-edit pass-edit-pw1")
            .attr("placeholder", field_hash.data("placeholder"))
            .keyup(function() {
                pass_verify(container);
@@ -323,7 +318,7 @@ function pass_edit(container) {
   
    
     var pw2 = $('<input type="password" />')
-           .addClass("string pass-edit pass-edit-pw2")
+           .addClass("string form-control pass-edit pass-edit-pw2")
            .attr("placeholder", field_hash.data("placeholder_confirm"))
            .keyup(function() {
                pass_verify(container);
@@ -332,21 +327,27 @@ function pass_edit(container) {
     var pass_options = $('<div></div>')
             .addClass("pass-options")
     
-    var btn_set = $('<button type="button"></button>')
+    var btn_apply = $('<button type="button"></button>')
             .html(field_hash.data("apply"))
-            .attr("disabled", "1")
+            .attr("disabled", "disabled")
+            .addClass("btn btn-default")
             .click(function(){
-                pass_md5crypt(field_hash.attr('id'));
+                pass_md5crypt(field_hash.attr('id'));    
+                field_hash = container.children(".password-hash").first();
+                var status = pass_status(field_hash);
+                container.find(".pass-options").remove();
+                container.find(".password-edit-toggle").removeClass("open").html(status);
+                return false;
             });
             
     pass_options.append(pw1);
     pass_options.append(pw2);
-    pass_options.append(btn_set);
+    pass_options.append(btn_apply);
    
-    if (container.children(".pass-options").length < 1) {
-        container.append(pass_options).slideDown();
+    if (btn_toggle.find(".pass-options").length < 1) {
+        btn_toggle.html(pass_options);
         //container.children(".pass-options").css({"display": "block", "float": "none" })
-        container.find(".pass-edit-pw1").focus();
+        btn_toggle.find(".pass-edit-pw1").focus();
     }
 }
 
@@ -458,7 +459,6 @@ function nosharepkgs() {
 
 function qospkgs() {
     if (document.getElementById("imageconf_wan_qos").checked) {
-        console.log("checked");
         qospackages = 'qos-scripts';
         $("#qos-options").html(wan_qos_down + wan_qos_up);
         hideAll();
@@ -545,7 +545,9 @@ function ipv6pkgs() {
 }
 
 function init_step2() {
-    $("#accordion").accordion({ heightStyle: "content" });
+    $("#accordion").accordion({
+        heightStyle: "content" }
+    );
     set_packages();
     update_defaultpkgs();
     themeselect();
@@ -595,8 +597,19 @@ function init_step2() {
     });
 }
 
+function set_lang(lang) {
+    var date = new Date();
+    cookieDate = date.setTime(date.getTime() + (100 * 24 * 60 * 60 * 1000));
+    document.cookie = 'all_lang=' + lang + ';expires=' + cookieDate + '';
+    window.location.reload();
+}
+
 $( document ).ready(function() {
+    hideAll();
     pass_init();
+    $("#language-select").change(function() {
+        set_lang($(this).val())
+    });
 });
 
 

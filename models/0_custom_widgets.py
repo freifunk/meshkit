@@ -5,7 +5,7 @@ def password_md5crypt(field, value):
     id = "%s_%s" % (field._tablename, field.name)
     input_hash = INPUT(_name=field.name,
                     _id=id,
-                    _class=field.type + " password-hash",
+                    _class=field.type + " password-hash form-control",
                     _value=value,
                     data={
                         'error': T("Error calculating the password hash."),
@@ -24,7 +24,6 @@ def password_md5crypt(field, value):
                  CAT(
                         input_hash,
                         BUTTON(
-                            T("Edit"),
                             _type="button",
                             _class="password-edit-toggle"
                         ),

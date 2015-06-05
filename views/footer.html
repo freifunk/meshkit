@@ -1,21 +1,23 @@
 <noscript>
-  <div id='noscript'>
+<div id='noscript'>
     {{=T('Javascript is needed to correctly display this page.')}}<br>
     {{=T('Please enable it in your browser.')}}
-  </div>
+</div>
 </noscript>
 
-<div class="footer_left">
-    {{=XML(T('Meshkit is a webinterface for the %(openwrt)s image generator.' % dict(openwrt='<a href="https://openwrt.org">OpenWrt</a>')))}}
-    {{=T('It allows you to build customized OpenWrt firmware images to use on your router/access point.')}}
-</div>
-<div class="footer_right">
-    {{=T('Found a bug? Have some questions or suggestions?')}}
-    {{=XML(T('Then visit the %(about)s page to find some contact options.') % dict(about='<a href="' + URL('about') + '">' + T('About') +'</a>'))}}
-    <br />
-    <strong>{{=T('Version')}}:</strong> {{=version}}
-</div>
+<footer class="footer container">
+    <div class="row">
+        <div class="footer_left">
+            {{=XML(T('Meshkit is a webinterface for the %(openwrt)s image generator.' % dict(openwrt='<a href="https://openwrt.org">OpenWrt</a>')))}}
+            {{=T('It allows you to build customized OpenWrt firmware images to use on your router/access point.')}}
+        </div>
+        <div class="footer_right">
+            {{=T('Found a bug? Have some questions or suggestions?')}}
+            {{=XML(T('Then visit the %(about)s page to find some contact options.') % dict(about='<a href="' + URL('about') + '">' + T('About') +'</a>'))}}
+            <br />
+            <strong>{{=T('Version')}}:</strong> {{=version}}
+        </div>
+    </div>
+</footer>
 
-<script type="javascript">
-	hideAll();
-</script>
+

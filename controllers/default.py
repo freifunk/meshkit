@@ -119,8 +119,7 @@ def wizard():
     import random
     import datetime
     import hashlib
-    # add target to response subtitle
-    response.subtitle = settings.subtitle + " [" + session.target + "]"
+
     # check if community and target are set, else redirect to the index page
     # todo
     # list of profiles

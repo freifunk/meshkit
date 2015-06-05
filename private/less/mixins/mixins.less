@@ -1,0 +1,28 @@
+.horizontal-line-before(@color: @gray-light, @height: 1px, @width: 100%, @top: 0, @bottom: 0) {
+    &:before {
+        display: block;
+        content: "";
+        height: @height;
+        width: @width;
+        background-color: @color;
+        margin-top: @top;
+        margin-bottom: @bottom;
+    }
+}
+
+.transparentBackground(@color, @opacity){
+    @r: red(@color);
+    @g: green(@color);
+    @b: blue(@color);
+    @rgba: rgba(@r, @g, @b, @opacity);
+
+    background: rgb(@r, @g, @b);
+    background: transparent\9;
+    background: @rgba;
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=argb(@rgba),endColorstr=argb(@rgba));
+    zoom: 1;
+
+    &:nth-child(n) {
+        filter: none;
+    }
+}
