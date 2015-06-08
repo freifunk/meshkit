@@ -1,7 +1,7 @@
 <header class="header">
     <div class="container">
         <div class="row">
-            <header class="sitetitle">
+            <header class="site-title">
                 <h1 class="remove-bottom title" style="margin-top: .5em;">
                     {{=response.title or request.application}}
                     <small>{{=response.subtitle or ''}}</small>
@@ -10,15 +10,13 @@
                     {{pass}}
                 </h1>
             </header>
-            <div class="sitelogo">
-                <img src="{{=URL('static','images/logo.png')}}" />
-            </div>
+            {{=response.logo or ''}}
         </div>
         
         <div class="statusbar">
         {{block statusbar}}
         <div class="breadcrumbs">{{=request.function.replace('_', ' ').title()}}</div>
-        <div id="languageselect" style="float:right">
+        <div id="language-select-wrapper">
             <select name="adminlanguage" id="language-select">
                 {{for language in T.get_possible_languages():}}
                 <option {{=T.accepted_language==language and 'selected' or ''}} value="{{=language}}">{{=T(language)}}</option>

@@ -4,6 +4,7 @@
 # after that it is disabled
 
 START=99
+
 boot() {
 	logger -t wizard.notice \"the meshwizard is starting his work\"
 	/usr/bin/meshwizard/wizard.sh

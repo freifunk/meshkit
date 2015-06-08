@@ -58,6 +58,7 @@
 "Choose the factory image, if your router uses the vendor firmware. If there's already OpenWRT on it, take the sysupgrade file": 'Wenn der Router noch die Originalfirmware hat, dann benutze das factory Image. Ist schon OpenWrt auf dem Router installiert dann benutze das sysupgrade Image.',
 'Chooses the theme for the web interface. Freifunk-generic is the only one that is customised for communities, so you should probably use this theme.': 'Wählt das zu installierende Theme. Freifunk-Generic ist das einzige Theme, das für verschiedene Communities angepasst ist. Daher solltest du normalerweise dieses wählen.',
 'Click on the link %(link)s to reset your password': 'Benutze den Link %(link)s zum zurücksetzen deines Passwortes',
+'Click to hide help': 'Click to hide help',
 'Click to show help': 'Click to show help',
 'Client IP': 'Client IP',
 'Community': 'Community',

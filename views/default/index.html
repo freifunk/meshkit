@@ -21,7 +21,7 @@
 
 <!-- form start -->
 
-<form method="post" name="step1" enctype="multipart/form-data" action="">
+<form method="post" name="step1" enctype="multipart/form-data" class="form-horizontal border-top border-bottom" action="">
     {{if config.communitysupport == True:}}
         {{=fh.field("community")}}
     {{pass}} 
@@ -40,7 +40,7 @@
 
 
     {{ if config.autosubmit != True: }}
-    <input type="submit" value="{{=T('Go to step 2')}}"/ >
+    <input type="submit" class="btn btn-default btn-primary" value="{{=T('Go to step 2')}}"/ >
     {{pass}}
     
     <input type="hidden" name="profile" id="imageconf_profile"/>

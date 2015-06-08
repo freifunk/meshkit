@@ -10,6 +10,18 @@
     }
 }
 
+.horizontal-line-after(@color: @gray-light, @height: 1px, @width: 100%, @top: 0, @bottom: 0) {
+    &:after {
+        display: block;
+        content: "";
+        height: @height;
+        width: @width;
+        background-color: @color;
+        margin-top: @top;
+        margin-bottom: @bottom;
+    }
+}
+
 .transparentBackground(@color, @opacity){
     @r: red(@color);
     @g: green(@color);

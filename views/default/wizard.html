@@ -52,12 +52,11 @@
               unspecified: "{{=T('There was another problem loading the package list.')}}"
           }
       }
-    
 </script>
 
 <h1>{{=T('2. Image configuration')}}</h1>
 
-<form action="" name="MAINFORM" enctype="multipart/form-data" method="POST"{{if session.expert:}} class="expert-mode"{{pass}}>
+<form action="" name="MAINFORM" enctype="multipart/form-data" method="POST" class="form-horizontal border-top{{if session.expert:}} expert-mode{{pass}}">
       
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         
@@ -344,7 +343,7 @@
       }
     </script>
 
-    <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');hideAll();"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
+    <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');help_toggle_init()"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
 
     {{=formhelpers.panel_end()}}
     {{pass}}
@@ -412,7 +411,7 @@
   
     <!-- Start submit tab -->
     {{=formhelpers.panel_start("submit", T('Submit'), T('Submit the form and build your images. Note: root password will be "admin" if not set.'))}}
-    <input type="submit" value="{{=T('Build image')}}" class="button" />
+    <input type="submit" value="{{=T('Build image')}}" class="btn btn-default btn-primary" />
     {{=formhelpers.panel_end()}}
     </div>
     <!-- End submit tab -->

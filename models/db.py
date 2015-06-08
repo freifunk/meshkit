@@ -34,6 +34,15 @@ response.generic_patterns = ['*'] if request.is_local else []
 
 response.formstyle = 'bootstrap3_inline' # or 'bootstrap3_stacked' or 'bootstrap2' or other
 
+response.logo = A(
+    IMG(
+        _src=URL('static','images/logo.png'),
+        _alt="Freifunk Logo"
+    ),
+    _href=URL('index'),
+    _class="site-logo"
+)
+
 # custom user login controls in navbar
 import custom_layout as custom
 

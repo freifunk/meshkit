@@ -25,68 +25,26 @@ function themepkgs() {
 	update_defaultpkgs();
 }
 
-/* Help link toggle */
-/* from http://www.websemantics.co.uk/resources/accessible_form_help/scripts/showhide.js */
-
-function addEvent(func){
-  if (!document.getElementById | !document.getElementsByTagName) return
-  var oldonload=window.onload
-  if (typeof window.onload != 'function') {window.onload=func}
-  else {window.onload=function() {oldonload(); func()}}
-}
-
-addEvent(hideAll)
-
-function hideAll(){
-  var obj,nextspan,anchor,content
-
-  // get all spans
-  obj=document.getElementsByTagName('span')
-
-  // run through them
-  for (var i=0;i<obj.length;i++){
-
-    // if it has a class of helpLink
-    if(/helpLink/.test(obj[i].className)){
-
-      // get the adjacent span
-      nextspan=obj[i].nextSibling
-      while(nextspan.nodeType!=1) nextspan=nextspan.nextSibling
-
-       // hide it
-      nextspan.style.display='none'
-
-      //create a new link
-      anchor=document.createElement('a')
-
-      // copy original helpLink text and add attributes
-      content=document.createTextNode(obj[i].firstChild.nodeValue)
-      anchor.appendChild(content)
-      anchor.href='#help'
-      anchor.title='Click to show help'
-      anchor.className=obj[i].className
-      anchor.nextspan=nextspan
-      anchor.innerHTML='?'
-      anchor.onclick=function(){showHide(this.nextspan);changeTitle(this);return false}
-      // replace span with created link
-      obj[i].replaceChild(anchor,obj[i].firstChild)
-    }
-  }
-}
-
-// used to flip helpLink title
-function changeTitle(obj){
-  if(obj)
-    obj.title = obj.title=='Click to show help' ? 'Click to hide help' : 'Click to show help'
-}
-
 // used to flip the display property
-function showHide(obj){
-  if(obj)
-    obj.style.display = obj.style.display=='none' ? 'block' : 'none'
-}
+//function showHide(obj){
+//  if(obj)
+//    obj.style.display = obj.style.display=='none' ? 'block' : 'none'
+//}
 
-/* End helplinktoggle */
+function help_toggle_init() {
+    $(".help-toggle").each(function() {
+        $(this).click(function() {
+            var help_block = $(this).siblings(".help-block");
+            if (help_block.hasClass("open")) {
+                help_block.slideUp().removeClass("open");
+                $(this).attr("title", msg_show_help);
+            } else {
+                help_block.slideDown().addClass("open");
+                $(this).attr("title", msg_hide_help);
+            }
+        });
+    });
+}
 
 /* Toggle Divs */
 
@@ -372,7 +330,6 @@ function themeselect() {
         lucipackages = luci_default_packages;
         themepkgs();
         update_defaultpkgs();
-        hideAll();
     };
 }
 
@@ -396,7 +353,6 @@ function lanselect() {
     });
     
     $("#lan_options").html(lan_options);
-    hideAll();
 }
 
 function wanselect() {
@@ -421,7 +377,6 @@ function wanselect() {
         }
     });
     $('#wan_options').html(wan_options);
-    hideAll();
 }
 ;
 wanselect();
@@ -461,7 +416,6 @@ function qospkgs() {
     if (document.getElementById("imageconf_wan_qos").checked) {
         qospackages = 'qos-scripts';
         $("#qos-options").html(wan_qos_down + wan_qos_up);
-        hideAll();
         update_defaultpkgs();
     }
     else {
@@ -566,6 +520,7 @@ function init_step2() {
     });
     $("#imageconf_webif").change(function() {
         themeselect();
+        help_toggle_init();
     });
     $("#imageconf_theme").change(function() {
         themepkgs();
@@ -578,9 +533,11 @@ function init_step2() {
     });
     $("#imageconf_lanproto").change(function() {
         lanselect();
+        help_toggle_init();
     });
     $("#imageconf_wanproto").change(function() {
         wanselect();
+        help_toggle_init();
     });
     $("#imageconf_sharenet").change(function() {
         nosharepkgs();
@@ -608,7 +565,7 @@ function set_lang(lang) {
 }
 
 $( document ).ready(function() {
-    hideAll();
+    help_toggle_init();
     pass_init();
     $("#language-select").change(function() {
         set_lang($(this).val())

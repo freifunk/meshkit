@@ -539,6 +539,9 @@ class BuildImages(object):
                         logger.debug('Deleted %s' % uploaded_file)
                     except:
                         logger.warning('Could not delete %s' % uploaded_file)
+                        
+            # add uci-defaults-script to set password (if password_hash is available)
+            
 
             out = open(self.BinDir + "/build.log", "w")
             if self.Profile:

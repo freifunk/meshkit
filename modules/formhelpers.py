@@ -42,9 +42,12 @@ def helptext(text, expandable=True):
 
     if text:
         if config.expandablehelp is True:
-            help = TAG[''](SPAN("?",_class='helpLink'), DIV(text, _class='helptext'))
+            help = TAG[''](
+                TAG.button("?", _type="button", _class='help-toggle', _title=T("Click to show help")),
+                DIV(text, _class='help-block')
+            )
         else:
-            help = DIV(text, _class='helptext')
+            help = DIV(text, _class='help-block')
         
     return XML(help)
 
@@ -127,18 +130,29 @@ class customField:
         
         advancedToggle = ''
         
+        if widget.elements('select'):
+            widget = DIV(
+                widget,
+                _class="select-wrapper"
+            )        
+        
+        class_form_options = "form-options"
         if advanced:
-            advancedToggle = SPAN(
-                "+/-",
+            class_form_options += " has-suboptions"
+        
+        if advanced:
+            advancedToggle = TAG.BUTTON(
+                SPAN(T("Advanced Options"), _class="sr-only"),
                 _title=T("Advanced Options"),
                 _class="advanced",
+                _type="button",
                 _onclick="ToggleDiv(\'%s\')" % advanced
             )
         
-        fieldset = CAT(
+        fieldset = DIV(
             LABEL (
                 label,
-                _class="form_label",
+                _class="control-label col-sm-3",
                 _for=id
             ),
             DIV(
@@ -147,8 +161,10 @@ class customField:
                     helptext(comment),
                     advancedToggle
                 ),
-                _class="form_value"
-            )
+                _class=class_form_options
+            ),
+            _id="%s__row" % id,
+            _class="form-group"
         )
         
         if suboption:
