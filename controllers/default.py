@@ -118,7 +118,7 @@ def wizard():
     # check if community and target are set, else redirect to the index page
     # todo
     # list of profiles
-    session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
+    session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"), True)
     
     # overwrite field defaults and requires before creating the SQLFORM
     

@@ -185,13 +185,15 @@ def dict_pkg_info(ibpath,target,savedir):
 
         return info
     
-def get_profiles(ibpath,target,savedir):
+def get_profiles(ibpath,target,savedir,remove_default=False):
     """Get a list of available profiles for one target.
 
     Args:
         ibpath: imagebuilder path
         target: target (name of the target/architecture folder in ibpath)
         savedir: directory where the cached files will be saved
+        remove_default: remove Default profiles, they create a lot of images (boolean)
+        
     Returns:
         A sorted list which contains the names of all profiles for a target
         e.g.
@@ -201,7 +203,14 @@ def get_profiles(ibpath,target,savedir):
     profiles = []
     info = dict_pkg_info(ibpath,target,savedir)
     for p in info['info']:
-        profiles.append(p)
+        if remove_default:
+            if "ar71xx" in target and p == "Default":
+                pass
+            else:
+                profiles.append(p)
+        else:    
+            profiles.append(p)
+        
     return sorted(profiles)
 
 def get_profile(ibpath,target,savedir,profile):
