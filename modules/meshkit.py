@@ -12,6 +12,62 @@ try:
     import json
 except ImportError:
     import simplejson as json
+    
+def get_hostname_from_form_vars(vars):
+    """ returns the systems hostname
+    
+        if form.vars.hostname is available use it. If not, try to generate
+        a hostname from one of the wifi ips. If that fails too: use 'OpenWrt' as
+        default.
+        
+        Args:
+            vars:    a web2py form.vars object
+            
+        Returns:
+            string: system hostname (Default: OpenWrt)
+            
+    """
+    
+    hostname = "OpenWrt"
+    
+    if vars.hostname:
+        hostname = vars.hostname
+    else:
+        for i in range(9):
+            if vars["wifi%sipv4addr" % i]:
+                hostname = vars["wifi%sipv4addr" % i].replace(".", "-")
+                break
+
+    return hostname
+
+def filter_wifi_interfaces(vars):
+    """ filter out all wifi options and write to wifi_interfaces table
+    
+        Args:
+            vars:    a web2py form.vars object
+            
+        Returns:
+            list:    a list containing all wifi options
+    
+    """
+    
+    wifi_options = []
+    # probably not the most performant way to get the interfaces in order
+    for i in range(9):
+        for v in vars:
+            if v.startswith("wifi%s" % i):
+                try:
+                    iface_index = int(v[4:5])
+                except ValueError:
+                    continue
+                option = v[5:]
+                try:
+                    wifi_options[iface_index][option] = vars[v]
+                except IndexError:
+                    wifi_options.append(dict())
+                    wifi_options[iface_index][option] = vars[v]
+
+    return wifi_options
 
 def get_communities(path):
     """Get a list of communities we have profiles for
@@ -128,7 +184,7 @@ def dict_pkg_info(ibpath,target,savedir):
             pass
 
         return info
-
+    
 def get_profiles(ibpath,target,savedir):
     """Get a list of available profiles for one target.
 

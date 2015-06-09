@@ -5842,6 +5842,9 @@ input:-webkit-autofill:focus {
     text-decoration: none;
     outline: 0;
   }
+  .advanced {
+    right: 60px;
+  }
 }
 @media (min-width: 768px) and (min-width: 768px) {
   header.header .site-title {

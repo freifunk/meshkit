@@ -17,7 +17,10 @@
         assets_js = '{{=URL("static", "js/")}}',
         session = new Object();
         session.target = '{{=session.target}}';
+        wifi_ifs_initial = 1;
+        wifi_ifs_max = 3;
         
+      
     fields = {
         wanipv4addr: '{{=fh.field("wanipv4addr")}}',
         wannetmask: '{{=fh.field("wannetmask")}}',
@@ -33,7 +36,33 @@
         landhcp: '{{=fh.field("landhcp", advanced="lan_dhcp_range")}}',
         landhcprange: '{{=fh.field("landhcprange", suboption="lan_dhcp_range")}}',
         theme: '{{=fh.field("theme")}}',
+//        wifi0: {
+//            ipv4addr: '{{=fh.field("wifi0ipv4addr")}}',
+//            chan: '{{=fh.field("wifi0chan")}}',
+//            dhcp: '{{=fh.field("wifi0dhcp", advanced="wifi0_dhcp_advanced")}}',
+//            dhcprange: '{{=fh.field("wifi0dhcprange", suboption="wifi0_dhcp_advanced")}}',
+//            vap: '{{=fh.field("wifi0vap", advanced="wifi0_vap_advanced")}}',
+//            ipv6ra: '{{=fh.field("wifi0ipv6ra", suboption="wifi0_vap_advanced")}}',
+//        }
     };
+    
+    /* wifi interfaces */
+    {{for i in range(3):}}
+        fields["wifi{{=i}}"] = {
+            enabled: '{{=fh.field("wifi%senabled" % i)}}',
+            ipv4addr: '{{=fh.field("wifi%sipv4addr" % i)}}',
+            chan: '{{=fh.field("wifi%schan" % i)}}',
+            dhcp: '{{=fh.field("wifi%sdhcp" % i, advanced="wifi%s_dhcp_advanced" % i)}}',
+            dhcprange: '{{=fh.field("wifi%sdhcprange" % i, suboption="wifi%s_dhcp_advanced" % i)}}',
+            vap: '{{=fh.field("wifi%svap" % i, advanced="wifi%s_vap_advanced" % i)}}',
+            ipv6ra: '{{=fh.field("wifi%sipv6ra" % i, suboption="wifi%s_vap_advanced" % i)}}',    
+        }
+        {{ if session.ipv6_config == 'static':}}
+            fields["wifi{{=i}}"].ipv6addr: '{{=fh.field("wifi%sipv6addr" % i)}}';
+        {{pass}}
+    {{pass}}
+    
+    
     {{ if session.ipv6_config == 'static':}}
     fields.lan_ipv6addr = '{{=fh.field("lanipv6addr")}}';
     {{pass}}
@@ -54,11 +83,30 @@
       }
 </script>
 
+{{#BEAUTIFY(session)}}
 <h1>{{=T('2. Image configuration')}}</h1>
 
+
+
 <form action="" name="MAINFORM" enctype="multipart/form-data" method="POST" class="form-horizontal border-top{{if session.expert:}} expert-mode{{pass}}">
-      
+
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+<!-- Start wifi tab -->
+    {{if session.community <> 'weimar' and not session.noconf == True:}}
+    {{=formhelpers.panel_start("wireless", T('Wireless'), T('Configure your wireless interface(s) here. These will be configured to operate in adhoc mode with the correct settings for your community.'), True)}}
+    <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or '0'}}" />
+
+    <div id="wifi-interfaces">
+        <!-- populated by js -->
+    </div>
+    <a href="javascript:void(0)" id="wifi-interface-add">{{=T('Add another wifi interface.')}}</a>
+    <a href="javascript:void(0)" id="wifi-interface-remove">{{=T('Remove last wifi interface.')}}</a>
+    
+    {{=formhelpers.panel_end()}}
+    {{pass}}
+    <!-- End wifi tab -->
+        
         
         <!-- SYSTEM TAB -->
         {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), True)}}
@@ -126,228 +174,6 @@
 
         {{=formhelpers.panel_end()}}
         {{pass}}
-
-    {{if session.community <> 'weimar' and not session.noconf == True:}}
-    <!-- Start wifi tab -->
-    {{=formhelpers.panel_start("wireless", T('Wireless'), T('Configure your wireless interface(s) here. These will be configured to operate in adhoc mode with the correct settings for your community.'))}}
-    <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or 1}}" />
-    <script type="text/javascript">
-      var wifi_counter = 0;
-      var wifi_limit = 3;
-      function removeWifi(number) {
-        if (document.getElementById(number)) {
-          parent = document.getElementById(number).parentNode
-          child = document.getElementById(number);
-          parent.removeChild(child);
-          wifi_counter--;
-          document.getElementById("wifiifsnr").value = wifi_counter;
-        };
-      }
-      function addInput(divName){
-        if (wifi_counter == wifi_limit)  {
-          alert("{{=T('Maximum number of wifi interfaces reached.')}}");
-        }
-        else {
-          var e_wifi0_ipv4addr = "{{=form.errors.wifi0ipv4addr}}";
-          var e_wifi1_ipv4addr = "{{=form.errors.wifi1ipv4addr}}";
-          var e_wifi2_ipv4addr = "{{=form.errors.wifi2ipv4addr}}";
-          var v_wifi0_ipv4addr = "{{=form.vars.wifi0ipv4addr or defip}}";
-          var v_wifi1_ipv4addr = "{{=form.vars.wifi1ipv4addr or defip}}";
-          var v_wifi2_ipv4addr = "{{=form.vars.wifi2ipv4addr or defip}}";
-
-          var e_wifi0_ipv6addr = "{{=form.errors.wifi0ipv6addr}}";
-          var e_wifi1_ipv6addr = "{{=form.errors.wifi1ipv6addr}}";
-          var e_wifi2_ipv6addr = "{{=form.errors.wifi2ipv6addr}}";
-          var v_wifi0_ipv6addr = "{{=form.vars.wifi0ipv6addr or ''}}";
-          var v_wifi1_ipv6addr = "{{=form.vars.wifi1ipv6addr or ''}}";
-          var v_wifi2_ipv6addr = "{{=form.vars.wifi2ipv6addr or ''}}";
-
-          var e_wifi0_chan = "{{=form.errors.wifi0chan}}";
-          var e_wifi1_chan = "{{=form.errors.wifi1chan}}";
-          var e_wifi2_chan = "{{=form.errors.wifi2chan}}";
-          var v_wifi0_chan = "{{=form.vars.wifi0chan or defchannel}}";
-          var v_wifi1_chan = "{{=form.vars.wifi1chan or defchannel}}";
-          var v_wifi2_chan = "{{=form.vars.wifi2chan or defchannel}}";
-
-          var e_wifi0_dhcprange = "{{=form.errors.wifi0dhcprange}}";
-          var e_wifi1_dhcprange = "{{=form.errors.wifi1dhcprange}}";
-          var e_wifi2_dhcprange = "{{=form.errors.wifi2dhcprange}}";
-          var v_wifi0_dhcprange = "{{=form.vars.wifi0dhcprange or ''}}";
-          var v_wifi1_dhcprange = "{{=form.vars.wifi1dhcprange or ''}}";
-          var v_wifi2_dhcprange = "{{=form.vars.wifi2dhcprange or ''}}";
-
-          var v_wifi0_vap = "{{=form.vars.wifi0vap or session.wifi0vap or ''}}";
-          var v_wifi1_vap = "{{=form.vars.wifi1vap or session.wifi1vap or ''}}";
-          var v_wifi2_vap = "{{=form.vars.wifi2vap or session.wifi2vap or ''}}";
-
-          var v_wifi0_ipv6ra = "{{=form.vars.wifi0ipv6ra or session.wifi0ipv6ra or ''}}";
-          var v_wifi1_ipv6ra = "{{=form.vars.wifi1ipv6ra or session.wifi1ipv6ra or ''}}";
-          var v_wifi2_ipv6ra = "{{=form.vars.wifi2ipv6ra or session.wifi2ipv6ra or ''}}";
-
-          var newdiv = document.createElement('div');
-          wrapper_start = "<div id='wifi" + wifi_counter + "'>";
-          wrapper_start += "<fieldset class='section' xmlns='http://www.w3.org/1999/xhtml'>";
-          wrapper_start += "<legend>Wifi" + wifi_counter;
-          wrapper_start += "<span class='sectionremove'>";
-          wrapper_start += "<a onclick=\"removeWifi('wifi" + wifi_counter + "')\" ";
-          wrapper_start += "href='javascript:void(0)' title='{{=T('Remove')}}'>";
-          wrapper_start += "<img src=\"{{=URL('static', 'images/icons/remove.gif')}}\" alt=\"{{=T('Remove')}}\">";
-          wrapper_start += "</a></span></legend>";
-
-          wifi_ipv4addr_label = "<label id='imageconf_wifi" + wifi_counter + "ipv4addr__label' ";
-          wifi_ipv4addr_label += "for='imageconf_wifi" + wifi_counter + "ipv4addr' class='form_label'>";
-          wifi_ipv4addr_label += "{{=T('IPv4 address')}}</label>";
-          wifi_ipv4addr_input = "<div class='form_value'>";
-          wifi_ipv4addr_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "ipv4addr' ";
-          wifi_ipv4addr_input += "value='" + eval('v_wifi' + wifi_counter + '_ipv4addr') + "' name='wifi" + wifi_counter + "ipv4addr'/>";
-          wifi_ipv4addr_input += '{{=formhelpers.helptext(T("IPv4 address for this interface."),config.expandablehelp)}}';
-
-          for (var i=0; i<wifi_limit; i++) {
-            var e = eval("e_wifi" + i + "_ipv4addr");
-            if (e!="None" && wifi_counter==i)  {
-              wifi_ipv4addr_input += "<div id='wifi" + wifi_counter + "ipv4addr__error' class='error'>" + e + "</div>";
-            }
-          }
-          wifi_ipv4addr_input += "</div>"
-          wifi_ipv4addr = wifi_ipv4addr_label + wifi_ipv4addr_input;
-
-          wifi_ipv6addr = '';
-          {{ if session.ipv6_config == 'static':}}
-          wifi_ipv6addr_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6addr__label' ";
-          wifi_ipv6addr_label += "for='imageconf_wifi" + wifi_counter + "ipv6addr' class='form_label'>";
-          wifi_ipv6addr_label += "{{=T('IPv6 address')}}</label>";
-          wifi_ipv6addr_input = "<div class='form_value'>";
-          wifi_ipv6addr_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "ipv6addr' ";
-          wifi_ipv6addr_input += "value='" + eval('v_wifi' + wifi_counter + '_ipv6addr') + "' name='wifi" + wifi_counter + "ipv6addr'/>";
-          for (var i=0; i<wifi_limit; i++) {
-            var e = eval("e_wifi" + i + "_ipv6addr");
-            if (e!="None" && wifi_counter==i)  {
-              wifi_ipv6addr_input += "<div id='wifi" + wifi_counter + "ipv6addr__error' class='error'>" + e + "</div>";
-            }
-          }
-          wifi_ipv6addr_input += "</div>"
-          wifi_ipv6addr = wifi_ipv6addr_label + wifi_ipv6addr_input;
-          {{pass}}
-
-          wifi_chan_label = "<label id='imageconf_wifi" + wifi_counter + "chan__label' ";
-          wifi_chan_label += "for='imageconf_wifi" + wifi_counter + "chan' class='form_label'>";
-          wifi_chan_label += "{{=T('Channel')}}</label>";
-          wifi_chan_input = "<div class='form_value'>";
-          wifi_chan_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "chan' ";
-          wifi_chan_input += "value='" + eval('v_wifi' + wifi_counter + '_chan') + "' name='wifi" + wifi_counter + "chan'/>";
-          for (var i=0; i<wifi_limit; i++) {
-            var e = eval("e_wifi" + i + "_chan");
-            if (e!="None" && wifi_counter==i)  {
-              wifi_chan_input += "<div id='wifi" + wifi_counter + "chan__error' class='error'>" + e + "</div>";
-            }
-          }
-          wifi_chan_input += "</div>";
-          wifi_chan = wifi_chan_label + wifi_chan_input;
-
-          wifi_dhcp_label = "<label id='imageconf_wifi" + wifi_counter + "dhcp__label' ";
-          wifi_dhcp_label += "for='imageconf_wifi" + wifi_counter + "dhcp' class='form_label'>";
-          wifi_dhcp_label += "{{=T('Enable DHCP')}}</label>";
-          wifi_dhcp_input = "<div class='form_value'>";
-          wifi_dhcp_input += "<input type='checkbox' checked='' ";
-          wifi_dhcp_input += "name='wifi" + wifi_counter + "dhcp' id='imageconf_wifi" + wifi_counter +"dhcp'/>";
-          wifi_dhcp_input += "<a onclick=\"ToggleDiv('wifi" + wifi_counter + "dhcp_range')\" ";
-          wifi_dhcp_input += "title='Advanced Options' class='advanced' href='javascript:void(0)'>+/-</a>"
-          wifi_dhcp_input += '{{=formhelpers.helptext(T("Enable DHCP and allow guests to connect to the network without using olsrd."),config.expandablehelp)}}';
-          wifi_dhcp_input += "</div>"
-          wifi_dhcp = '<div class="expert">' + wifi_dhcp_label + wifi_dhcp_input + '</div>'; 
-
-
-
-          wifi_dhcp_range_wrap_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "dhcp_range'>";
-          wifi_dhcp_range_label = "<label id='imageconf_wifi" + wifi_counter + "dhcprange__label' ";
-          wifi_dhcp_range_label += "for='imageconf_wifi" + wifi_counter + "dhcprange' class='form_label'>";
-          wifi_dhcp_range_label += "{{=T('DHCP Range')}}</label>";
-          wifi_dhcp_range_input = "<div class='form_value'>";
-          wifi_dhcp_range_input += "<input type='text' id='imageconf_wifi" + wifi_counter + "dhcprange' ";
-          wifi_dhcp_range_input += "value='" + eval('v_wifi' + wifi_counter + '_dhcprange') + "' name='wifi" + wifi_counter + "dhcprange'/>";
-          for (var i=0; i<wifi_limit; i++) {
-            var e = eval("e_wifi" + i + "_dhcprange");
-            if (e!="None" && wifi_counter==i)  {
-              wifi_dhcp_range_input += "<div id='wifi" + wifi_counter + "dhcprange__error' class='error'>" + e + "</div>";
-            }
-          }
-          wifi_dhcp_range_input += '{{=formhelpers.helptext(T("The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8."),config.expandablehelp)}}';
-          wifi_dhcp_range_input += "</div>";
-          wifi_dhcp_range_wrap_end = "</div>";
-          wifi_dhcp_range = wifi_dhcp_range_wrap_start + wifi_dhcp_range_label + wifi_dhcp_range_input + wifi_dhcp_range_wrap_end;
-
-          /* VAP */
-          checked = ''
-          for (var i=0; i<wifi_limit; i++) {
-            var v = eval("v_wifi" + i + "_vap");
-            if ((v=="True" || v=="on") && wifi_counter==i)  {
-              checked = ' checked="1" ';
-            }
-          }
-
-          wifi_vap_label = "<label id='imageconf_wifi" + wifi_counter + "vap__label' ";
-          wifi_vap_label += "for='imageconf_wifi" + wifi_counter + "vap' class='form_label'>";
-          wifi_vap_label += "{{=T('VAP')}}</label>";
-          wifi_vap_input = "<div class='form_value'>";
-          wifi_vap_input += "<input type='checkbox'" + checked;
-          wifi_vap_input += "name='wifi" + wifi_counter + "vap' id='imageconf_wifi" + wifi_counter +"vap'/>";
-          wifi_vap_input += "<a onclick=\"ToggleDiv('wifi" + wifi_counter + "_ra')\" ";
-          wifi_vap_input += "title='Advanced Options' class='advanced' href='javascript:void(0)'>+/-</a>"
-
-          wifi_vap_input += '{{=formhelpers.helptext(T("Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k."),config.expandablehelp)}}';
-          wifi_vap_input += "</div>"
-          wifi_vap = '<div class="expert">' + wifi_vap_label + wifi_vap_input + '</div>';
-
-          wifi_ipv6ra = '';
-          {{ if session.ipv6_config == 'auto-ipv6-random' or session.ipv6_config == 'auto-ipv6-fromv4' or session.ipv6_config == 'static':}}
-          wifi_ipv6ra_label_start = "<div style='display: none;' class='suboptions' id='wifi" + wifi_counter + "_ra'>";
-          wifi_ipv6ra_label = "<label id='imageconf_wifi" + wifi_counter + "ipv6ra__label' ";
-          wifi_ipv6ra_label += "for='imageconf_wifi" + wifi_counter + "ipv6ra' class='expert form_label'>";
-          wifi_ipv6ra_label += "{{=T('Router Advertisement')}}</label>";
-          wifi_ipv6ra_input = "<div class='form_value expert'>";
-          checked = ''
-          for (var i=0; i<wifi_limit; i++) {
-            var v = eval("v_wifi" + i + "_ipv6ra");
-            if ((v=="True" || v=="on") && wifi_counter==i)  {
-              checked = ' checked="1" ';
-            }
-          }
-          wifi_ipv6ra_input += "<input type='checkbox'" + checked;
-          wifi_ipv6ra_input += "name='wifi" + wifi_counter + "ipv6ra' id='imageconf_wifi" + wifi_counter +"ipv6ra'/>";
-          wifi_ipv6ra_input += '{{=formhelpers.helptext(T("Send IPv6 router advertisements."),config.expandablehelp)}}';
-          wifi_ipv6ra_input += "</div>";
-          wifi_ipv6ra_input_end = "</div>";
-          wifi_ipv6ra = wifi_ipv6ra_label_start + wifi_ipv6ra_label + wifi_ipv6ra_input + wifi_ipv6ra_input_end;
-          {{pass}}
-
-          wrapper_end = "</fieldset></div>";
-          newdiv.innerHTML = wrapper_start + wifi_ipv4addr + wifi_ipv6addr + wifi_chan + wifi_dhcp + wifi_dhcp_range + wifi_vap + wifi_ipv6ra + wrapper_end;
-          document.getElementById(divName).appendChild(newdiv);
-          wifi_counter++;
-          document.getElementById("wifiifsnr").value = wifi_counter;
-        }
-      }
-    </script>
-
-    <div id="dynamicWifi">
-      <!-- This will be replaced by dynamically created wifi interface config sections -->
-    </div>
-
-    <!-- add wifi entry(s) -->
-    <script type="text/javascript">
-      nr = document.getElementById("wifiifsnr").value;
-      var i = 0;
-      while (i < nr) {
-        addInput('dynamicWifi');
-        i++;
-      }
-    </script>
-
-    <a href="javascript:void(0)" title="{{=T('Add')}}" onClick="addInput('dynamicWifi');help_toggle_init()"><img src='{{=URL('static', 'images/icons/add.gif')}}'> {{=T('Add another wifi interface')}}</a>
-
-    {{=formhelpers.panel_end()}}
-    {{pass}}
-    <!-- End wifi tab -->
 
     
     <!-- LAN TAB -->

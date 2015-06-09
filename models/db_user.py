@@ -4,6 +4,10 @@
 ########################################
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db, hmac_key=Auth.get_or_create_key())
+# We don't use first/lastname, so replace firstname with username to show in navbar
+if auth.user:
+    auth.user.first_name = auth.user.username
+    
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
 # If communitysupport is enabled show more fields in profile

@@ -130,7 +130,7 @@ class customField:
         
         advancedToggle = ''
         
-        if widget.elements('select'):
+        if widget and widget.elements('select'):
             widget = DIV(
                 widget,
                 _class="select-wrapper"

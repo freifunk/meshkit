@@ -31,6 +31,78 @@ function themepkgs() {
 //    obj.style.display = obj.style.display=='none' ? 'block' : 'none'
 //}
 
+
+function dynwifi_addif(index) {
+    var wifi_options = "";
+    var wifi_if = "wifi" + index;
+    //var hidden_name = "imageconf_" + wifi_if + "enabled";
+    //wifi_options += '<input type="hidden" name="' + hidden_name + '" value="1" />';
+    wifi_options += '<fieldset class="wifi-interface" data-index="' + index + '" id="wifi-interface-' + wifi_if + '">';
+    wifi_options += '<legend>' + wifi_if + '</legend>';
+    $.each(fields[wifi_if], function(key, value){
+       wifi_options += fields[wifi_if][key];
+    });
+    wifi_options += '</fieldset>';
+    
+    var new_count = parseInt(index) + 1;
+    $("#wifiifsnr").val(new_count);
+    dynwifi_buttons(new_count);
+    return wifi_options;
+}
+
+function dynwifi_remove_last() {
+    var last_if = $("#wifi-interfaces").find("fieldset.wifi-interface").last();
+    last_if.remove();
+    var new_count = parseInt($("#wifiifsnr").val()) - 1;
+    $("#wifiifsnr").val(new_count);
+    console.log("remove, wifi count is now " + new_count);
+    dynwifi_buttons(new_count);
+}
+
+function dynwifi_buttons(wifi_count) {
+    console.log("changed" + wifi_count);
+    if (wifi_count < 1) {
+        $("#wifi-interface-remove").addClass("hidden");
+    } else {
+        $("#wifi-interface-remove").removeClass("hidden");
+    }
+    if (wifi_count >= wifi_ifs_max) {
+        $("#wifi-interface-add").addClass("hidden");
+    } else {
+        $("#wifi-interface-add").removeClass("hidden");
+    }
+}
+
+function dynwifi() {
+    var wifi_index = 0;
+    var wifi_ifs = parseInt($("#wifiifsnr").val());
+
+    while ( wifi_index < wifi_ifs_initial || wifi_index < wifi_ifs ) {
+        $("#wifi-interfaces").append(dynwifi_addif(wifi_index));
+        $("#imageconf_wifi" + wifi_index + "enabled").prop('checked', true);;
+        wifi_index++;
+    }
+
+    
+    $("#wifi-interface-add").click(function() {
+        //var last_index = $("#wifiifsnr").val();
+        var last_index = $("#wifi-interfaces").find("fieldset.wifi-interface").last().data("index");
+        var index = parseInt(last_index) + 1;
+        console.log("foo" + last_index);
+        if ( last_index === undefined) {
+            last_index = -1;
+        }
+        
+        $("#wifi-interfaces").append(dynwifi_addif(index));
+        $("#imageconf_wifi" + index + "enabled").prop('checked', true);
+    });
+    
+    $("#wifi-interface-remove").click(function() {
+        dynwifi_remove_last();
+    });
+}
+        
+
 function help_toggle_init() {
     $(".help-toggle").each(function() {
         $(this).click(function() {
@@ -514,6 +586,7 @@ function init_step2() {
     nosharepkgs();
     ipv6pkgs();
     update_defaultpkgs();
+    dynwifi();
     ajax_packagelist();  
     $("#imageconf_profile").change(function() {
         set_packages();

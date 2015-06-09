@@ -3,13 +3,10 @@
 def user(): return dict(form=auth())
 def download(): return response.download(request,db)
 def call(): return service()
-import meshkit
-import uci
 import mkutils
 import os
 import subprocess
 import formhelpers
-import json
 
 ### end requires
 
@@ -23,9 +20,7 @@ def check_queue():
     else:
         subprocess.call(['python', 'web2py.py', '-S', 'meshkit', '-M', '-R', os.path.join(request.folder, 'init', 'build_queue.py')])
 
-# We don't use first/lastname, so replace firstname with username to show in navbar
-if auth.user:
-    auth.user.first_name = auth.user.username
+
 
 def error():
     if not config.noconf == True:
@@ -169,27 +164,28 @@ def wizard():
         zero=None
     )
     
-    c = None
-    community = None
-    if config.communitysupport == True:
-        c = uci.UCI(config.profiles, "profile_" + session.community)
-        community_defaults = c.read()
-        db.imageconf.theme.default = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
-        db.imageconf.ipv6.default = c.get(community_defaults, 'profile', 'ipv6', '0') and True or False
-        db.imageconf.latitude.default = c.get(community_defaults, 'profile', 'latitude', '48')
-        db.imageconf.longitude.default = c.get(community_defaults, 'profile', 'longitude', '10')
+    # add fields for wireless interfaces wifi0 to wifi2 by cloning them from
+    # the db.wifi_interfaces table and adding custom names.
+    
+    wfields = []
+    for i in range(3):
+        for f in ['chan', 'dhcp', 'dhcprange', 'ipv4addr', 'ipv6addr', 'vap', 'ipv6ra', 'enabled']:
+            name = 'wifi%s%s' % (i, db.wifi_interfaces[f].name)
+            #default = db.wifi_interfaces[f].default
+            #wfields.append(db.wifi_interfaces[f].clone(name=name, default=default))
+            wfields.append(db.wifi_interfaces[f].clone(name=name))
+
         
     
+    form = SQLFORM.factory(db.imageconf, *wfields, table_name='imageconf')
     
-    form = SQLFORM(db.imageconf, table_name='imageconf')
     # session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
     defaultpkgs = get_defaultpkgs(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
-    session.theme = config.defaulttheme
     # generate a static package list (this is only done once).
     # if package lists change delete the cache file in static/package_lists/<target>
     create_package_list(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "package_lists"))
     user_packagelist = ''
-    defchannel = mesh_network = defip = community_packages = ipv6 = ipv6_config = ipv6_packages = ""
+    ipv6 = ipv6_config = ipv6_packages = ""
     session.url = URL(request.application, request.controller, 'api/json/buildimage', scheme=True, host=True)
     if config.communitysupport == True:
         nodenumber = ''
@@ -197,67 +193,46 @@ def wizard():
         defaultpkgs.append('meshwizard')
         lucipackages = config.lucipackages + " luci-app-meshwizard"
         session.communitysupport = True
-        defchannel = c.get(community_defaults, 'wifi_device', 'channel', '1')
-        mesh_network = c.get(community_defaults, 'profile', 'mesh_network', '10.0.0.0/8')
-        if mesh_network:
-            defip = meshkit.defip(mesh_network)
-        else:
-            defip = ""
-        community_packages  = c.get(community_defaults, 'profile', 'extrapackages', '')
-        ipv6 = c.get(community_defaults, 'profile', 'ipv6', '0')
-        ipv6_config = c.get(community_defaults, 'profile', 'ipv6_config', False)
-        vap = c.get(community_defaults, 'profile', 'vap', '0')
-        #session.theme = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
     else:
         session.communitysupport = False
         lucipackages = config.lucipackages
-        vap = 0
         nodenumber = False
         community_defaults = dict()
         
     if not session.mail:
         session.mail = ''
-    if ipv6 == '1':
-        session.ipv6 = True
-        session.wifi0ipv6ra = True
-        session.wifi1ipv6ra = True
-        session.wifi2ipv6ra = True
-        session.ipv6conf = True
-        session.ipv6_config = ipv6_config
+        
+    if session.ipv6 == True:
         ipv6_packages = config.ipv6packages or ''
         if ipv6_config == 'auto-ipv6-random' or ipv6_config == 'auto-ipv6-fromv4':
             ipv6_packages = ipv6_packages + ' auto-ipv6-ib'
-    else:
-        session.ipv6 = False
-        session.ipv6conf = False
-        session.ipv6_config = None
-        session.wifi0ipv6ra = False
-        session.wifi1ipv6ra = False
-        session.wifi2ipv6ra = False
 
-    if vap == '1':
-        session.wifi0vap = session.wifi1vap = session.wifi2vap = True
-    else:
-        session.wifi0vap = session.wifi1vap = session.wifi2vap = False
 
-    if auth.user:
-        session.nickname = auth.user.username or ''
-        session.name = auth.user.name or ''
-        session.homepage = auth.user.homepage or ''
-        session.phone = auth.user.phone or ''
-        session.note = auth.user.note or ''
-    else:
-        session.nickname = ''
-        session.name = ''
-        session.homepage = ''
-        session.phone = ''
-        session.note = ''
     if form.process(session=None, formname='step2', keepvalues=True).accepted:
         session.profile = form.vars.profile
         session.noconf = form.vars.noconf or config.noconf
         session.rand = form.vars.rand
-	session.id = form.vars.id
+        session.id = form.vars.id
+        
+        wifi_options = filter_wifi_interfaces(form.vars)
+ 
+         # auto-set hostname if it is empty
+        if not form.vars.hostname:
+            form.vars.hostname = get_hostname_from_form_vars(form.vars)
+        
+        id = db.imageconf.insert(**db.imageconf._filter_fields(form.vars))
+        session.id = id
+        
+        for i in wifi_options:
+            if i["enabled"] == True:
+                id_row = db.wifi_interfaces.insert(id_build=id, **db.wifi_interfaces._filter_fields(i))
+                if id_row:
+                    row = db(db.wifi_interfaces.id == id_row).select().first()
+                    row.update_record(id_build=id, enabled=True)    
+                    db.commit()
+                
         redirect(URL('build'))
+        
     elif form.errors:
         errormsg = ''
         for i in form.errors:
@@ -265,23 +240,16 @@ def wizard():
             response.flash = XML(T('Form has errors:') + "</br><ul>" + errormsg + "</ul>")
         session.profile = form.vars.profile or ''
         session.webif = form.vars.webif or ''
-        session.theme = form.vars.theme or config.defaulttheme
         session.wifiifsnr = form.vars.wifiifsnr or 1
-        session.wifi0ipv6ra = form.vars.wifi0ipv6ra or False
-        session.wifi1ipv6ra = form.vars.wifi1ipv6ra or False
-        session.wifi2ipv6ra = form.vars.wifi2ipv6ra or False
-        session.wifi0vap = form.vars.wifi0vap or False
-        session.wifi1vap = form.vars.wifi1vap or False
-        session.wifi2vap = form.vars.wifi2vap or False
         user_packagelist = form.vars.packages or ''
         
     hash = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
+    
     return dict(form=form, packages='',rand=hash, defaultpkgs=defaultpkgs, lucipackages=lucipackages, nodenumber=nodenumber,
-                defchannel=defchannel, defip=defip,
-                community_packages=community_packages  + " " + config.add_defaultpackages,
+                community_packages=session.community_packages  + " " + config.add_defaultpackages,
                 user_packagelist=user_packagelist, addpackages='',
                 ipv6_packages=ipv6_packages, formhelpers=formhelpers,
-                fh = formhelpers.customField(form, "imageconf"),
+                fh = formhelpers.customField(form, "imageconf")
                 )
 
 def build():
@@ -338,13 +306,14 @@ def buildstatus():
     ret['status'] = int(row.status)
     if row.hostname:
         ret['hostname'] = row.hostname
-    elif row.wifi0ipv4addr:
-        ret['hostname'] = row.wifi0ipv4addr.replace(".", "-")
-    else:
-        ret['hostname'] = '-'
+#    elif row.wifi0ipv4addr:
+#        ret['hostname'] = row.wifi0ipv4addr.replace(".", "-")
+#    else:
+#        ret['hostname'] = '-'
 
     if row.nodenumber:
 	    ret['nodenumber'] = row.nodenumber
+
     ret['community'] = row.community or '-'
     ret['location'] = row.location or '-'
     ret['target'] = row.target or '-'
@@ -377,10 +346,24 @@ def buildimage():
     if request.vars.packages:
         replacement_table = { 'luci-proto-6x4': 'luci-proto-ipv6', 'luaneightbl': 'luci-lib-luaneightbl' }
         request.vars.packages = replace_obsolete_packages(os.path.join(request.folder, "static", "package_lists", request.vars.target), request.vars.packages, replacement_table)
+        
+    
+    # auto-set hostname if it is empty
+    if not request.vars.hostname:
+        request.vars.hostname = get_hostname_from_form_vars(request.vars)
 
-    ret = db.imageconf.validate_and_insert(**request.vars)
+    ret = db.imageconf.validate_and_insert(**db.imageconf._filter_fields(request.vars))
+    #session.id = ret.id
+
+    wifi_options = filter_wifi_interfaces(request.vars)
+    for i in wifi_options:
+        id_row = db.wifi_interfaces.insert(**db.imageconf._filter_fields(i))
+        if id_row:
+            row = db(db.wifi_interfaces.id == id_row).select().first()
+            row.update_record(id_build=ret.id, enabled=True)    
+            db.commit()
+
     ret['rand'] = request.vars.rand
-
     return ret
 
 def api():

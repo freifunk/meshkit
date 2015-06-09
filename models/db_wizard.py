@@ -1,5 +1,5 @@
 from meshkit import *
-
+import uci
 
 if not config == None:
     db.define_table('imageconf',
@@ -69,7 +69,7 @@ if not config == None:
             comment = T('Chooses the theme for the web interface. Freifunk-generic is the only one that is customised for communities, so you should probably use this theme.'),
             requires=IS_EMPTY_OR(IS_IN_SET(themes, error_message=T('%(name)s is invalid') % dict(name=T('Theme'))))
         ),
-        Field('ipv6', 'boolean', label=T('IPv6'),
+        Field('ipv6', 'boolean', label=T('IPv6'), default=False,
             comment=T('Enable/Disable IPv6 globally.')
         ),
         Field('ipv6_config',
@@ -116,51 +116,6 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_UPLOAD_FILENAME(extension='gz', error_message=T('%(name)s is invalid') % dict(name=T('Upload'))))
         ),
         Field('wifiifsnr', 'integer'),
-        Field('wifi0ipv4addr',
-            requires=IS_EMPTY_OR(IS_IPV4(error_message=T('%(name)s is invalid') % dict(name='WIFI0 ' + T('IP address'))))
-        ),
-        Field('wifi0ipv6addr',
-            requires=IS_EMPTY_OR(IS_IPV6CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI0 ' + T('IPv6 address'))))
-        ),
-        Field('wifi0ipv6ra', 'boolean'),
-        Field('wifi0chan',
-            requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name='WIFI0 ' + T('Channel'))))
-        ),
-        Field('wifi0dhcp','boolean'),
-        Field('wifi0vap','boolean'),
-        Field('wifi0dhcprange',
-            requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI0 ' + T('DHCP Range'))))
-        ),
-        Field('wifi1ipv4addr',
-            requires=IS_EMPTY_OR(IS_IPV4(error_message=T('%(name)s is invalid') % dict(name='WIFI1 ' + T('IP address'))))
-        ),
-        Field('wifi1ipv6addr',
-            requires=IS_EMPTY_OR(IS_IPV6CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI1 ' + T('IPv6 address'))))
-        ),
-        Field('wifi1ipv6ra', 'boolean'),
-        Field('wifi1chan',
-            requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name='WIFI1 ' + T('Channel'))))
-        ),
-        Field('wifi1dhcp','boolean'),
-        Field('wifi1vap','boolean'),
-        Field('wifi1dhcprange',
-            requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI1 ' + T('DHCP Range'))))
-        ),
-        Field('wifi2ipv4addr',
-            requires=IS_EMPTY_OR(IS_IPV4(error_message=T('%(name)s is invalid') % dict(name='WIFI2 ' + T('IP address'))))
-        ),
-        Field('wifi2ipv6addr',
-            requires=IS_EMPTY_OR(IS_IPV6CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI2 ' + T('IPv6 address'))))
-        ),
-        Field('wifi2ipv6ra', 'boolean'),
-        Field('wifi2chan',
-            requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name='WIFI2 ' + T('Channel'))))
-        ),
-        Field('wifi2dhcp','boolean'),
-        Field('wifi2vap','boolean'),
-        Field('wifi2dhcprange',
-            requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name='WIFI2 ' + T('DHCP Range'))))
-        ),
         Field('nickname',
             label = T('Nickname'),
             comment = T('Enter your nickname here.'),
@@ -299,4 +254,87 @@ if not config == None:
         Field('url',
             requires=IS_EMPTY_OR(IS_URL(error_message=T('%(name)s is invalid') % dict(name=T('URL'))))
         ),
+        #db.wifi_interfaces.ipv4addr.clone(name='%s_%s' % ("test0", db.wifi_interfaces.ipv4addr.name))
     )
+
+    db.define_table('wifi_interfaces',
+        Field('ipv4addr', label=T('IPv4 Address'), length=15,
+            comment=T('IPv4 address for this interface.'),
+            requires=IS_EMPTY_OR(IS_IPV4(error_message=T('%(name)s is invalid') % dict(name=T('IP address')))),
+            default='1.2.3.4'
+        ),
+        Field('ipv6addr', label=T('IPv6 Address'), length=255,
+            comment=T('IPv6 address for this interface.'),
+            requires=IS_EMPTY_OR(IS_IPV6CIDR(error_message=T('%(name)s is invalid') % dict(name=T('IPv6 address'))))
+        ),
+        Field('ipv6ra', 'boolean', label=T('Router Advertisement'),
+            comment=T('Send IPv6 router advertisements.'), default=False
+        ),
+        Field('chan', 'integer', length=4, label=T('Channel'),
+            comment=T('Channel to operate on.'),
+            requires=IS_EMPTY_OR(IS_INT_IN_RANGE(1, 170, error_message=T('%(name)s is invalid') % dict(name=T('Channel'))))
+        ),
+        Field('dhcp','boolean', label=T('Enable DHCP'), default=True,
+            comment=T('Enable DHCP and allow guests to connect to the network without using olsrd.'),
+        ),
+        Field('vap','boolean', label=T('VAP'), default=True,
+            comment=('Configure a VAP as Access Point. Only with drivers that support this. At the moment these are madwifi, ath5k and ath9k.'),
+        ),
+        Field('dhcprange', length=18, label=T('DHCP Range'),
+            comment=T('The range from which clients are assigned IP adresses. If it is inside your mesh network, then clients are announced as HNA by olsrd. If it is outside, they are natted. If left blank then a range is autocalculated from 6.0.0.0/8.'),
+            requires=IS_EMPTY_OR(IS_IPV4CIDR(error_message=T('%(name)s is invalid') % dict(name=T('DHCP Range'))))
+        ),
+        Field('enabled', 'boolean', label=T("Enabled"),
+            comment=T('If the interface is enabled.')
+        ),
+        Field('id_build', db.imageconf, label=T("Build ID"),
+            comment=T('The parent ID this interface belongs to.')
+        ),
+        #Field('rand',requires=[IS_ALPHANUMERIC(), IS_LENGTH(32)]),
+    )
+    
+if session.community:
+    c = uci.UCI(config.profiles, "profile_" + session.community)
+    community_defaults = c.read()
+    defchannel = c.get(community_defaults, 'wifi_device', 'channel', '1')
+    mesh_network = c.get(community_defaults, 'profile', 'mesh_network', '10.0.0.0/8')
+    defipv4 = defip(mesh_network)
+    ipv6 = c.get(community_defaults, 'profile', 'ipv6', '0')
+    ipv6_config = c.get(community_defaults, 'profile', 'ipv6_config', False)
+    vap = c.get(community_defaults, 'profile', 'vap', '0')
+    adhoc_dhcp_when_vap = c.get(community_defaults, 'profile', 'adhoc_dhcp_when_vap', '0')
+    
+    session.community_packages  = c.get(community_defaults, 'profile', 'extrapackages', '')
+    
+    # db.wifi_interfaces defaults
+    db.wifi_interfaces.chan.default = defchannel
+    db.wifi_interfaces.ipv4addr.default = defipv4
+    if vap == '1':
+        db.wifi_interfaces.vap.default = True
+    if adhoc_dhcp_when_vap == 1:
+        db.wifi_interfaces.dhcp.default = True
+        
+    if ipv6 == '1':
+        session.ipv6 = True
+        session.ipv6conf = True
+        session.ipv6_config = ipv6_config
+        db.wifi_interfaces.ipv6ra.default = True
+    else:
+        session.ipv6 = False
+        session.ipv6conf = False
+        session.ipv6_config = None
+        
+    # db-imageconf defaults
+    db.imageconf.theme.default = c.get(community_defaults, 'profile', 'theme', config.defaulttheme)
+    db.imageconf.latitude.default = c.get(community_defaults, 'profile', 'latitude', '48')
+    db.imageconf.longitude.default = c.get(community_defaults, 'profile', 'longitude', '10')
+    if ipv6 == '1':
+        db.imageconf.ipv6.default = True
+        
+        
+
+       
+       
+    
+       
+        
