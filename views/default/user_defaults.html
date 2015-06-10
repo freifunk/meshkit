@@ -1,0 +1,39 @@
+{{extend 'layout.html'}}
+{{footer_enable=True}}
+<h1>{{=T('Firmware Defaults')}}</h1>
+
+<form action="" name="user_defaults" enctype="multipart/form-data" method="POST" class="form-horizontal border-top{{if session.expert:}} expert-mode{{pass}}">
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+    <!-- General Tab -->
+    {{=formhelpers.panel_start("general", T('General Options'), T('General Options'), True)}}
+        {{=fh.field("community")}}
+        {{=fh.field("expert")}}
+    {{=formhelpers.panel_end()}}
+    
+    <!-- Contact Tab -->
+    {{=formhelpers.panel_start("contact", T('Contact'), T('Contact data that is shown on the routers web interface.'), True)}}
+        {{=fh.field("nickname")}}
+        {{=fh.field("name")}}
+        {{=fh.field("email")}}
+        {{=fh.field("phone")}}
+        {{=fh.field("location")}}
+        {{=fh.field("note")}}
+        {{=fh.field("homepage")}}
+    {{=formhelpers.panel_end()}}
+    
+    <!-- Auth Tab -->
+    {{=formhelpers.panel_start("auth", T('Authentication'), T('Set up a default password and/or ssh public keys here.'), True)}}
+        {{=fh.field("password_hash")}}
+        {{=fh.field("pubkeys")}}
+    {{=formhelpers.panel_end()}}
+    {{=form.hidden_fields()}}
+    {{=form.custom.submit}}
+
+    
+</form>
+
+{{block footer}}
+{{include 'footer.html'}}
+{{end}}
