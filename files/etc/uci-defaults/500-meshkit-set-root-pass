@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# set the root password to the hash stored in meshkit config
+# if a hash is found there
+
+. /lib/functions.sh
+
+config_load meshkit
+config_get hash auth password_hash
+
+if [ -n "$hash" ]; then
+	/bin/sed -i -e "s#root:[^:]*:#root:$hash:#" /etc/shadow
+	/sbin/uci -q delete meshkit.auth.password_hash
+    /sbin/uci commit meshkit
+fi
