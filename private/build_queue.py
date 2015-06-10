@@ -73,7 +73,7 @@ class BuildImages(object):
         self.Profile = _get('profile')
         self.Pubkeys = _get('pubkeys')
         self.password_hash = _get('password_hash')
-        self.Pkgs = _get('pkgs') or ''
+        self.Pkgs = _get('packages') or ''
         self.rows_wifi = db(db.wifi_interfaces.id_build == self.Id).select()
         self.Noconf = _get('noconf')
         if not self.Noconf == True:
