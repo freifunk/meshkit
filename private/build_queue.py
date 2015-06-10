@@ -57,81 +57,72 @@ class BuildImages(object):
         config_file: filename of the config file
     """
 
-    def __init__(self, id=None, rand=None, target=None, profile=None,
-                 pkgs=None, upload=None, mail=None, noconf=True, pubkeys=None,
-                 hostname=None, latitude=None, longitude=None,
-                 ipv6=False, ipv6_config=None,
-                 location=None, community=None, nodenumber=None, nickname=None,
-                 name=None, homepage=None, email=None, phone=None, note=None,
-                 theme=None,
-                 lanproto=None, lanipv4addr=None, lannetmask=None, landhcp=None,
-                 landhcprange=None, wanproto=None, wanipv4addr=None, wannetmask=None,
-                 wangateway=None, wandns=None, wan_allow_ssh=None, wan_allow_web=None,
-                 localrestrict=None, sharenet=None, url=None,
-                 wan_qos=None, wan_qos_down=None, wan_qos_up=None,
-                 ):
-        self.Id = str(id)
-        self.Rand = rand
-        self.Target = target
-        self.Profile = profile
-        self.Pubkeys = pubkeys
-        self.Pkgs = pkgs or ''
+    def __init__(self, row=None):
+        def _get(option):
+            ret = None
+            try:
+                ret = row[option]
+            except KeyError:
+                logger.warning("Could not get option %s from the db" % option)
+                pass
+            return ret
+                    
+        self.Id = _get('id')
+        self.Rand = _get('rand')
+        self.Target = _get('target')
+        self.Profile = _get('profile')
+        self.Pubkeys = _get('pubkeys')
+        self.password_hash = _get('password_hash')
+        self.Pkgs = _get('pkgs') or ''
         self.rows_wifi = db(db.wifi_interfaces.id_build == self.Id).select()
-        if not noconf == True:
+        self.Noconf = _get('noconf')
+        if not self.Noconf == True:
             self.Pkgs += ' meshwizard'
         for row_wifi in self.rows_wifi:
             if row_wifi.vap == True:
                 self.Pkgs += ' hostapd-mini'
                 break
-        self.Upload = upload
-        self.Mail = mail # this is the mailaddress used to send mails after build
-        self.Noconf = noconf
-        self.Latitude = latitude or ''
-        self.Longitude = longitude or ''
-        self.Ipv6 = ipv6
-        self.Ipv6_config = ipv6_config
-        self.Location = location or ''
-        self.Community = community or 'augsburg'
-        self.nodenumber = nodenumber or '1024'
-        self.Nickname = nickname or ''
-        self.Name = name or ''
-        self.Homepage = homepage or ''
-        self.Email = email or '' # this is the email address for contact information
-        self.Phone = phone or ''
-        self.Note = note or ''
-        if theme:
-            self.Theme = theme.replace("luci-theme-", "") or 'freifunk-generic'
+        self.Upload = _get('upload')
+        self.Mail = _get('mail') # this is the mailaddress used to send mails after build
+        self.Latitude = _get('latitude') or ''
+        self.Longitude = _get('longitude') or ''
+        self.Hostname = _get('hostname')
+        
+        self.Ipv6 = _get('ipv6')
+        self.Ipv6_config = _get('ipv6_config')
+        self.Location = _get('location') or ''
+        self.Community = _get('community') or 'augsburg'
+        self.nodenumber = _get('nodenumber') or '1024'
+        self.Nickname = _get('nickname') or ''
+        self.Name = _get('name') or ''
+        self.Homepage = _get('homepage') or ''
+        self.Email = _get('email') or '' # this is the email address for contact information
+        self.Phone = _get('phone') or ''
+        self.Note = _get('note') or ''
+        self.Theme = _get('theme')
+        if self.Theme:
+            self.Theme = self.Theme.replace("luci-theme-", "") or 'freifunk-generic'
         else:
             self.Theme = 'freifunk-generic'
-        self.Lanproto = lanproto or 'dhcp'
-        self.Lanipv4addr = lanipv4addr
-        self.Lannetmask = lannetmask or '255.255.255.0'
-        self.Landhcp = landhcp and "1" or "0"
-        self.Landhcprange = landhcprange or ''
-        self.Wanproto = wanproto or 'static'
-        self.Wanipv4addr = wanipv4addr
-        self.Wannetmask = wannetmask or '255.255.255.0'
-        self.Wangateway = wangateway or ''
-        self.Wandns = wandns or ''
-        self.Wan_allow_ssh = wan_allow_ssh and 1 or 0
-        self.Wan_allow_web = wan_allow_web and 1 or 0
-        self.Localrestrict = localrestrict and "1" or "0"
-        self.Sharenet = sharenet and "1" or "0"
-        self.Wan_qos = wan_qos and 1 or 0
-        self.Wan_qos_down = wan_qos_down or "1024"
-        self.Wan_qos_up = wan_qos_up or "128"
+        self.Lanproto = _get('lanproto') or 'dhcp'
+        self.Lanipv4addr = _get('lanipv4addr')
+        self.Lannetmask = _get('lannetmask') or '255.255.255.0'
+        self.Landhcp = _get('landhcp') and "1" or "0"
+        self.Landhcprange = _get('landhcprange') or ''
+        self.Wanproto = _get('wanproto') or 'static'
+        self.Wanipv4addr = _get('wanipv4addr')
+        self.Wannetmask = _get('wannetmask') or '255.255.255.0'
+        self.Wangateway = _get('wangateway') or ''
+        self.Wandns = _get('wandns') or ''
+        self.Wan_allow_ssh = _get('wan_allow_ssh') and 1 or 0
+        self.Wan_allow_web = _get('wan_allow_web') and 1 or 0
+        self.Localrestrict = _get('localrestrict') and "1" or "0"
+        self.Sharenet = _get('sharenet') and "1" or "0"
+        self.Wan_qos = _get('wan_qos') and 1 or 0
+        self.Wan_qos_down = _get('wan_qos_down') or "1024"
+        self.Wan_qos_up = _get('wan_qos_up') or "128"
+        self.Url = _get('url') or ''
         
-        
-        self.Hostname = hostname
-#        if not self.Hostname:
-#            for row_wifi in self.rows_wifi:
-#                if row_wifi.ipv4addr:
-#                    self.Hostname = row_wifi.ipv4addr.replace(".", "-")
-#                    break
-#        
-#        if not self.Hostname:    
-#            self.Hostname = "OpenWrt"
- 
         self.OutputDir = os.path.join(config.images_output_dir, self.Rand)
         self.FilesDir = os.path.join(self.OutputDir, "files")
         self.FilesDirInit = os.path.join(self.FilesDir, 'etc', 'init.d')
@@ -140,7 +131,6 @@ class BuildImages(object):
         self.BinDir = os.path.join(self.OutputDir, "bin")
         self.OutputDirWeb = os.path.join(config.images_web_dir, self.Rand)
         self.BinDirWeb = os.path.join(self.OutputDirWeb, "bin")
-        self.Url = url or ''
 
 
     def build_links_json(self):
@@ -351,34 +341,6 @@ class BuildImages(object):
                 self.Ipv6_config == 'static')):
                 config += "\toption 'IB_wifi" +  str(wifi_counter) + "_ipv6ra' '" + (row_wifi.ipv6ra and "1" or "0") + "'\n"
                 
-        
-            #        for i in range(0,3): # configure up to 3 wifi interfaces
-            #            i = str(i)
-            #            try:
-            #                wifiipv4 = eval('self.Wifi' + i + 'ipv4addr')
-            #                wifiipv6 = eval('self.Wifi' + i + 'ipv6addr')
-            #                ra = eval('self.Wifi' +  i + 'ipv6ra')
-            #                vap = eval('self.Wifi' +  i + 'vap')
-            #                if wifiipv4 is not None:
-            #                    chan = eval('self.Wifi' + i + 'chan')
-            #                    dhcp = eval('self.Wifi' +  i + 'dhcp')
-            #                    dhcprange = eval('self.Wifi' + i + 'dhcprange')
-            #                    config += "\toption 'IB_wifi" + i + "_config' '1'\n"
-            #                    config += "\toption 'IB_wifi" + i + "_ip4addr' '" + wifiipv4 + "'\n"
-            #                    config += "\toption 'IB_wifi" + i + "_channel' '" + chan + "'\n"
-            #                    config += "\toption 'IB_wifi" + i + "_dhcp' '" + dhcp + "'\n"
-            #                    config += "\toption 'IB_wifi" + i + "_dhcprange' '" + dhcprange + "'\n"
-            #                    config += "\toption 'IB_wifi" + i + "_vap' '" + vap + "'\n"
-
-            #                    if self.Ipv6 and self.Ipv6_config == 'static' and wifiipv6:
-            #                        config += "\toption 'IB_wifi" + i + "_ip6addr' '" + wifiipv6 + "'\n"
-            #                    if self.Ipv6 and (self.Ipv6_config == 'auto-ipv6-random' or
-            #                                      self.Ipv6_config == 'auto-ipv6-fromv4' or
-            #                                      self.Ipv6_config == 'static'):
-            #                        config += "\toption 'IB_wifi" + i + "_ipv6ra' '" + ra + "'\n"
-            #            except NameError:
-            #                pass
-
             if self.Wanproto == 'olsr' and self.Wanipv4addr is not None:
                 config += "\toption 'wan_config' '1'\n"
                 config += "\toption 'wan_proto' '" + self.Wanproto + "'\n"
@@ -463,17 +425,17 @@ class BuildImages(object):
                 pass
 
         # Write /etc/config/meshkit containing current configuration
-	#config_meshkit = 'config "meshkit" "update"\n'
-        #for o in self.__dict__:
-        #    v = "{key}\t'{value}'".format(key=o, value=self.__dict__[o])
-        #    config_meshkit += '\toption' + '\t' + v + '\n'
-
         config_meshkit = add_section('meshkit', 'update')
         if self.Profile:
             config_meshkit += add_option('profile', self.Profile)
         config_meshkit += add_option('target', self.Target)
         config_meshkit += add_option('url', self.Url)
-
+        
+        # if a password_hash is available then write it to the meshkit config too
+        if self.password_hash:
+            config_meshkit += "\n"
+            config_meshkit += add_section('defaults', 'auth')
+            config_meshkit += add_option('password_hash', self.password_hash)
         try:
             f = open(os.path.join(self.FilesDirConfig, 'meshkit'), "w")
             try:
@@ -483,8 +445,6 @@ class BuildImages(object):
         except IOError:
             logger.critical("Could not write /etc/config/meshkit!")
 
-
-    
 
     def build(self):
         logger.info('Build started, ID: %s, Target: %s' % (self.Id, self.Target) )
@@ -539,9 +499,6 @@ class BuildImages(object):
                     except:
                         logger.warning('Could not delete %s' % uploaded_file)
                         
-            # add uci-defaults-script to set password (if password_hash is available)
-            
-
             out = open(self.BinDir + "/build.log", "w")
             if self.Profile:
                 option_profile = "PROFILE='" + self.Profile + "'"
@@ -595,22 +552,7 @@ else:
                 rows = []
 
             for row in rows:
-                builder = BuildImages(id=row.id, rand=row.rand, target=row.target, mail=row.mail,
-                                      profile=row.profile, pkgs=row.packages, upload=row.upload,
-                                      noconf=row.noconf, pubkeys=row.pubkeys, hostname=row.hostname, nodenumber=row.nodenumber,
-                                      latitude=row.latitude, longitude=row.longitude, location=row.location,
-                                      ipv6=row.ipv6, ipv6_config=row.ipv6_config,
-                                      community=row.community, nickname=row.nickname, name=row.name, homepage=row.homepage,
-                                      email=row.email, phone=row.phone, note=row.note, theme=row.theme,
-                                      lanproto=row.lanproto, lanipv4addr=row.lanipv4addr,
-                                      lannetmask=row.lannetmask, landhcp=row.landhcp,
-                                      landhcprange=row.landhcprange, wanproto=row.wanproto,
-                                      wanipv4addr=row.wanipv4addr, wannetmask=row.wannetmask,
-                                      wangateway=row.wangateway, wandns=row.wandns,
-                                      wan_allow_ssh=row.wan_allow_ssh, wan_allow_web=row.wan_allow_web,
-                                      localrestrict=row.localrestrict, sharenet=row.sharenet, url=row.url,
-                                      wan_qos=row.wan_qos, wan_qos_down=row.wan_qos_down, wan_qos_up=row.wan_qos_up
-                                      )
+                builder = BuildImages(row)
                 ret = builder.build()
                 if ret == 0:
                     logger.info('Build finished, ID: %s ' % str(row.id))
