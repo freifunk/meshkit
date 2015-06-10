@@ -5262,7 +5262,8 @@ dl dd {
 #docurl {
   margin-bottom: 25px;
 }
-#imageconf_pubkeys {
+/* do not wrap pubkey text fields */
+textarea[id$="_pubkeys"] {
   white-space: pre;
   word-wrap: normal;
   overflow-x: auto;
