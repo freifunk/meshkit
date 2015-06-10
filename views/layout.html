@@ -61,7 +61,7 @@
                     <div class="collapse navbar-collapse navbar-ex1-collapse">
                         <ul class="nav navbar-nav navbar-right">
                             {{# 'auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
-                            {{='auth' in globals() and custom.navbar(auth.navbar(mode='bare')) or ''}}
+                            {{='auth' in globals() and custom.navbar(auth.navbar(mode='bare'), current.config.communitysupport) or ''}}
                         </ul>
                         
                         {{if response.menu:}}
@@ -72,6 +72,7 @@
             </nav>
             <!-- Masthead ===================================== -->    
             {{block header}}
+            {{=response.toolbar()}}
             {{include 'header.html'}}
             {{end}}
             <!-- Main ========================================= -->

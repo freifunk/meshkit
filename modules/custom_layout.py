@@ -3,10 +3,14 @@
 
 from gluon import *
 
-def navbar(auth_navbar):
+def navbar(auth_navbar, user_defaults=False):
     """ create a custom user navbar element (login, register...)
     
         see gluon/tools.py
+        
+        Args:
+            user_defaults: Show user defaults link for logged in users if True
+        
     """
     bar = auth_navbar
     user = bar["user"]
@@ -49,10 +53,18 @@ def navbar(auth_navbar):
         li_password = LI(A(current.T("Password"), _class="icon-user",
                         _href=bar["change_password"], _rel="nofollow"))
                         
+        
+        if user_defaults:
+            li_defaults = LI(A(current.T("Firmware Defaults"), _class="icon-wrench",
+                            _href=URL("user_defaults"), _rel="nofollow"))
+        else:
+            li_defaults = ''
+                        
         li_logout = LI(A(current.T("Log Out"), _class="icon-login",
                        _href=bar["logout"], _rel="nofollow"))
                        
-        dropdown = UL(li_profile,
+        dropdown = UL(li_defaults,
+                      li_profile,
                       li_password,
                       LI('', _class="divider"),
                       li_logout,

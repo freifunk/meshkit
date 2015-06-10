@@ -20,40 +20,19 @@ if not config == None:
         Field('noconf', 'boolean', label=T("No configuration"),
             comment=T('If you check this option meshkit will only build your images, but not configure your system. Also it is still possible to select packages and upload your own files.')
         ),
-        Field('expert', 'boolean', label=T('Expert mode'),
-            comment=T('Enable this to show much more options for customizing your firmware.')),
+        db.user_defaults.expert,
         Field('mail', label=T('Email'),
             comment=T('Enter your email address here. After the images have been built you will receive an email with download links for the firmware.'),
             requires=IS_EMPTY_OR(IS_EMAIL(error_message=T('%(name)s is invalid') % dict(name=T('Email')))),
         ),
-        Field('community',
-            label=T('Community'),
-            comment=T('Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.'),
-            requires=IS_IN_SET(communities,
-                zero=None,
-                error_message=T('%(name)s is invalid') % dict(name=T('Community'))
-            )
-        ),
+        db.user_defaults.community,
         Field('nodenumber', 
             label=T('Nodenumber'),
             comment=T('Please enter the Node Number for your weimarnetz node.'),
             requires=IS_EMPTY_OR(IS_DECIMAL_IN_RANGE(1, 1000, error_message=T('%(name)s is invalid') % dict(name=T('Node Number'))))
         ),
-        Field('password_hash', type='string', default=None,
-            label = T('Password'),
-            comment = T('Set a password here. Only the hash is transferred to and stored on the server. But you should change the password after the first login nevertheless.'),
-            requires=IS_EMPTY_OR(
-                IS_MD5CRYPT()
-            ),
-            widget=password_md5crypt
-        ),
-        Field('pubkeys',type='text', label=T('Public Keys'),
-            comment=T('Add ssh public keys, one per line.'),
-            requires=IS_EMPTY_OR([
-                    IS_LENGTH(32768,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Pubkeys'), len='32768')),
-                    IS_MATCH('[a-zA-Z0-9\/\+,-@\.\=]+', error_message=T('%(name)s contains invalid characters') % dict(name=T('Pubkeys')) )
-                ])
-        ),
+        db.user_defaults.password_hash.clone(label=T('Password')),
+        db.user_defaults.pubkeys,
         Field('profile',
             label=T('Profile'),
             comment=T('This sets a profile for your router model. If your device is not listed try something generic (default) if available.'),
@@ -116,50 +95,13 @@ if not config == None:
             requires=IS_EMPTY_OR(IS_UPLOAD_FILENAME(extension='gz', error_message=T('%(name)s is invalid') % dict(name=T('Upload'))))
         ),
         Field('wifiifsnr', 'integer'),
-        Field('nickname',
-            label = T('Nickname'),
-            comment = T('Enter your nickname here.'),
-            requires=IS_EMPTY_OR(
-                IS_LENGTH(32,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Nickname'), len='32'))
-            )
-        ),
-        Field('name',
-            label = T('Name'),
-            comment = T('Enter your name here.'),
-            requires=IS_EMPTY_OR(
-                IS_LENGTH(32,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Name'), len='32'))
-            )
-        ),
-        Field('email',
-            label = T('Mail'),
-            comment = T('Enter your email address here.'),
-            requires=IS_EMPTY_OR(IS_EMAIL(error_message=T('Not a valid email address!')))
-        ),
-        Field('phone', label=T('Phone'),
-            comment = T('Enter your phone number here.'),
-            requires=IS_EMPTY_OR(
-            IS_LENGTH(32,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Phone'), len='32'))
-            )
-        ),
-        Field('location', label=T('Location'),
-            comment=T('Location of your node.'),
-            requires=IS_EMPTY_OR(
-                IS_LENGTH(64,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Location'), len='64'))
-            )
-        ),
-        Field('homepage',
-            label = T('Homepage'),
-            comment = T('If you have a homepage, then you can add it here.'),
-            requires=IS_EMPTY_OR(
-                IS_URL(error_message=T("%(name)s isn't a valid URL") % dict(name=T('Homepage'), len='255'))
-            )
-        ),
-        Field('note', length=1024, type='text', label = T("Note"),
-            comment = T('You may enter a custom comment here.'),
-            requires=IS_EMPTY_OR(
-                    IS_LENGTH(1024,0, error_message=T('%(name)s can only be up to %(len)s characters long') % dict(name=T('Note'), len='1024'))
-                )
-        ),
+        db.user_defaults.nickname,
+        db.user_defaults.name,
+        db.user_defaults.email,
+        db.user_defaults.phone,
+        db.user_defaults.location,
+        db.user_defaults.homepage,
+        db.user_defaults.note,
         Field('wanproto', label=T('WAN Protocol'),
             comment=T('Protocol to use for the WAN interface.'),
             requires=IS_EMPTY_OR(

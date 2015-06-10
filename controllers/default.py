@@ -59,8 +59,14 @@ def index():
         db.imageconf.community.writable = False
     
     if auth.user:
-        session.community = auth.user.community
-        db.imageconf.community.default = session.community
+        user_defaults = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
+        if user_defaults:
+            if "community" in user_defaults:
+                session.community = user_defaults.community
+                db.imageconf.community.default = session.community
+                if "expert" in user_defaults:
+                    db.imageconf.expert.default = user_defaults.expert
+        # use the registration email here, not the one from user defaults.
         db.imageconf.mail.default = auth.user.email
     else:
         session.community = ''
@@ -108,8 +114,6 @@ def index():
     return dict(form=form, formhelpers=formhelpers, modellist=modellist,
                 startpage=startpage)
     
-# coding: utf8
-# try something like
 def wizard():
     import random
     import datetime
@@ -123,14 +127,21 @@ def wizard():
     # overwrite field defaults and requires before creating the SQLFORM
     
     if auth.user:
-        db.imageconf.pubkeys.default = auth.user.pubkeys
-        db.imageconf.location.default = auth.user.location
-        db.imageconf.nickname.default = auth.user.username
-        db.imageconf.name.default = auth.user.name
-        db.imageconf.email.default = auth.user.email
-        db.imageconf.homepage.default = auth.user.homepage
-        db.imageconf.phone.default = auth.user.phone
-        db.imageconf.note.default = auth.user.note
+        user_defaults = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
+        ud_items = [ 'pubkeys', 'expert', 'location', 'nickname', 'name', 'email', 'homepage', 'phone', 'note', 'password_hash']
+        
+        for k in ud_items:
+            if k in user_defaults and user_defaults[k]:
+                db.imageconf[k].default = user_defaults[k]
+                
+            
+#        db.imageconf.location.default = auth.user.location
+#        db.imageconf.nickname.default = auth.user.username
+#        db.imageconf.name.default = auth.user.name
+#        db.imageconf.email.default = auth.user.email
+#        db.imageconf.homepage.default = auth.user.homepage
+#        db.imageconf.phone.default = auth.user.phone
+#        db.imageconf.note.default = auth.user.note
         
     
     db.imageconf.profile.requires = IS_IN_SET(
@@ -251,6 +262,46 @@ def wizard():
                 ipv6_packages=ipv6_packages, formhelpers=formhelpers,
                 fh = formhelpers.customField(form, "imageconf")
                 )
+
+@auth.requires_login()
+def user_defaults():
+    """ user defaults to prefill fields in forms """
+    user_defaults = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
+    id_user_defaults = None
+    
+    if user_defaults:
+        id_user_defaults = user_defaults.id
+    else:
+        # no user defaults exist, creating a new row
+        id_user_defaults = db.user_defaults.insert(
+            id_auth_user=auth.user_id,
+            nickname=auth.user.username,
+            email=auth.user.email
+        )
+        user_defaults = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
+    
+    db.user_defaults.id.readable = False
+    db.user_defaults.id_auth_user.readable = False
+    db.user_defaults.id_auth_user.writable = False
+    
+    form = SQLFORM(db.user_defaults, id_user_defaults)
+
+    if form.process(session=None, formname='user_defaults', keepvalues=True).accepted:
+        response.flash = 'form accepted'
+    elif form.errors:
+        errormsg = ''
+        for i in form.errors:
+            errormsg = errormsg + "<li>" + str(form.errors[i]) + "</li>"
+            response.flash = XML(T('Form has errors:') + "</br><ul>" + errormsg + "</ul>")
+
+    return(
+        dict(
+            form=form,
+            formhelpers=formhelpers,
+            fh=formhelpers.customField(form, "user_defaults")
+        )
+    )
+    
 
 def build():
     queuedimg = str(cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60))

@@ -92,22 +92,6 @@
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-<!-- Start wifi tab -->
-    {{if session.community <> 'weimar' and not session.noconf == True:}}
-    {{=formhelpers.panel_start("wireless", T('Wireless'), T('Configure your wireless interface(s) here. These will be configured to operate in adhoc mode with the correct settings for your community.'), True)}}
-    <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or '0'}}" />
-
-    <div id="wifi-interfaces">
-        <!-- populated by js -->
-    </div>
-    <a href="javascript:void(0)" id="wifi-interface-add">{{=T('Add another wifi interface.')}}</a>
-    <a href="javascript:void(0)" id="wifi-interface-remove">{{=T('Remove last wifi interface.')}}</a>
-    
-    {{=formhelpers.panel_end()}}
-    {{pass}}
-    <!-- End wifi tab -->
-        
-        
         <!-- SYSTEM TAB -->
         {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), True)}}
         
@@ -175,93 +159,107 @@
         {{=formhelpers.panel_end()}}
         {{pass}}
 
-    
-    <!-- LAN TAB -->
-    {{if session.community <> 'weimar' and not session.noconf == True:}}
-    {{=formhelpers.panel_start("lan", T('LAN'), T('You can change the settings for the LAN interface here.'))}}
-    <ul>
-        <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
-        <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
-    </ul>
-    {{=fh.field("lanproto")}}
-    {{=fh.field("lanipv4addr")}}
-    {{=fh.field("lannetmask")}}
+        <!-- Start wifi tab -->
+        {{if session.community <> 'weimar' and not session.noconf == True:}}
+        {{=formhelpers.panel_start("wireless", T('Wireless'), T('Configure your wireless interface(s) here. These will be configured to operate in adhoc mode with the correct settings for your community.'))}}
+        <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or '0'}}" />
 
-    <div id="lan_options">
-        <!--This will be inserted by the lanselect() function -->
-    </div>
-    {{=formhelpers.panel_end()}}
-    {{pass}}
+        <div id="wifi-interfaces">
+            <!-- populated by js -->
+        </div>
+        <a href="javascript:void(0)" id="wifi-interface-add">{{=T('Add another wifi interface.')}}</a>
+        <a href="javascript:void(0)" id="wifi-interface-remove">{{=T('Remove last wifi interface.')}}</a>
+
+        {{=formhelpers.panel_end()}}
+        {{pass}}
+        <!-- End wifi tab -->
+        
+        <!-- LAN TAB -->
+        {{if session.community <> 'weimar' and not session.noconf == True:}}
+        {{=formhelpers.panel_start("lan", T('LAN'), T('You can change the settings for the LAN interface here.'))}}
+        <ul>
+            <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
+            <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
+        </ul>
+        {{=fh.field("lanproto")}}
+        {{=fh.field("lanipv4addr")}}
+        {{=fh.field("lannetmask")}}
+
+        <div id="lan_options">
+            <!--This will be inserted by the lanselect() function -->
+        </div>
+        {{=formhelpers.panel_end()}}
+        {{pass}}
 
   
  
-    <!-- WAN TAB -->
-    {{if session.community <> 'weimar' and not session.noconf == True:}}
-    {{=formhelpers.panel_start("wan", T('WAN'), T('Configure your wan interface here. The OpenWrt Default is to use "dhcp".'))}}
+        <!-- WAN TAB -->
+        {{if session.community <> 'weimar' and not session.noconf == True:}}
+        {{=formhelpers.panel_start("wan", T('WAN'), T('Configure your wan interface here. The OpenWrt Default is to use "dhcp".'))}}
 
-    {{=fh.field("wanproto")}}
-    <div id="wan_options">
-        <!-- This will be inserted by the wanselect() function -->
-    </div>
-    {{=formhelpers.panel_end()}}
-    {{pass}}
-
-
-
-    <!-- PACKAGES TAB -->
-    {{=formhelpers.panel_start("packages", T('Packages'), T('Add or remove packages which are going to be installed into your firmware image here.'))}}
-    <strong>{{=T('Default Packages')}}:</strong> 
-    <div id='default-packages'></div>
-    <div style="clear:both"></div>
-
-    {{=fh.field("packages")}}
+        {{=fh.field("wanproto")}}
+        <div id="wan_options">
+            <!-- This will be inserted by the wanselect() function -->
+        </div>
+        {{=formhelpers.panel_end()}}
+        {{pass}}
 
 
-    <H2>{{=T('Available Packages')}}</h2>
 
-    <div class="panel-group" id="packagelist" role="tablist" aria-multiselectable="true">
-        <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
-        {{T("Loading package list...")}}
-    </div>
-    {{=formhelpers.panel_end()}}
+        <!-- PACKAGES TAB -->
+        {{=formhelpers.panel_start("packages", T('Packages'), T('Add or remove packages which are going to be installed into your firmware image here.'))}}
+        <strong>{{=T('Default Packages')}}:</strong> 
+        <div id='default-packages'></div>
+        <div style="clear:both"></div>
+
+        {{=fh.field("packages")}}
 
 
-    <!-- UPLOAD TAB -->
-    {{=formhelpers.panel_start("upload", T('Upload'), T('Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive.'))}}
+        <H2>{{=T('Available Packages')}}</h2>
 
-    <input type="file" id="upload" class="upload" name="upload"/>
-    {{ if form.errors.upload:}}
+        <div class="panel-group" id="packagelist" role="tablist" aria-multiselectable="true">
+            <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+            {{T("Loading package list...")}}
+        </div>
+        {{=formhelpers.panel_end()}}
+
+
+        <!-- UPLOAD TAB -->
+        {{=formhelpers.panel_start("upload", T('Upload'), T('Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive.'))}}
+
+        <input type="file" id="upload" class="upload" name="upload"/>
+        {{ if form.errors.upload:}}
         <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
-    {{pass}}
-    {{=formhelpers.panel_end()}}
-  
-    <!-- Start submit tab -->
-    {{=formhelpers.panel_start("submit", T('Submit'), T('Submit the form and build your images. Note: root password will be "admin" if not set.'))}}
-    <input type="submit" value="{{=T('Build image')}}" class="btn btn-default btn-primary" />
-    {{=formhelpers.panel_end()}}
+        {{pass}}
+        {{=formhelpers.panel_end()}}
+
+        <!-- Start submit tab -->
+        {{=formhelpers.panel_start("submit", T('Submit'), T('Submit the form and build your images. Note: root password will be "admin" if not set.'))}}
+        <input type="submit" value="{{=T('Build image')}}" class="btn btn-default btn-primary" />
+        {{=formhelpers.panel_end()}}
+        <!-- End submit tab -->
+
     </div>
-    <!-- End submit tab -->
 
-  <!-- Hidden fields -->
-  <input type="hidden" name="target" value="{{=session.target}}" />
-  <input type="hidden" name="url" value="{{=session.url}}" />
-  {{if not config.noconf == True:}}
-  <input type="hidden" name="community" value="{{=session.community}}" />
-  {{pass}}
-  <input type="hidden" name="mail" value="{{=session.mail}}" />
-  {{if not config.noconf == True:}}
-	{{if not session.noconf == False:}}
-  <input type="hidden" name="noconf" value="True" />
-	{{pass}}
-  {{pass}}
-  {{ if session.ipv6_config:}}
-  <input type="hidden" name="ipv6_config" value="{{=session.ipv6_config}}" />
-  {{pass}}
-  <input type="hidden" name="status" value="1" />
-  <input type="hidden" name="rand" value="{{=rand}}" />
-  <input type="hidden" name="_formname" value="step2" />
 
-   
+    <!-- Hidden fields -->
+    <input type="hidden" name="target" value="{{=session.target}}" />
+    <input type="hidden" name="url" value="{{=session.url}}" />
+    {{if not config.noconf == True:}}
+    <input type="hidden" name="community" value="{{=session.community}}" />
+    {{pass}}
+    <input type="hidden" name="mail" value="{{=session.mail}}" />
+    {{if not config.noconf == True:}}
+    {{if not session.noconf == False:}}
+    <input type="hidden" name="noconf" value="True" />
+    {{pass}}
+    {{pass}}
+    {{ if session.ipv6_config:}}
+    <input type="hidden" name="ipv6_config" value="{{=session.ipv6_config}}" />
+    {{pass}}
+    <input type="hidden" name="status" value="1" />
+    <input type="hidden" name="rand" value="{{=rand}}" />
+    {{=form.hidden_fields()}}
 </form>
 
 
