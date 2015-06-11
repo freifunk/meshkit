@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 #########################################################################
@@ -11,6 +12,8 @@
 
 #from gluon import current
 
+# custom user login controls in navbar
+import custom_layout as custom
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -33,7 +36,6 @@ response.generic_patterns = ['*'] if request.is_local else []
 # response.optimize_js = 'concat,minify,inline'
 
 response.formstyle = 'bootstrap3_inline' # or 'bootstrap3_stacked' or 'bootstrap2' or other
-
 response.logo = A(
     IMG(
         _src=URL('static','images/logo.png'),
@@ -42,8 +44,3 @@ response.logo = A(
     _href=URL('index'),
     _class="site-logo"
 )
-
-# custom user login controls in navbar
-import custom_layout as custom
-
-#current.db = db

@@ -1,22 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from gluon.storage import Storage
 settings = Storage()
 
 migrate = False
 fake_migrate = False
+fake_migrate_all = False
 
-app_mode = "development"
-if app_mode == "development":
-    # enable reloading of modules when their code was modified
-    from gluon.custom_import import track_changes
-    track_changes(True)
-    # migration settings
-    migrate=True
-    #fake_migrate=True
-    #fake_migrate_all=True
-else:
-    # process js and css files
-    response.optimize_css = 'concat,minify'
-    response.optimize_js = 'concat,minify'
+
 
 settings.migrate = migrate
 # use fake_migrate to repair broken tables

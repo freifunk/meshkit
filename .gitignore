@@ -3,6 +3,7 @@ errors
 databases
 sessions
 uploads
+static/temp
 *.bak
 *.svn
 *.bak

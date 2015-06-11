@@ -1,7 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from meshkit import *
 from gluon import current
 
 db.define_table('config',
+    Field('mode', label=T('Application Mode'), default='production',
+        comment=T('Development mode disables caching and minimizing/merging of assets (js and css files).'),
+        requires=IS_IN_SET(
+            {
+                'production': T('Production'),
+                'development': T('Development')
+            },
+            zero=None,
+        )
+    ),
     Field('noconf', 'boolean'),
     Field('communitysupport', 'boolean'),
     Field('profiles',
@@ -83,6 +96,18 @@ if config:
     else:
         communities = []
 
+    # development/production settings:
+    
+    if config.mode == 'development':
+        # enable reloading of modules when their code was modified
+        from gluon.custom_import import track_changes
+        track_changes(True)
+        settings.migrate = migrate = True
+        #fake_migrate=True
+        #fake_migrate_all=True
+    else:
+        response.optimize_css = 'concat,minify'
+        response.optimize_js = 'concat,minify'
 
 # Needs to be there so config can be accessed in modules
 current.config = config
