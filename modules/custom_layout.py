@@ -47,7 +47,7 @@ def navbar(auth_navbar, user_defaults=False):
                    _class="dropdown-toggle",
                    _rel="nofollow",
                    ** {"_data-toggle": "dropdown"})
-        li_profile = LI(A(current.T("Account Details"), _class="icon-wrench",
+        li_profile = LI(A(current.T("Account Details"), _class="icon-cog",
                         _href=bar["profile"], _rel="nofollow"))
         
         li_password = LI(A(current.T("Password"), _class="icon-user",

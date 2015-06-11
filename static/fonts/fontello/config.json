@@ -37,6 +37,18 @@
       "src": "entypo"
     },
     {
+      "uid": "2626e3a1bbcd90e45849af3b58a1d594",
+      "css": "trash",
+      "code": 59403,
+      "src": "entypo"
+    },
+    {
+      "uid": "bc64550dd022ce21604f97309b346cea",
+      "css": "cog",
+      "code": 59404,
+      "src": "entypo"
+    },
+    {
       "uid": "a204f0fa972408eaae5a363c444991b2",
       "css": "login",
       "code": 59398,

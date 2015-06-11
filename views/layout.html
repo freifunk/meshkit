@@ -70,14 +70,16 @@
             </nav>
             <!-- Masthead ===================================== -->    
             {{block header}}
-            {{if current.config.mode == 'development':}}
-            {{=response.toolbar()}}
-            {{pass}}
             {{include 'header.html'}}
             {{end}}
             <!-- Main ========================================= -->
             <!-- Begin page content -->
             <div class="container main-content">
+                {{if current.config.mode == 'development':}}
+                    <div class="app-toolbar">
+                        {{=response.toolbar()}}
+                    </div>
+                {{pass}}
                 <div class="row">
                     {{if left_sidebar_enabled:}}
                     <div class="col-md-3 left-sidebar">
