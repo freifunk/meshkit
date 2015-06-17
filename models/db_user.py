@@ -106,6 +106,7 @@ if config and config.communitysupport:
               comment=T('Default password that is set on the router. We only store a salted hash of the password on the server. Still you should change the password after you flashed the image and log in for the first time.'),
               widget=password_md5crypt
         ),
+        # TODO: Make a list:string
         Field('pubkeys',type='text', label=T('Public Keys'),
             comment=T('Add ssh public keys, one per line.'),
             requires=IS_EMPTY_OR([

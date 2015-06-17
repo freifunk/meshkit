@@ -6,8 +6,7 @@
         extrapackages = '',
         communitypackages = '{{=community_packages}}',
         nosharepackages = '',
-        luci_default_packages = '{{=lucipackages}}',
-        lucipackages = '',
+        webifpackages = ''
         qospackages = '',
         ipv6packages_default = '{{=ipv6_packages}}',
         ipv6packages = '{{=ipv6_packages}}',
@@ -83,7 +82,7 @@
       }
 </script>
 
-{{#BEAUTIFY(session)}}
+{{BEAUTIFY(form.errors)}}
 <h1>{{=T('2. Image configuration')}}</h1>
 
 
@@ -91,7 +90,6 @@
 <form action="" name="MAINFORM" enctype="multipart/form-data" method="POST" class="form-horizontal border-top{{if session.expert:}} expert-mode{{pass}}">
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-
         <!-- SYSTEM TAB -->
         {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), True)}}
         

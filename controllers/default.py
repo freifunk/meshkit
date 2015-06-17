@@ -46,6 +46,13 @@ def index():
     else:
         db.imageconf.community.requires=IS_EMPTY()
         communities = []
+    
+    # allow empty values for webif in this step
+    db.imageconf.webif.requires = IS_EMPTY_OR(
+        IS_IN_DB(
+            db, db.gui.id, '%(full_name)s'
+        ),
+    ),
             
     targets = get_targets(config.buildroots_dir)
     if len(targets) == 1:
@@ -151,12 +158,6 @@ def wizard():
     )
     db.imageconf.profile.default=session.profile
     
-    db.imageconf.webif.requires = IS_IN_SET(
-        config.webifs,
-        error_message=T('%(name)s is invalid') % dict(name=T('Webinterface')),
-        zero=None,
-    )
-    
     db.imageconf.theme.requires = IS_IN_SET(
         themes,
         error_message=T('%(name)s is invalid') % dict(name=T('Theme')),
@@ -200,13 +201,11 @@ def wizard():
     session.url = URL(request.application, request.controller, 'api/json/buildimage', scheme=True, host=True)
     if config.communitysupport == True:
         nodenumber = ''
-        # Add meshwizard to defaultpackages and lucipackages
+        # Add meshwizard to defaultpackages
         defaultpkgs.append('meshwizard')
-        lucipackages = config.lucipackages + " luci-app-meshwizard"
         session.communitysupport = True
     else:
         session.communitysupport = False
-        lucipackages = config.lucipackages
         nodenumber = False
         community_defaults = dict()
         
@@ -256,7 +255,7 @@ def wizard():
         
     hash = hashlib.md5(str(datetime.datetime.now()) + str(random.randint(1,999999999))).hexdigest()
     
-    return dict(form=form, packages='',rand=hash, defaultpkgs=defaultpkgs, lucipackages=lucipackages, nodenumber=nodenumber,
+    return dict(form=form, packages='',rand=hash, defaultpkgs=defaultpkgs, nodenumber=nodenumber,
                 community_packages=session.community_packages  + " " + config.add_defaultpackages,
                 user_packagelist=user_packagelist, addpackages='',
                 ipv6_packages=ipv6_packages, formhelpers=formhelpers,

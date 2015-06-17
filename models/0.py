@@ -4,11 +4,9 @@
 from gluon.storage import Storage
 settings = Storage()
 
-migrate = False
+migrate = True
 fake_migrate = False
 fake_migrate_all = False
-
-
 
 settings.migrate = migrate
 # use fake_migrate to repair broken tables
@@ -32,5 +30,3 @@ settings.plugins = []
 
 response.title = settings.title
 response.subtitle = settings.subtitle
-
-

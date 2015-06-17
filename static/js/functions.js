@@ -19,13 +19,14 @@ function loadScript(url, callback)
 }
 
 function themepkgs() {
-	var e = document.getElementById('imageconf_theme');
-	var selected = e.options[e.selectedIndex].value;
-	themepackages = selected;
-	update_defaultpkgs();
+    var theme_select = $('#imageconf_theme');
+    if ( theme_select.length ) { 
+        themepackages = theme_select.val();
+        update_defaultpkgs();
+    }
 }
 
-// used to flip the display property
+// usesld to flip the display property
 //function showHide(obj){
 //  if(obj)
 //    obj.style.display = obj.style.display=='none' ? 'block' : 'none'
@@ -234,7 +235,7 @@ function update_defaultpkgs() {
 			addpackages += " " + user_packagelist;
 		}
 	}
-	if( typeof lucipackages != "undefined") { addpackages += " " + lucipackages };
+	if( typeof webifpackages != "undefined") { addpackages += " " + webifpackages };
 	if( typeof themepackages != "undefined") { addpackages += " " + themepackages };
 	if( typeof defaultpackages != "undefined") { packages += " " + defaultpackages };
 	if( typeof communitypackages != "undefined") { addpackages += " " + communitypackages };
@@ -389,20 +390,85 @@ function set_packages() {
 }
 
 function themeselect() {
-    var selected = $("#imageconf_webif").val();
-    if (selected === "none") {
-        $("#theme_options").html('');
-        lucipackages = "";
-        themepackages = "";
-        update_defaultpkgs();
-    }
-    if (selected === "luci") {
-        var newdiv = fields.theme;
-        document.getElementById("theme_options").innerHTML = newdiv;
-        lucipackages = luci_default_packages;
+    var webif_packages = $("#imageconf_webif").find('option:selected').data('packages');
+    console.log(webif_packages);
+    if ( webif_packages.indexOf('luci-mod-admin') >= 0) {
+        console.log("selected luci");
+        $("#theme_options").html(fields.theme);
+        webifpackages = webif_packages;
         themepkgs();
         update_defaultpkgs();
-    };
+    } else {
+        $("#theme_options").html('');
+        webifpackages = "";
+        themepackages = "";
+        update_defaultpkgs();   
+    }
+    //var selected = $("#imageconf_gui").val();
+//    if (selected === "none") {
+//        $("#theme_options").html('');
+//        guipackages = "";
+//        themepackages = "";
+//        update_defaultpkgs();
+//    }
+//    if (selected === "luci") {
+//        var newdiv = fields.theme;
+//        document.getElementById("theme_options").innerHTML = newdiv;
+//        guipackages = $("#imageconf_gui").selected().data('packages');
+//        themepkgs();
+//        update_defaultpkgs();
+//    };
+}
+
+//function init_range_sliders() {
+//    console.log("init");
+//    $(".range-slider").each(functiown(){
+//       var input_slider = $(this).find("input") ;
+//       console.log(input_slider);
+//       var input = $(this).siblings("input");
+//       input_slider.on('input', function() {
+//           console.log(input_slider.val());
+//          input.val(input_slider.val());
+//       });
+//    });
+//}
+
+
+var range_bandwidth_sliders = {
+	'min': [ 128, 16],
+	'20%': [ 1024, 64 ],
+	'50%': [ 4096, 128 ],
+    '70%': [ 8192, 128 ],
+    '85%': [ 16384, 256 ],
+	'max': [ 100000 ]
+};
+
+function init_range_sliders() {
+    $(".input-slider").each(function(){
+       var linked_input = $(this).siblings("input").first();
+       var preset = $(this).data("preset");
+       var range = {};
+       if (preset === 'bandwidth') {
+           range = range_bandwidth_sliders;
+       }
+       $(this).noUiSlider({
+            range: range,
+            start: linked_input.val(),
+            format: {
+                to: function(value) {
+                    return parseInt(value);
+                },
+                from: function(value) {
+                    return parseInt(value);
+                }
+            }
+        });
+       $(this).noUiSlider_pips({
+            mode: 'range',
+            density: 3
+        });
+        $(this).Link('lower').to(linked_input);
+    });
 }
 
 function lanselect() {
@@ -484,11 +550,13 @@ function nosharepkgs() {
     }
 }
 
+
 function qospkgs() {
     if (document.getElementById("imageconf_wan_qos").checked) {
         qospackages = 'qos-scripts';
-        $("#qos-options").html(wan_qos_down + wan_qos_up);
+        $("#qos-options").html(fields.wan_qos_down + fields.wan_qos_up);
         update_defaultpkgs();
+        init_range_sliders();
     }
     else {
         qospackages = '';
@@ -587,6 +655,7 @@ function init_step2() {
     ipv6pkgs();
     update_defaultpkgs();
     dynwifi();
+    init_range_sliders();
     ajax_packagelist();  
     $("#imageconf_profile").change(function() {
         set_packages();

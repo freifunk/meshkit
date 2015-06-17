@@ -218,6 +218,8 @@ input {
     }
 }
 
+//input[type="range"]:after { content:attr(value); }
+
 .password-edit-toggle {
     width: 100%;
     height: (@baseUnit * 1.5);
@@ -615,6 +617,10 @@ input:-webkit-autofill:focus {
         }
         .form-control {
             font-size: @font-size-base;
+/*            &.small {
+                width: 120px;
+                float: left;
+            }*/
         }
         .form-group {
             &>.form-options{

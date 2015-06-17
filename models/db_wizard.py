@@ -41,11 +41,14 @@ if not config == None:
             comment=T('This sets a profile for your router model. If your device is not listed try something generic (default) if available.'),
             requires=IS_EMPTY_OR(IS_MATCH('[a-zA-Z0-9\-]+', error_message=T('%(name)s is invalid') % dict(name=T('Profile'))))
         ),
-        Field('webif',
-            label=T('Web Interface'),
+        Field('webif', 'list:reference gui', label=T('Web Interface'),
             comment=T('Webinterface that is installed. This may remove or add packages depending on your selection.'),
-            requires=IS_EMPTY_OR(IS_IN_SET(config.webifs, error_message=T('%(name)s is invalid') % dict(name=T('Webinterface')))),
+            requires=IS_IN_DB(
+                db, db.gui.id, '%(full_name)s', zero=None,
+            ),
+            widget=select_webif_options
         ),
+        
         Field('theme',
             label = T('Theme'),
             comment = T('Chooses the theme for the web interface. Freifunk-generic is the only one that is customised for communities, so you should probably use this theme.'),
@@ -163,10 +166,12 @@ if not config == None:
             comment=T('Adds traffic shaping with a fixed down- and upload limit to the WAN-Interface.')
         ),
         Field('wan_qos_down', 'integer', label=T('Download speed'), default='1024',
-            comment=T('Download speed in kbit/s. Set it about 10% lower than your actual internet download speed.')
+            comment=T('Download speed in kbit/s. Set it about 10% lower than your actual internet download speed.'),
+            widget=lambda k,v: input_nouislider(k, v, preset='bandwidth')
         ),
         Field('wan_qos_up', 'integer', label=T('Upload speed'), default='128',
-            comment=T('Upload speed in kbit/s. Set it about 10% lower than your actual internet upload speed.')
+            comment=T('Upload speed in kbit/s. Set it about 10% lower than your actual internet upload speed.'),
+            widget=lambda k,v: input_nouislider(k, v, preset='bandwidth')
         ),
         Field('lanproto', label=T('LAN Protocol'),
             comment = T('Protocol to use for the LAN interface.'),
@@ -275,11 +280,4 @@ if session.community:
     db.imageconf.longitude.default = c.get(community_defaults, 'profile', 'longitude', '10')
     if ipv6 == '1':
         db.imageconf.ipv6.default = True
-        
-        
-
-       
-       
-    
-       
         
