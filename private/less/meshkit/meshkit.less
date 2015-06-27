@@ -135,10 +135,10 @@ header.header {
         height: @baseUnit;
         color: @white;
         #language-select-wrapper {
-                position: absolute;
-                right: -120px;
-                color: @gray-dark;
-                select {
+            position: absolute;
+            right: -120px;
+            color: @gray-dark;
+            select {
                 .transparentBackground(@ff-yellow, 0.7);
                 width: 120px;
                 //background-color: @ff-yellow;
@@ -352,7 +352,8 @@ select.form-control, #language-select {
 .form-horizontal {
     input[type=checkbox] {
         margin: 0;
-        height: @baseUnit;
+        height: ( @baseUnit * 1.5 );
+        width: 22px;
     }
     .form-group {
         position: relative;
@@ -451,10 +452,13 @@ select.form-control, #language-select {
 }
 
 form input.btn-default {
-    width: 100%;
-    height: ( @baseUnit * 2);
+    &.btn-submit {
+        width: 100%;
+        height: ( @baseUnit * 2);
+        margin-top: @baseUnit;
+    }
+    height: ( @baseUnit * 1.5);
     font-size: @font-size-large;
-    margin-top: @baseUnit;
     text-transform: uppercase;
     .transition(background .2s ease-in-out);
 }
@@ -465,6 +469,10 @@ form input.btn-default {
     &:focus {
         .box-shadow(~"inset 0 0px 0px transparent, 0 0 0px transparent");
     }
+}
+
+#w2p_query_panel .form-control {
+    height: 34px;
 }
 
 input:-webkit-autofill {

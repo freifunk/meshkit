@@ -12,3 +12,9 @@
 .icon-cancel:before { content: '\e80a'; } /* '' */
 .icon-trash:before { content: '\e80b'; } /* '' */
 .icon-cog:before { content: '\e80c'; } /* '' */
+.icon-search:before { content: '\e80d'; } /* '' */
+.icon-lock:before { content: '\e80e'; } /* '' */
+.icon-tools:before { content: '\e80f'; } /* '' */
+.icon-signal:before { content: '\e810'; } /* '' */
+.icon-picture:before { content: '\e811'; } /* '' */
+.icon-pencil:before { content: '\e812'; } /* '' */

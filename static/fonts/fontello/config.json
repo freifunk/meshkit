@@ -7,6 +7,12 @@
   "ascent": 850,
   "glyphs": [
     {
+      "uid": "7222571caa5c15f83dcfd447c58d68d9",
+      "css": "search",
+      "code": 59405,
+      "src": "entypo"
+    },
+    {
       "uid": "e335adbc2d898c7d85d40c507796e7b4",
       "css": "mail",
       "code": 59401,
@@ -25,6 +31,12 @@
       "src": "entypo"
     },
     {
+      "uid": "3def559c3c39b8500882e02892b7daa8",
+      "css": "picture",
+      "code": 59409,
+      "src": "entypo"
+    },
+    {
       "uid": "14017aae737730faeda4a6fd8fb3a5f0",
       "css": "check",
       "code": 59400,
@@ -37,6 +49,18 @@
       "src": "entypo"
     },
     {
+      "uid": "1a7104205ea96e6f40ac716d0ca72f21",
+      "css": "lock",
+      "code": 59406,
+      "src": "entypo"
+    },
+    {
+      "uid": "c77fd2fd065b5fe16d6f2b41e190b266",
+      "css": "pencil",
+      "code": 59410,
+      "src": "entypo"
+    },
+    {
       "uid": "2626e3a1bbcd90e45849af3b58a1d594",
       "css": "trash",
       "code": 59403,
@@ -46,6 +70,12 @@
       "uid": "bc64550dd022ce21604f97309b346cea",
       "css": "cog",
       "code": 59404,
+      "src": "entypo"
+    },
+    {
+      "uid": "6a7b9d4863bb7e6c79e9457a72d689b6",
+      "css": "tools",
+      "code": 59407,
       "src": "entypo"
     },
     {
@@ -76,6 +106,12 @@
       "uid": "0805cca616b3c12714f35af4d0912c10",
       "css": "up-open-big",
       "code": 59395,
+      "src": "entypo"
+    },
+    {
+      "uid": "84a7262985600b683bbab0da9298776d",
+      "css": "signal",
+      "code": 59408,
       "src": "entypo"
     },
     {

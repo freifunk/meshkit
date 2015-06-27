@@ -8,6 +8,20 @@ if config is not None:
     db.define_table(
         'imageconf',
         Field(
+            'id_user',
+            db.auth_user,
+            label=T('User ID'),
+            comment=T('Id of the user who created this build.'),
+            requires=IS_EMPTY_OR(
+                IS_IN_DB(
+                    db, db.auth_user.id, '%(username)s', zero=T('None'),
+                    error_message=T(
+                        '%(name)s is invalid'
+                    ) % dict(name=T('User ID'))
+                )
+            )
+        ),
+        Field(
             'target',
             label=T('Target'),
             comment=T(
@@ -25,12 +39,19 @@ if config is not None:
         ),
         Field(
             'status',
+            default=1,
             requires=IS_EMPTY_OR(
                 IS_IN_SET(
-                    ['0', '1', '2', '3'],
+                    {
+                        '0': T("Finished successfully"),
+                        '1': T("Queued"),
+                        '2': T("Build failed"),
+                        '3': T("System error"),
+                    },
                     error_message=T(
                         '%(name)s is invalid'
-                    ) % dict(name=T('Status'))
+                    ) % dict(name=T('Status')),
+                    zero=None,
                 )
             )
         ),

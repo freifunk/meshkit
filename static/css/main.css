@@ -256,8 +256,8 @@ th {
 /*@import "./bootstrap/glyphicons.less";*/
 @font-face {
   font-family: 'fontello';
-  src: url('../fonts/fontello/font/fontello.eot?0');
-  src: url('../fonts/fontello/font/fontello.eot?0#iefix') format('embedded-opentype'), url('../fonts/fontello/font/fontello.woff?0') format('woff'), url('../fonts/fontello/font/fontello.ttf?0') format('truetype'), url('../fonts/fontello/font/fontello.svg?0#fontello') format('svg');
+  src: url('../fonts/fontello/font/fontello.eot?1');
+  src: url('../fonts/fontello/font/fontello.eot?1#iefix') format('embedded-opentype'), url('../fonts/fontello/font/fontello.woff?1') format('woff'), url('../fonts/fontello/font/fontello.ttf?1') format('truetype'), url('../fonts/fontello/font/fontello.svg?1#fontello') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -267,7 +267,7 @@ th {
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'fontello';
-    src: url('@{fontPath}/fontello/font/fontello.svg?0#fontello') format('svg');
+    src: url('@{fontPath}/fontello/font/fontello.svg?1#fontello') format('svg');
   }
 }
 */
@@ -374,6 +374,42 @@ th {
 }
 .icon-cog:before {
   content: '\e80c';
+}
+.icon-search {
+  /* '' */
+}
+.icon-search:before {
+  content: '\e80d';
+}
+.icon-lock {
+  /* '' */
+}
+.icon-lock:before {
+  content: '\e80e';
+}
+.icon-tools {
+  /* '' */
+}
+.icon-tools:before {
+  content: '\e80f';
+}
+.icon-signal {
+  /* '' */
+}
+.icon-signal:before {
+  content: '\e810';
+}
+.icon-picture {
+  /* '' */
+}
+.icon-picture:before {
+  content: '\e811';
+}
+.icon-pencil {
+  /* '' */
+}
+.icon-pencil:before {
+  content: '\e812';
 }
 .icon-status-ok {
   /* '' */
@@ -2220,6 +2256,12 @@ select[multiple].form-group-lg .form-control {
     top: 0;
   }
 }
+.form-horizontal {
+  /*  .radio,
+  .checkbox {
+    min-height: (@line-height-computed + (@padding-base-vertical + 1));
+  }*/
+}
 .form-horizontal .radio,
 .form-horizontal .checkbox,
 .form-horizontal .radio-inline,
@@ -2227,10 +2269,6 @@ select[multiple].form-group-lg .form-control {
   margin-top: 0;
   margin-bottom: 0;
   padding-top: 7px;
-}
-.form-horizontal .radio,
-.form-horizontal .checkbox {
-  min-height: 29px;
 }
 .form-horizontal .form-group {
   margin-left: -15px;
@@ -4819,26 +4857,89 @@ div.error_wrapper {
 #poweredBy {
   float: right;
 }
+.web2py_grid {
+  width: 100%;
+}
+.web2py_grid table {
+  max-width: 100%;
+  margin-bottom: 22px;
+  width: 100%;
+}
+.web2py_grid table > thead > tr > th,
+.web2py_grid table > tbody > tr > th,
+.web2py_grid table > tfoot > tr > th,
+.web2py_grid table > thead > tr > td,
+.web2py_grid table > tbody > tr > td,
+.web2py_grid table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #dddddd;
+}
+.web2py_grid table > thead > tr > th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dddddd;
+}
+.web2py_grid table > caption + thead > tr:first-child > th,
+.web2py_grid table > colgroup + thead > tr:first-child > th,
+.web2py_grid table > thead:first-child > tr:first-child > th,
+.web2py_grid table > caption + thead > tr:first-child > td,
+.web2py_grid table > colgroup + thead > tr:first-child > td,
+.web2py_grid table > thead:first-child > tr:first-child > td {
+  border-top: 0;
+}
+.web2py_grid table > tbody + tbody {
+  border-top: 2px solid #dddddd;
+}
+.web2py_grid table .table {
+  background-color: #ffffff;
+}
+.web2py_grid table > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+.web2py_grid table > tbody > tr:hover {
+  background-color: #f5f5f5;
+}
+.web2py_grid table > thead > tr > th,
+.web2py_grid table > tbody > tr > th,
+.web2py_grid table > tfoot > tr > th,
+.web2py_grid table > thead > tr > td,
+.web2py_grid table > tbody > tr > td,
+.web2py_grid table > tfoot > tr > td {
+  vertical-align: middle;
+}
+.web2py_grid table > thead > tr > th > a,
+.web2py_grid table > tbody > tr > th > a,
+.web2py_grid table > tfoot > tr > th > a {
+  color: #555555;
+}
+.web2py_grid table > thead > tr > th > a:hover,
+.web2py_grid table > tbody > tr > th > a:hover,
+.web2py_grid table > tfoot > tr > th > a:hover {
+  color: #222222;
+  text-decoration: none;
+}
 .web2py_grid tbody td {
   vertical-align: middle;
   padding: 2px 5px;
 }
 .web2py_grid thead th,
 .web2py_grid tfoot td {
-  background-color: #EAEAEA;
-  padding: 10px 5px;
+  padding: 10px 0 10px 5px;
 }
-.web2py_grid tr.odd {
-  background-color: #F9F9F9;
+.web2py_grid .row_buttons {
+  min-height: 25px;
+  vertical-align: middle;
+  text-align: right;
 }
-.web2py_grid tr:hover {
-  background-color: #F5F5F5;
+.web2py_grid .row_buttons a {
+  margin: 3px;
 }
 .web2py_console form {
   width: 100%;
   display: inline;
   vertical-align: middle;
-  margin: 0 0 0 5px;
+  margin: 0;
 }
 .web2py_console form select {
   margin: 0;
@@ -4847,13 +4948,6 @@ div.error_wrapper {
   float: left;
   text-align: left;
   width: 100%;
-}
-.web2py_grid .row_buttons {
-  min-height: 25px;
-  vertical-align: middle;
-}
-.web2py_grid .row_buttons a {
-  margin: 3px;
 }
 .web2py_grid .row_buttons a,
 .web2py_paginator ul li a,
@@ -4929,17 +5023,12 @@ li.w2p_grid_breadcrumb_elem {
 td.w2p_fl,
 td.w2p_fw,
 td.w2p_fc,
-#web2py_user_form td,
-.web2py_grid .web2py_form td {
+#web2py_user_form td {
   vertical-align: top;
 }
 #auth_user_remember__row label,
 .web2py_paginator ul li {
   display: inline;
-}
-.web2py_grid,
-.web2py_grid table {
-  width: 100%;
 }
 input[type=checkbox],
 input[type=radio] {
@@ -5781,7 +5870,8 @@ select.form-control,
 }
 .form-horizontal input[type=checkbox] {
   margin: 0;
-  height: 30px;
+  height: 45px;
+  width: 22px;
 }
 .form-horizontal .form-group {
   position: relative;
@@ -5908,14 +5998,17 @@ select.form-control,
   min-height: 300px;
 }
 form input.btn-default {
-  width: 100%;
-  height: 60px;
+  height: 45px;
   font-size: 20px;
-  margin-top: 30px;
   text-transform: uppercase;
   -webkit-transition: background 0.2s ease-in-out;
   -o-transition: background 0.2s ease-in-out;
   transition: background 0.2s ease-in-out;
+}
+form input.btn-default.btn-submit {
+  width: 100%;
+  height: 60px;
+  margin-top: 30px;
 }
 .form-control {
   height: 45px;
@@ -5924,6 +6017,9 @@ form input.btn-default {
 .form-control:focus {
   -webkit-box-shadow: inset 0 0px 0px transparent, 0 0 0px transparent;
   box-shadow: inset 0 0px 0px transparent, 0 0 0px transparent;
+}
+#w2p_query_panel .form-control {
+  height: 34px;
 }
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 50px #fff0cc inset;

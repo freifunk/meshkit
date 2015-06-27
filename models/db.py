@@ -28,7 +28,7 @@ response.generic_patterns = ['*'] if request.is_local else []
 # response.optimize_js = 'concat,minify,inline'
 
 # form style, 'bootstrap3_inline', 'bootstrap3_stacked', 'bootstrap2' or other
-response.formstyle = 'bootstrap3_inline'
+response.formstyle = custom.formstyle_bootstrap3(3)
 
 response.logo = A(
     IMG(

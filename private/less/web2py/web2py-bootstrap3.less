@@ -163,26 +163,54 @@ div.error_wrapper {
 #poweredBy {
     float: right;
 }
-.web2py_grid tbody td {
-    vertical-align: middle;
-    padding: 2px 5px;
+.web2py_grid {
+    width: 100%;
+    table {
+        .table();
+        .table-striped();
+        .table-hover();
+        width: 100%;
+        > thead, > tbody, > tfoot {
+            > tr {
+                > th,
+                > td {
+                    vertical-align: middle;
+                }
+                > th {
+                    > a {
+                        color: @gray;
+                        &:hover {
+                            color: @gray-darker;
+                            text-decoration: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    tbody td {
+        vertical-align: middle;
+        padding: 2px 5px;
+    }
+    thead th, tfoot td {
+        //background-color: #EAEAEA;
+        padding: 10px 0 10px 5px;
+    }
+    .row_buttons {
+        min-height: 25px;
+        vertical-align: middle;
+        text-align: right;
+        a {
+            margin: 3px;
+        }
+    }
 }
-.web2py_grid thead th,
-.web2py_grid tfoot td {
-    background-color: #EAEAEA;
-    padding: 10px 5px;
-}
-.web2py_grid tr.odd {
-    background-color: #F9F9F9;
-}
-.web2py_grid tr:hover {
-    background-color: #F5F5F5;
-}
+
 .web2py_console form {
     width: 100%;
     display: inline;
     vertical-align: middle;
-    margin: 0 0 0 5px;
+    margin: 0;
 }
 .web2py_console form select {
     margin: 0;
@@ -191,13 +219,6 @@ div.error_wrapper {
     float: left;
     text-align: left;
     width: 100%;
-}
-.web2py_grid .row_buttons {
-    min-height: 25px;
-    vertical-align: middle;
-}
-.web2py_grid .row_buttons a {
-    margin: 3px;
 }
 .web2py_grid .row_buttons a,
 .web2py_paginator ul li a,
@@ -273,18 +294,14 @@ li.w2p_grid_breadcrumb_elem {
 td.w2p_fl,
 td.w2p_fw,
 td.w2p_fc,
-#web2py_user_form td,
-.web2py_grid .web2py_form td {
+#web2py_user_form td {
     vertical-align: top;
 }
 #auth_user_remember__row label,
 .web2py_paginator ul li {
     display: inline;
 }
-.web2py_grid,
-.web2py_grid table {
-    width: 100%;
-}
+
 input[type=checkbox], input[type=radio] {
     margin: 8px 8px 0 0;
 }

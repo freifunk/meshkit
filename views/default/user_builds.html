@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+{{footer_enable=True}}
+<h1>{{=T('Your Builds')}}</h1>
+
+{{=grid}}
+
+{{block footer}}
+{{include 'footer.html'}}
+{{end}}

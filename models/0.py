@@ -27,6 +27,24 @@ settings.email_login = None
 settings.login_method = 'local'
 settings.login_config = ''
 settings.plugins = []
+settings.ui_grid = dict(
+    widget='',
+    header='',
+    content='',
+    default='',
+    cornerall='',
+    cornertop='',
+    cornerbottom='',
+    button='btn btn-default',
+    buttontext='',
+    buttonadd='icon-plus big',
+    buttonback='icon-left big',
+    buttonexport='icon-down big',
+    buttondelete='icon-trash big',
+    buttonedit='icon-pencil big',
+    buttontable='icon-right big',
+    buttonview='icon-eye big'
+)
 
 response.title = settings.title
 response.subtitle = settings.subtitle

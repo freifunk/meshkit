@@ -187,9 +187,19 @@ def wizard():
             #wfields.append(db.wifi_interfaces[f].clone(name=name, default=default))
             wfields.append(db.wifi_interfaces[f].clone(name=name))
 
+    form = None
+    id = None
+    if auth.user and request.args(0):
+        record = db.imageconf(request.args(0)) or redirect(URL('access_denied'))
         
-    
-    form = SQLFORM.factory(db.imageconf, *wfields, table_name='imageconf')
+        if record.id_user == auth.user_id:
+            form = SQLFORM(db.imageconf, record, table_name='imageconf')
+            id = request.args(0)
+        else:
+            # access denied
+            redirect(URL('access_denied'))
+    else:
+        form = SQLFORM.factory(db.imageconf, *wfields, table_name='imageconf')
     
     # session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
     defaultpkgs = get_defaultpkgs(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"))
@@ -226,13 +236,22 @@ def wizard():
         session.id = form.vars.id
         
         wifi_options = filter_wifi_interfaces(form.vars)
- 
+
+         # write id of logged in user:
+        if auth.user:
+            form.vars.id_user = auth.user_id
+
          # auto-set hostname if it is empty
         if not form.vars.hostname:
             form.vars.hostname = get_hostname_from_form_vars(form.vars)
         
-        id = db.imageconf.insert(**db.imageconf._filter_fields(form.vars))
-        session.id = id
+        if id:
+            query=(db.imageconf.id==id)
+            db(query).update(**db.imageconf._filter_fields(form.vars))
+        else:
+            id = db.imageconf.insert(**db.imageconf._filter_fields(form.vars))
+            session.id = id
+        
         
         for i in wifi_options:
             if i["enabled"] == True:
@@ -302,6 +321,31 @@ def user_defaults():
         )
     )
     
+@auth.requires_login()
+def user_builds():
+    """ Builds the user has done """
+    
+    if len(request.args) > 2:
+        if request.args[0] == "edit":
+            redirect(URL(wizard, args=[request.args[2]]))
+    
+    fields = [
+        db.imageconf.hostname,
+        db.imageconf.profile,
+        db.imageconf.location
+    ]
+    grid = SQLFORM.grid(
+        db.imageconf.id_user==auth.user_id,
+        user_signature=False,
+        fields=fields,
+        create=False,
+        details=False,
+        csv=False,
+        ui=settings.ui_grid,
+    )
+    
+    #builds = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
+    return dict(grid=grid)
 
 def build():
     queuedimg = str(cache.ram('queuedimg',lambda:len(db(db.imageconf.status=='1').select()),time_expire=60))
@@ -310,6 +354,10 @@ def build():
 def about():
     adminmail = config.adminmail.replace('@', '(at)')
     return dict(adminmail=adminmail)
+
+def access_denied():
+    return dict()
+
 
 ### API
 

@@ -3,6 +3,54 @@
 
 from gluon import *
 
+
+def formstyle_bootstrap3(col_label_size=3):
+    """ bootstrap 3 horizontal form layout
+
+    Note:
+        Experimental!
+    """
+    def _inner(form, fields):
+        form.add_class('form-horizontal')
+        label_col_class = "col-sm-%d" % col_label_size
+        col_class = "col-sm-%d" % (12 - col_label_size)
+        offset_class = "col-sm-offset-%d" % col_label_size
+        parent = CAT()
+        for id, label, controls, help in fields:
+            # wrappers
+            _help = SPAN(help, _class='help-block')
+            # embed _help into _controls
+            _controls = DIV(controls, _help, _class=col_class)
+            if isinstance(controls, INPUT):
+                if controls['_type'] == 'submit':
+                    controls.add_class('btn btn-primary')
+                    _controls = DIV(controls, _class="%s %s" % (col_class, offset_class))
+                if controls['_type'] == 'button':
+                    controls.add_class('btn btn-default')
+                elif controls['_type'] == 'file':
+                    controls.add_class('input-file')
+                elif controls['_type'] in ('text', 'password'):
+                    controls.add_class('form-control')
+                elif controls['_type'] == 'checkbox':
+                    controls.add_class('form-control checkbox')
+                    
+                elif isinstance(controls, (SELECT, TEXTAREA)):
+                    controls.add_class('form-control')
+                
+            elif isinstance(controls, SPAN):
+                _controls = P(controls.components, 
+                              _class="form-control-static %s" % col_class)
+            elif isinstance(controls, UL):
+                for e in controls.elements("input"):
+                    e.add_class('form-control')
+            if isinstance(label, LABEL):
+                label['_class'] = 'control-label %s' % label_col_class
+
+            parent.append(DIV(label, _controls, _class='form-group', _id=id))
+        return parent
+    return _inner
+
+
 def navbar(auth_navbar, user_defaults=False):
     """ create a custom user navbar element (login, register...)
     
@@ -47,10 +95,19 @@ def navbar(auth_navbar, user_defaults=False):
                    _class="dropdown-toggle",
                    _rel="nofollow",
                    ** {"_data-toggle": "dropdown"})
-        li_profile = LI(A(current.T("Account Details"), _class="icon-cog",
+        li_profile = LI(A(current.T("Account Details"), _class="icon-user",
                         _href=bar["profile"], _rel="nofollow"))
         
-        li_password = LI(A(current.T("Password"), _class="icon-user",
+        li_builds = LI(
+            A(
+                current.T("Your Builds"),
+                _class="icon-picture",
+                _href=URL("user_builds"),
+                _rel="nofollow",
+            )
+        )
+        
+        li_password = LI(A(current.T("Password"), _class="icon-lock",
                         _href=bar["change_password"], _rel="nofollow"))
                         
         
@@ -64,6 +121,7 @@ def navbar(auth_navbar, user_defaults=False):
                        _href=bar["logout"], _rel="nofollow"))
                        
         dropdown = UL(li_defaults,
+                      li_builds,
                       li_profile,
                       li_password,
                       LI('', _class="divider"),
