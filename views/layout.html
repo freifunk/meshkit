@@ -37,7 +37,7 @@
     (left_sidebar_enabled and 1 or 0)+(right_sidebar_enabled and 1 or 0)]
         }}
     </head>
-    {{if current.config.expandablehelp:}}
+    {{if current.config and current.config.expandablehelp:}}
     <body class="expandable-help">
     {{else:}}
     <body>
@@ -59,7 +59,7 @@
                     <div class="collapse navbar-collapse navbar-ex1-collapse">
                         <ul class="nav navbar-nav navbar-right">
                             {{# 'auth' in globals() and auth.navbar('Welcome',mode='dropdown') or ''}}
-                            {{='auth' in globals() and custom.navbar(auth.navbar(mode='bare'), current.config.communitysupport) or ''}}
+                            {{='auth' in globals() and custom.navbar(auth.navbar(mode='bare'), current.config and current.config.communitysupport) or ''}}
                         </ul>
                         
                         {{if response.menu:}}
@@ -75,7 +75,7 @@
             <!-- Main ========================================= -->
             <!-- Begin page content -->
             <div class="container main-content">
-                {{if current.config.mode == 'development':}}
+                {{if current.config and current.config.mode == 'development':}}
                     <div class="app-toolbar">
                         {{=response.toolbar()}}
                     </div>

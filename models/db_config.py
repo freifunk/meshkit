@@ -218,7 +218,7 @@ if config:
 
     # development/production settings:
 
-    if config.mode == 'development':
+    if config and config.mode == 'development':
         # enable reloading of modules when their code was modified
         from gluon.custom_import import track_changes
         track_changes(True)

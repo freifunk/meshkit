@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 {
 '!=': '!=',
 '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN': '"update" is an optional expression like "field1=\'newvalue\'". You cannot update or delete the results of a JOIN',
@@ -444,6 +444,7 @@
 'URL ist ungültig': 'URL ist ungültig',
 'Use (...)&(...) for AND, (...)|(...) for OR, and ~(...)  for NOT to build more complex queries.': 'Use (...)&(...) for AND, (...)|(...) for OR, and ~(...)  for NOT to build more complex queries.',
 'Use this GUI as the default web interface. Should only be selected once.': 'Use this GUI as the default web interface. Should only be selected once.',
+'Use this GUI as the default. Should only be selected once.': 'Use this GUI as the default. Should only be selected once.',
 'used': 'benutzt',
 'User %(id)s Logged-in': 'User %(id)s Logged-in',
 'User %(id)s Logged-out': 'User %(id)s Logged-out',
@@ -451,6 +452,7 @@
 'User %(id)s Profile updated': 'User %(id)s Profile updated',
 'User %(id)s Registered': 'User %(id)s Registered',
 'User ID': 'User ID',
+'User Profile ID': 'User Profile ID',
 'Username': 'Nickname',
 'Value not in database': 'Value not in database',
 'VAP': 'Virtueller Access Point',

@@ -41,7 +41,7 @@ def helptext(text, expandable=True):
     help = ""
 
     if text:
-        if config.expandablehelp is True:
+        if config and config.expandablehelp is True:
             help = TAG[''](
                 TAG.button("?", _type="button", _class='help-toggle', _title=T("Click to show help")),
                 DIV(text, _class='help-block')
