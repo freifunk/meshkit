@@ -213,8 +213,9 @@ def wizard():
         session.mail = ''
         
     if session.ipv6 == True:
+
         ipv6_packages = config.ipv6packages or ''
-        if ipv6_config == 'auto-ipv6-random' or ipv6_config == 'auto-ipv6-fromv4':
+        if session.ipv6_config == 'auto-ipv6-random' or session.ipv6_config == 'auto-ipv6-fromv4':
             ipv6_packages = ipv6_packages + ' auto-ipv6-ib'
 
 
