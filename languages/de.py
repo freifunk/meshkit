@@ -174,6 +174,7 @@
 'For all bugs and questions regarding this specific installation of Meshkit please contact the the admin of this installation:': 'Für Fehler die diese Installation von Meshkit betreffen nimm bitte Kontakt mit dem Admin auf:',
 'For help on config options and allowed values consult the INSTALL file.': 'Hilfe zu den einzelnen Optionen befindet sich in der Datei INSTALL.',
 'For which hardware platform you want to build an image. If you are unsure which is the right one for your device visit the openwrt wiki and search for your device there.': 'Die Hardware PLattform für die eine Firmware gebaut werden soll. Bist Du dir unsicher welches die richtige Einstellung ist dann besuche das OpenWrt Wiki und suche dort nach deinem Modell.',
+'For which hardware platform you want to build an image. If you are unsure which is the right one for your device vist the openwrt wiki and search for your device there.': 'For which hardware platform you want to build an image. If you are unsure which is the right one for your device vist the openwrt wiki and search for your device there.',
 'Forgot username?': 'Forgot username?',
 'forgot username?': 'Nutzernamen vergessen?',
 'Form has errors:': 'Das Formular hat folgende Fehler:',

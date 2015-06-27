@@ -1,7 +1,9 @@
 # coding: utf8
 import re
 
+
 class IS_IPV4CIDR(object):
+
     """
     Checks if field's value is an IPv4 host/network in CIDR notation.
 
@@ -23,8 +25,9 @@ class IS_IPV4CIDR(object):
     """
     regex = re.compile(
         '^(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(/(3[012]|[12]?[0-9]))$')
-    
-    def __init__(self, error_message='enter valid IPv4 address/network in CIDR Notation'):
+
+    def __init__(
+            self, error_message='enter valid IPv4 address/network in CIDR Notation'):
         self.error_message = error_message
 
     def __call__(self, value):
@@ -32,8 +35,10 @@ class IS_IPV4CIDR(object):
             return (value, None)
         else:
             return (value, self.error_message)
-            
+
+
 class IS_IPV6CIDR(object):
+
     """
     Checks if field's value is an IPv6 host/network in CIDR notation.
 
@@ -56,8 +61,9 @@ class IS_IPV6CIDR(object):
     regex = re.compile(
         '^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*(\/(\d|\d\d|1[0-1]\d|12[0-8]))$'
     )
-    
-    def __init__(self, error_message='enter valid IPv6 address/network in CIDR Notation'):
+
+    def __init__(
+            self, error_message='enter valid IPv6 address/network in CIDR Notation'):
         self.error_message = error_message
 
     def __call__(self, value):
@@ -66,7 +72,9 @@ class IS_IPV6CIDR(object):
         else:
             return (value, self.error_message)
 
+
 class IS_MD5CRYPT(object):
+
     """
     Checks if field's value is a salted MD5 hash (aka md5-crypt).
 
@@ -87,7 +95,7 @@ class IS_MD5CRYPT(object):
     regex = re.compile(
         '^\$1\$[./0-9A-Za-z]*\$[./0-9A-Za-z]{22}$'
     )
-    
+
     def __init__(self, error_message='enter valid md5-crypt hash'):
         self.error_message = error_message
 
