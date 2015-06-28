@@ -31,6 +31,7 @@ def config_not_found():
     return dict()
 
 def index():
+    hidden_fields = dict()
     check_queue()
     # if config doesn't exist in database yet redirect to appadmin
     if not config:
@@ -56,14 +57,14 @@ def index():
             
     targets = get_targets(config.buildroots_dir)
     if len(targets) == 1:
-        pass
-        #db.imageconf.target.default = targets[0]
-        #db.imageconf.target.writable = False
-        
-        
+        db.imageconf.target.default = targets[0]
+        db.imageconf.target.writable = False
+        hidden_fields['target'] = targets[0]
+
     if len(communities) == 1:
         db.imageconf.community.default = communities[0]
         db.imageconf.community.writable = False
+        hidden_fields['community'] = communities[0]
     
     if auth.user:
         user_defaults = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
@@ -79,7 +80,7 @@ def index():
         session.community = ''
       
         
-    form = SQLFORM.factory(db.imageconf, table_name='imageconf')
+    form = SQLFORM.factory(db.imageconf, table_name='imageconf', hidden=hidden_fields)
     
     
     modellist = '{'

@@ -130,11 +130,14 @@ class customField:
         
         advancedToggle = ''
         
-        if widget and widget.elements('select'):
-            widget = DIV(
-                widget,
-                _class="select-wrapper"
-            )        
+        try:
+            if widget and widget.elements('select'):
+                widget = DIV(
+                    widget,
+                    _class="select-wrapper"
+                )
+        except AttributeError:
+            pass
         
         class_form_options = "form-options"
         if advanced:
