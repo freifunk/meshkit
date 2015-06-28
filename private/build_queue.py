@@ -306,7 +306,7 @@ class BuildImages(object):
         config += "config 'public' 'contact'\n"
         config += "\toption 'nickname' '" + self.Nickname + "'\n"
         config += "\toption 'name' '" + self.Name + "'\n"
-        config += "\toption 'homepage' '" + self.Homepage + "'\n"
+        config += "\list 'homepage' '" + self.Homepage + "'\n"
         config += "\toption 'mail' '" + self.Email + "'\n"
         config += "\toption 'phone' '" + self.Phone + "'\n"
         config += "\toption 'note' '" + self.Note + "'\n"
