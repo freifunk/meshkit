@@ -4699,29 +4699,110 @@ a.label:focus {
 }
 div.flash {
   background-image: none;
-  border-radius: 4px;
-  -o-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  color: #333;
-  font-weight: 400;
   min-width: 28px;
   max-width: 300px;
-  opacity: 1;
   vertical-align: baseline;
+  font-size: 14px;
   right: auto;
-  border-width: 1px;
-  margin: 0 0 20px;
-  padding: 15px 35px 15px 15px;
+  border-width: 0;
+  padding: 25px 45px 15px 15px;
 }
-div.flash.alert:hover {
-  opacity: 1;
+div.flash > ul {
+  padding-left: 0;
+  margin: 5px 0;
 }
-.ie-lte8 div.flash {
-  filter: "progid: DXImageTransform.Microsoft.gradient(startColorstr='#222222', endColorstr='#000000', GradientType=0);";
+div.flash > ul > li {
+  list-style: none;
+  /* '' */
+  /* '' */
 }
-.ie-lte8 div.flash:hover {
-  filter: alpha(opacity=25);
+div.flash > ul > li:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+div.flash > ul > li:before {
+  content: '\e802';
+}
+div.flash > ul > li:before {
+  content: '\e802';
+}
+div.flash.alert {
+  display: none;
+  position: fixed;
+  top: 70px;
+  right: 30px;
+  cursor: pointer;
+  z-index: 1000;
+  background-color: #ffcb4d;
+}
+#closeflash {
+  position: absolute;
+  top: 0;
+  right: -12px;
+  color: transparent;
+  /* '' */
+  /* '' */
+}
+#closeflash:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#closeflash:before {
+  content: '\e80a';
+}
+#closeflash:before {
+  content: '\e80a';
+}
+#closeflash:before {
+  color: #ffffff;
+  background-color: #ffb400;
+  width: 24px;
+  height: 24px;
+  font-size: 20px;
+  margin-right: 0;
+  text-align: center;
 }
 div.error {
   width: auto;
@@ -4731,16 +4812,6 @@ div.error {
   color: red;
   display: inline-block;
   padding: 5px;
-}
-div.flash.alert {
-  display: none;
-  position: fixed;
-  top: 70px;
-  right: 75px;
-  cursor: pointer;
-  z-index: 1000;
-  background-color: #f9edbe;
-  border-color: #f0c36d;
 }
 .w2p-toolbar-hidden {
   margin: 10px;
@@ -4804,10 +4875,6 @@ body {
 html {
   position: relative;
   min-height: 100%;
-}
-.flash {
-  opacity: 0.9!important;
-  right: 100px;
 }
 .right {
   float: right;

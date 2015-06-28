@@ -1,30 +1,43 @@
 div.flash {
     background-image: none;
-    border-radius: 4px;
-    -o-border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    color: #333;
-    font-weight: 400;
     min-width: 28px;
     max-width: 300px;
-    opacity: 1;
     vertical-align: baseline;
+    font-size: @font-size-small;
     right: auto;
-    border-width: 1px;
-    margin: 0 0 20px;
-    padding: 15px 35px 15px 15px;
-}
-div.flash.alert:hover {
-    opacity: 1;
-}
-.ie-lte8 div.flash {
-    filter: "progid: DXImageTransform.Microsoft.gradient(startColorstr='#222222', endColorstr='#000000', GradientType=0);"
-}
-.ie-lte8 div.flash:hover {
-    filter: alpha(opacity=25);
+    border-width: 0;
+    padding: 25px 45px 15px 15px;
+    .list-arrows();
+    &.alert {
+        display: none;
+        position: fixed;
+        top: 70px;
+        right: @baseUnit;
+        cursor: pointer;
+        z-index: 1000;
+        background-color: lighten(@ff-yellow, 15%);
+    }
 }
 
+#closeflash {
+    position: absolute;
+    top: 0;
+    right: -12px;
+    color: transparent;
+    .icon-base();
+    .icon-cancel();
+    &:before {
+        color: @white;
+        background-color: @ff-yellow;
+        width: 24px;
+        height: 24px;
+        font-size: @font-size-large;
+        margin-right: 0;
+        text-align: center;
+    }
+    
+
+}
 
 div.error {
     width: auto;
@@ -34,16 +47,6 @@ div.error {
     color: red;
     display: inline-block;
     padding: 5px;
-}
-div.flash.alert {
-    display: none;
-    position: fixed;
-    top: 70px;
-    right: 75px;
-    cursor: pointer;
-    z-index: 1000;
-    background-color: #f9edbe;
-    border-color: #f0c36d;
 }
 .w2p-toolbar-hidden {
     margin: 10px;
@@ -111,10 +114,7 @@ html {
     min-height: 100%;
 }
 
-.flash {
-    opacity: 0.9!important;
-    right: 100px;
-}
+
 .right {
     float: right;
     text-align: right;
