@@ -1,3 +1,18 @@
+Changelog for 0.1.0
+ * Upgrade Bootstrap to version 3. This requires a recent version of web2py
+   (2.11 or newer)
+ * Remove jquery-ui, do tabs with bootstrap.js instead
+ * css file is now generated using a less preprocessor
+ * use icon font
+ * available web interfaces are now managed in their own table
+ * lots of code cleanups, most notably much cleaner and simpler form generation
+ * New configuration options: QOS, set password hash, homepage
+ * Add a seperate user defaults profile with more options to set as defaults
+ * add a overview page of all builds of a user with an option to edit/rebuild
+ * fixes for OpenWrt Chaos Calmer
+ * some other minor bugfixes/improvements
+ 
+
 Changelog for 0.0.2:
  * Copy the selected community profile to files/etc/config
  * remove web2py internal cronjob to cleanup imagedirs. Its much more reliable to use a system cronjob for this task
