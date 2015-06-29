@@ -256,8 +256,8 @@ th {
 /*@import "./bootstrap/glyphicons.less";*/
 @font-face {
   font-family: 'fontello';
-  src: url('../fonts/fontello/font/fontello.eot?1');
-  src: url('../fonts/fontello/font/fontello.eot?1#iefix') format('embedded-opentype'), url('../fonts/fontello/font/fontello.woff?1') format('woff'), url('../fonts/fontello/font/fontello.ttf?1') format('truetype'), url('../fonts/fontello/font/fontello.svg?1#fontello') format('svg');
+  src: url('../fonts/fontello/font/fontello.eot?2');
+  src: url('../fonts/fontello/font/fontello.eot?2#iefix') format('embedded-opentype'), url('../fonts/fontello/font/fontello.woff?2') format('woff'), url('../fonts/fontello/font/fontello.ttf?2') format('truetype'), url('../fonts/fontello/font/fontello.svg?2#fontello') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -267,7 +267,7 @@ th {
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'fontello';
-    src: url('@{fontPath}/fontello/font/fontello.svg?1#fontello') format('svg');
+    src: url('@{fontPath}/fontello/font/fontello.svg?2#fontello') format('svg');
   }
 }
 */
@@ -410,6 +410,12 @@ th {
 }
 .icon-pencil:before {
   content: '\e812';
+}
+.icon-info {
+  /* '' */
+}
+.icon-info:before {
+  content: '\e813';
 }
 .icon-status-ok {
   /* '' */
@@ -5808,8 +5814,19 @@ input.password-hash {
   transform: rotateX(180deg);
 }
 .panel-group .panel-description {
-  padding: 15px;
-  text-transform: uppercase;
+  padding: 15px 0;
+  position: relative;
+  /*        .icon-base();
+        .icon-info();
+        &:before {
+            margin-left: 0;
+            margin-right: 0;
+            color: @gray;
+            font-size: @font-size-h3;
+            position: absolute;
+            left: 0;
+            top: 15px;
+        }*/
 }
 /* Forms & Inputs */
 /* remove dotted outline in firefox */
@@ -6051,9 +6068,10 @@ select.form-control,
 }
 .suboptions {
   display: none;
-  padding-left: 2em;
-  margin-right: -2em;
   font-size: 85%;
+}
+.suboptions label {
+  padding-left: 30px;
 }
 .formelement {
   padding: 30px 20px 20px 20px;

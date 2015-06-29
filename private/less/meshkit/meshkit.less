@@ -277,8 +277,20 @@ input {
         }
     }
     .panel-description {
-        padding: ( @baseUnit / 2 );
-        text-transform: uppercase;
+        padding: ( @baseUnit / 2 ) 0;
+        position: relative;
+        //text-transform: uppercase;
+/*        .icon-base();
+        .icon-info();
+        &:before {
+            margin-left: 0;
+            margin-right: 0;
+            color: @gray;
+            font-size: @font-size-h3;
+            position: absolute;
+            left: 0;
+            top: 15px;
+        }*/
     }
 }
 
@@ -434,9 +446,10 @@ select.form-control, #language-select {
 
 .suboptions {
     display: none;
-	padding-left: 2em;
-	margin-right: -2em;
 	font-size: 85%;
+    label {
+        padding-left: @baseUnit;
+    }
 }
 
 
