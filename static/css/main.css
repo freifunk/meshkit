@@ -5951,6 +5951,7 @@ select.form-control,
 .form-horizontal .form-group > .form-options {
   position: relative;
   padding-right: 15px;
+  line-height: 45px;
 }
 .form-horizontal .form-group > .form-options.has-suboptions {
   padding-right: 60px;
@@ -6043,6 +6044,7 @@ select.form-control,
   padding: 10px;
   z-index: 10;
   padding: .5em 1em;
+  line-height: 1.42857143;
 }
 .expandable-help .help-block {
   display: none;

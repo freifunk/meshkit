@@ -62,8 +62,17 @@
 <script type="text/javascript">
 
 var modellist = {{=XML(modellist)}};
-var target_options = document.getElementById('imageconf_target').options;
-var target_hiddenvalue = document.getElementById('imageconf_target').value;
+
+var target_input = document.getElementById('imageconf_target');
+var target_options = [];
+var target_hiddenvalue = '';
+
+if (target_input !== null) {
+    target_options = document.getElementById('imageconf_target').options;
+    target_hiddenvalue = document.getElementById('imageconf_target').value;
+} else {
+    
+}
 
 function target_rewrite(target) {
     for(option in target_options) {
@@ -101,7 +110,12 @@ for(var manufacturer in modellist) {
     var target = modellist[manufacturer][model]['target'];
     var profile = modellist[manufacturer][model]['profile'];
     var full_target = target_rewrite(target);
-    msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
+    var msg = '';
+    if (full_target.length > 0) {
+        msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
+    } else {
+        msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
+    }
     link = "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");"
     link += "set_profile(\"" + profile + "\");";
     {{ if config.autosubmit == True: }}

@@ -31,7 +31,6 @@ def config_not_found():
     return dict()
 
 def index():
-    hidden_fields = dict()
     check_queue()
     # if config doesn't exist in database yet redirect to appadmin
     if not config:
@@ -59,13 +58,15 @@ def index():
     if len(targets) == 1:
         db.imageconf.target.default = targets[0]
         db.imageconf.target.writable = False
-        hidden_fields['target'] = targets[0]
+        db.imageconf.target.widget = SQLFORM.widgets.string.widget
+        session.target = targets[0]
 
     if len(communities) == 1:
         db.imageconf.community.default = communities[0]
         db.imageconf.community.writable = False
-        hidden_fields['community'] = communities[0]
-    
+        db.imageconf.community.widget = SQLFORM.widgets.string.widget
+        session.community = communities[0]
+        
     if auth.user:
         user_defaults = db(db.user_defaults.id_auth_user == auth.user_id).select().first()
         if user_defaults:
@@ -80,7 +81,7 @@ def index():
         session.community = ''
       
         
-    form = SQLFORM.factory(db.imageconf, table_name='imageconf', hidden=hidden_fields)
+    form = SQLFORM.factory(db.imageconf, table_name='imageconf')
     
     
     modellist = '{'
@@ -104,8 +105,10 @@ def index():
 
     if form.process(session=None, formname='step1', keepvalues=True).accepted:
         response.flash="form accepted"
-        session.community = form.vars.community
-        session.target = form.vars.target
+        if "community" in form.vars:
+            session.community = form.vars.community
+        if "target" in form.vars:
+            session.target = form.vars.target
         session.mail = form.vars.mail
         session.profile = form.vars.profile or 'Default'
         session.noconf = form.vars.noconf or config.noconf
@@ -130,6 +133,9 @@ def wizard():
     # check if community and target are set, else redirect to the index page
     # todo
     # list of profiles
+    if not session.target:
+        redirect((URL('error')))
+        
     session.profiles = get_profiles(config.buildroots_dir, session.target, os.path.join(request.folder, "static", "ajax"), True)
     
     # overwrite field defaults and requires before creating the SQLFORM
