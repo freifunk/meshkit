@@ -8,20 +8,6 @@ import os
 import subprocess
 import formhelpers
 
-### end requires
-
-# Make sure the build_queue is running. because internal crontab performance is really bad with wsgi
-# fake crontab functionality here. Also it is not possible to call private/build_queue.py directly
-# when using wsgi. So call this init instead.
-def check_queue():
-    queue_status = mkutils.check_pid(os.path.join(request.folder, "private", "buildqueue.pid"), False)
-    if queue_status:
-        return True
-    else:
-        subprocess.call(['python', 'web2py.py', '-S', 'meshkit', '-M', '-R', os.path.join(request.folder, 'init', 'build_queue.py')])
-
-
-
 def error():
     if not config.noconf == True:
         if not config.profiles or not os.access(config.profiles, os.R_OK):
@@ -31,7 +17,6 @@ def config_not_found():
     return dict()
 
 def index():
-    check_queue()
     # if config doesn't exist in database yet redirect to appadmin
     if not config:
         response.flash = "No config found, redirecting you to create one"
@@ -259,7 +244,6 @@ def wizard():
             id = db.imageconf.insert(**db.imageconf._filter_fields(form.vars))
             session.id = id
         
-        
         for i in wifi_options:
             if i["enabled"] == True:
                 id_row = db.wifi_interfaces.insert(id_build=id, **db.wifi_interfaces._filter_fields(i))
@@ -268,6 +252,15 @@ def wizard():
                     row.update_record(id_build=id, enabled=True)    
                     db.commit()
                 
+        # schedule task
+        scheduler.queue_task(
+            build,
+            pvars=dict(id=id),
+            immediate=True,
+            task_name="build-%s" % id,
+            timeout=settings.scheduler['timeout'],
+            retry_failed=settings.scheduler['retry_failed']
+        )
         redirect(URL('build'))
         
     elif form.errors:
@@ -377,7 +370,7 @@ def targets():
 @service.json
 def status():
     ret = {}
-    ret['status'] = check_queue()
+    ret['num_workers'] = mkutils.workers_online()
     ret['loadavg'] = cache.ram('loadavg',lambda:mkutils.loadavg(),time_expire=10)
     memory = cache.ram('memory',lambda:mkutils.memory_stats(),time_expire=10)
     ret['memused'], ret['memfree'] = str(memory[1]), str(memory[2])

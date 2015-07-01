@@ -38,3 +38,4 @@ response.logo = A(
     _href=URL('index'),
     _class="site-logo"
 )
+

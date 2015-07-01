@@ -4,11 +4,12 @@
 <table width="99%">
   <tr>
     <td width="30%">{{=T('Buildqueue running?')}}</td>
-    {{if status:}}
-    <td><span class='icon-status-ok'><span class="sr-only">{{=T("Yes")}}</span></span></td>
-    {{else:}}
-    <td><span class='icon-status-notok'><span class="sr-only">{{=T("No")}}</span></span></td>
-    {{pass}}
+    <td>
+        <span class='worker'>
+            <span class="sr-only">{{=T("No")}}</span>
+            {{=T('Workers')}}: <span id="num-worker">-</span>
+        </span>
+    </td>
   </tr>
   <tr>
     <td>{{=T('Load average')}}</td><td><strong><span id="loadavg">-</span></strong></td>
@@ -43,6 +44,18 @@
 
 function refreshStats(){
   $.getJSON('api/json/status', '', function (json, textStatus){
+        var workers_running = json.num_workers;        
+        if (workers_running > 0) {
+            $(".worker").removeClass("icon-status-notok")
+                    .addClass("icon-status-ok");
+            $(".worker > .sr-only").html('{{=T("Yes")}}');
+        } else {
+            $(".worker").removeClass("icon-status-ok")
+                    .addClass("icon-status-notok");
+            $(".worker > .sr-only").html('{{=T("No")}}');
+        }
+        $("#num-worker").html(workers_running);
+        
         document.getElementById('memfree').innerHTML = json.memfree;
         document.getElementById('memused').innerHTML = json.memused;
         document.getElementById('loadavg').innerHTML = json.loadavg;
@@ -53,11 +66,9 @@ function refreshStats(){
   });
 }
 
-// Keep interval in a variable in case you want to cancel it later.
-var refreshInterval = setInterval(refreshStats, 10000);
-
-refreshStats();
-
+  // Keep interval in a variable in case you want to cancel it later.
+  var refreshInterval = setInterval(refreshStats, 5000);
+  refreshStats();
 </script>
 
 {{block footer}}

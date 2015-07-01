@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """
 Defined statuses:
 0: build ok
@@ -11,19 +14,22 @@ import os
 import errno
 import subprocess
 import sys
+from datetime import datetime
 try:
     import json
 except ImportError:
     import simplejson as json
 import shutil
-sys.path.append(os.path.join(request.folder, "private", "modules"))
 import mkutils
-import processupload
-import log
 import distutils
 from distutils.dir_util import copy_tree
+from gluon import current
+from gluon.scheduler import Scheduler
 
-
+import sys
+sys.path.append(os.path.join(request.folder, "private", "modules"))
+import processupload
+import log
 logger = log.initialize_logging(request.folder, 'build_queue')
 
 def mkdir_p(path):
@@ -46,7 +52,6 @@ def cptree(src,dst):
     except IOError, e:
         logger.error('Could not create/write to directory %s. Check permissions.' % dst)
 
-
 class BuildImages(object):
 
     """
@@ -56,7 +61,7 @@ class BuildImages(object):
         config_path: Path where the uci config files are stored
         config_file: filename of the config file
     """
-
+    
     def __init__(self, row=None):
         def _get(option):
             ret = None
@@ -66,7 +71,7 @@ class BuildImages(object):
                 logger.warning("Could not get option %s from the db" % option)
                 pass
             return ret
-                    
+
         self.Id = _get('id')
         self.Rand = _get('rand')
         self.Target = _get('target')
@@ -153,6 +158,9 @@ class BuildImages(object):
     def summary_json(self):
         self.rows_wifi = self.rows_wifi.as_dict()
         r = json.dumps(self.__dict__, indent=4)
+        return r
+        
+    def summary_json_write(self, jsondata):
         summaryfile = os.path.join(self.BinDir, "summary.json")
         logger.debug('Writing summary to %s' % summaryfile)
         
@@ -160,11 +168,11 @@ class BuildImages(object):
         try:
             f = open(summaryfile, "w")
             try:
-                f.write(str(r))
+                f.write(str(jsondata))
             finally:
                 f.close()
         except IOError:
-               pass
+                logger.warning("Could not write the summary.json file!")
 
     def SendMail(self, status):
         if status == 0:
@@ -446,14 +454,17 @@ class BuildImages(object):
             logger.critical("Could not write /etc/config/meshkit!")
 
 
-    def build(self):
+    def _build(self):
+        status = 3
+        out = ''
         logger.info('Build started, ID: %s, Target: %s' % (self.Id, self.Target) )
-        if builder.createdirectories():
+        if self.createdirectories():
             if not self.Noconf == True:
-                builder.createconfig()
+                self.createconfig()
             
             #write summary to output directory
-            builder.summary_json()
+            settings_summary_json = self.summary_json()
+            self.summary_json_write(settings_summary_json)
 
             #handle files in <meshkit>/files
             mkfilesdir = os.path.join(request.folder, "files")
@@ -499,9 +510,9 @@ class BuildImages(object):
                     except:
                         logger.warning('Could not delete %s' % uploaded_file)
                         
-            out = open(self.BinDir + "/build.log", "w")
+            
             if self.Profile:
-                option_profile = "PROFILE='" + self.Profile + "'"
+                option_profile = "PROFILE=%s" % self.Profile
             else:
                 option_profile = ""
 
@@ -516,57 +527,94 @@ class BuildImages(object):
 
             # check if there are any files to include in the image
             if len(os.listdir(self.FilesDir)) > 0:
-                option_files = " FILES='" + self.FilesDir + "'"
+                option_files = "FILES=%s" % self.FilesDir
             else:
                 option_files=""
 
             if self.Pkgs:
-                option_pkgs = " PACKAGES='" + self.Pkgs + "'"
+                option_pkgs = "PACKAGES=%s" % self.Pkgs
             else:
-                option_pkgs = " "
+                option_pkgs = ""
+                
+            option_bin_dir = "BIN_DIR=%s" % self.BinDir
 
-            cmd = "cd " + config.buildroots_dir + "/" + self.Target + "; make image " + option_profile + option_pkgs + " BIN_DIR='" + self.BinDir + "' " + option_files
-            ret = subprocess.call([cmd, ""], stdout=out, stderr=subprocess.STDOUT, shell=True)
-            builder.build_links_json()
+            path = os.path.join(config.buildroots_dir, self.Target)
+          
+            proc = subprocess.Popen(
+                [
+                    "make",
+                    "image",
+                    option_profile,
+                    option_pkgs,
+                    option_bin_dir,
+                    option_files,
+                ],
+                cwd=path,
+                stdout=subprocess.PIPE,
+                shell=False,
+                stderr=subprocess.STDOUT
+            )
+            
+            
+            out, _ = proc.communicate()
+            ret = proc.returncode
+            
+            self.build_links_json()
             if ret != 0:
                 if ret < 0:
                     logger.critical('make was killed by signal %s', str(ret))
                 else:
                     logger.critical('make failed with return code %s', str(ret))
-                return 2
+                status = 2
             else:
-                return 0
-        else:
-            return 3
+                status = 0
 
-# Do not start if build_queue is already running
-if mkutils.check_pid(os.path.join(request.folder, "private", "buildqueue.pid"), os.getpid()):
-    logger.warning('Buildqueue is already running, not starting it again.')
-else:
-    try:
-        logger.info('Starting buildqueue')
-        while True:
-            try:
-                rows = db(db.imageconf.status=='1').select()
-            except KeyError:
-                rows = []
+        with open(self.BinDir + "/build.log", 'w') as f:
+            f.write(out)
+        
+        return status, out, settings_summary_json
 
-            for row in rows:
-                builder = BuildImages(row)
-                ret = builder.build()
-                if ret == 0:
-                    logger.info('Build finished, ID: %s ' % str(row.id))
-                    status = 0
-                elif ret == 3:
-                    logger.error('Build aborted due to previous errors, ID: %s' % str(row.id))
-                    status = 3
-                else:
-                    logger.error('Build failed, ID: %s' % str(row.id))
-                    status = 2
-                builder.SendMail(status)
-                row.update_record(status=status)
-                db.commit()
-            time.sleep(30)
-    except KeyboardInterrupt as e:
-        logger.info('Buildqueue stopped by keyboard interrupt.')
-        raise
+def build(id):
+    row = db.imageconf[id]
+    if not row:
+        logger.error("No row found for ID %s" % id)
+
+    build_start = datetime.now()
+    builder = BuildImages(row)
+    logger.info("starting builder()")
+    ret, out, settings_summary_json = builder._build()
+    logger.info("ret is: %s" % ret)
+    if ret == 0:
+        logger.info('Build finished, ID: %s ' % str(row.id))
+        status = 0
+    elif ret == 3:
+        logger.error('Build aborted due to previous errors, ID: %s' % str(row.id))
+        status = 3
+    else:
+        logger.error('Build failed, ID: %s' % str(row.id))
+        status = 2
+
+    row.update_record(status=status)
+    db.build_log.insert(
+        id_build=row.id,
+        status=status,
+        output=out,
+        settings=settings_summary_json,
+        start=build_start,
+        finished=datetime.now()
+    )
+    db.commit()
+    builder.SendMail(status)
+    
+    # while it might seem like a good idea to return out (the complete output)
+    # here: don't. It will prevent the job from completing, this probably is a
+    # scheduler bug. See https://www.pythonanywhere.com/forums/topic/744/
+    return ret
+
+
+scheduler = Scheduler(
+    db,
+    discard_results = True,
+    heartbeat = settings.scheduler['heartbeat'],
+    
+)

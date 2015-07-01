@@ -37,24 +37,7 @@ if config is not None:
                 zero=None
             ),
         ),
-        Field(
-            'status',
-            default=1,
-            requires=IS_EMPTY_OR(
-                IS_IN_SET(
-                    {
-                        '0': T("Finished successfully"),
-                        '1': T("Queued"),
-                        '2': T("Build failed"),
-                        '3': T("System error"),
-                    },
-                    error_message=T(
-                        '%(name)s is invalid'
-                    ) % dict(name=T('Status')),
-                    zero=None,
-                )
-            )
-        ),
+        db.build_log.status,
         Field(
             'noconf',
             'boolean',

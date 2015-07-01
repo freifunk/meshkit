@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from gluon.storage import Storage
+from gluon import current
 settings = Storage()
 
 migrate = True
@@ -20,7 +21,7 @@ settings.description = 'This imagebuilder will build firmware images for Freifun
 settings.layout_theme = 'Default'
 settings.database_uri = 'sqlite://storage.sqlite'
 settings.security_key = 'c50bdbb8-ada2-4398-80da-c00f555acdde'
-settings.email_server = 'localhost'
+settings.email_server = '127.0.0.1'
 settings.email_sender = 'noreply@meshkit.freifunk.net'
 settings.email_tls = False
 settings.email_login = None
@@ -45,6 +46,15 @@ settings.ui_grid = dict(
     buttontable='icon-right big',
     buttonview='icon-eye big'
 )
+
+settings.scheduler = dict(
+    heartbeat=2,
+    timeout=120,
+    retry_failed=1
+)
+
+# save settings to current, so we can use it in modules
+current.settings = settings
 
 response.title = settings.title
 response.subtitle = settings.subtitle
