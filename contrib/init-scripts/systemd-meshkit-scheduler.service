@@ -1,0 +1,22 @@
+# start the meshkit scheduler
+# This unit file should be placed in /etc/systemd/system/meshkit-scheduler.service
+# and enabled/startet with:
+# systemctl daemon-reload
+# systemctl enable meshkit-scheduler
+# systemctl start meshkit-scheduler
+
+[Unit]
+Description=Start a scheduler for meshkit
+After=syslog.target
+
+[Service]
+Type=simple
+User=web2py
+Group=web2py
+WorkingDirectory=/opt/web2py
+Nice=19
+ExecStart=/usr/bin/python /opt/web2py/web2py.py -K meshkit,meshkit
+Restart=on-failure
+RestartSec=30
+[Install]
+WantedBy=multi-user.target
