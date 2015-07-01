@@ -6,6 +6,9 @@ Changelog for 0.1.0
  * use icon font
  * available web interfaces are now managed in their own table
  * lots of code cleanups, most notably much cleaner and simpler form generation
+ * rework build queue, use web2py's scheduler and write a build log to the db
+   for each run. ATTENTION: You need to start/setup at least one worker to
+   process the queue tasks, see INSTALL file
  * New configuration options: QOS, set password hash, homepage
  * Add a seperate user defaults profile with more options to set as defaults
  * add a overview page of all builds of a user with an option to edit/rebuild

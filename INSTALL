@@ -43,6 +43,29 @@ see http://web2py.com/books/default/chapter/29/13
 
 The meshkit/examples/ folder contains a sample config for apache2 + wsgi.
 
+==== 1.3.1 Settings up worker(s) ====
+
+Now you need to start/setup at least one worker, that will process the build
+tasks using web2py's own scheduler. Starting a worker is easy:
+
+$ python web2py.py -M -K meshkit
+
+Hint: If you want to start more than one workers, simply repeat the meshkit
+keyword like this (to start 3 workers):
+
+$ python web2py.py -M -K meshkit,meshkit,meshkit
+
+Of course you want to make that persistent and start the worker at boot time.
+You may just insert a line in /etc/rc.local or, whats recommended, use your
+systems init service.
+
+For your convenience there are sample init files for systemd and system-v in
+contrib/init-scripts/ that may help you to get started.
+
+For upstart web2py brings its own example, see:
+http://web2py.com/books/default/chapter/29/13/deployment-recipes#Start-the-scheduler-as-a-Linux-service--upstart-
+
+
 === 1.4. Rewrite routes.py ===
 Assume you only run web2py for the meshkit application. Thats why you want
 to make meshkit the default application. To do this change into the web2py
