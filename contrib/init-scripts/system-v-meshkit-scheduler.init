@@ -1,0 +1,70 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          meshkit-scheduler
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: meshkit-scheduler
+# Description:       Starts workers for the meshkit scheduler
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+W2P_PATH=/opt/web2py
+DAEMON="/usr/bin/python $W2P_PATH/web2py.py"
+DESC="meshkit scheduler worker"
+NAME="mk-worker"
+PIDFILE=/var/run/${NAME}.pid
+DAEMON_OPTS="-d ${PIDFILE} -f ${W2P_PATH} -M -K meshkit,meshkit"
+USER=web2py
+GROUP=web2py
+
+case "$1" in
+  start)
+	log_daemon_msg "Starting $DESC" "$NAME"
+	start-stop-daemon -b -c ${USER}:${GROUP} --name $NAME --start --quiet --background --pidfile $PIDFILE --exec ${DAEMON} -- ${DAEMON_OPTS}
+        log_end_msg $?
+	;;
+  stop)
+
+        # Return
+        #   0 if daemon has been stopped
+        #   1 if daemon was already stopped
+        #   2 if daemon could not be stopped
+        #   other if a failure occurred
+        start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+        RETVAL="$?"
+        [ "$RETVAL" = 2 ] && return 2
+        # Wait for children to finish too if this is a daemon that forks 
+        # and if the daemon is only ever run from this initscript.
+        # If the above conditions are not satisfied then add some other code
+        # that waits for the process to drop all resources that could be
+        # needed by services started subsequently.  A last resort is to
+        # sleep for some time.
+        start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
+        [ "$?" = 2 ] && return 2
+        # Many daemons don't delete their pidfiles when they exit.
+        rm -f $PIDFILE
+        return "$RETVAL"
+
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE
+	rm -f $PIDFILE
+	log_end_msg $?
+	;;
+  restart)
+  	$0 stop
+	sleep 3
+	$0 start
+	;;
+  *)
+	log_success_msg "Usage: /etc/init.d/meshkit-scheduler {start|stop|restart}"
+	exit 1
+	;;
+esac
+
+exit 0
