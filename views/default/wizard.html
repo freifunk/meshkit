@@ -230,16 +230,9 @@
         <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
         {{pass}}
         {{=formhelpers.panel_end()}}
-
-        <!-- Start submit tab -->
-        {{=formhelpers.panel_start("submit", T('Submit'), T('Submit the form and build your images. Note: root password will be "admin" if not set.'))}}
-        <input type="submit" value="{{=T('Build image')}}" class="btn btn-default btn-primary btn-submit" />
-        {{=formhelpers.panel_end()}}
-        <!-- End submit tab -->
-
     </div>
-
-
+    <input type="submit" value="{{=T('Build image')}}" class="btn btn-default btn-primary btn-submit" />
+    
     <!-- Hidden fields -->
     <input type="hidden" name="target" value="{{=session.target}}" />
     <input type="hidden" name="url" value="{{=session.url}}" />
