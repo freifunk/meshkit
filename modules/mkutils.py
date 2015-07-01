@@ -11,16 +11,16 @@ def workers_online():
         Returns:
             integer -- number of connected workers
     """
-    db = current.globalenv['db']
+    db_scheduler = current.globalenv['db_scheduler']
     # show only workers, whose last heartbeat was not more than 3 * heartbeat
     # seconds ago.
     expiration = current.request.now - timedelta(
         seconds=current.settings.scheduler['heartbeat'] * 3
     )
-    workers = db(
-        (db.scheduler_worker.last_heartbeat > expiration) & (
-            (db.scheduler_worker.status == "ACTIVE") |
-            (db.scheduler_worker.status == "PICK")
+    workers = db_scheduler(
+        (db_scheduler.scheduler_worker.last_heartbeat > expiration) & (
+            (db_scheduler.scheduler_worker.status == "ACTIVE") |
+            (db_scheduler.scheduler_worker.status == "PICK")
         )
     ).select()
     num_worker = len(workers)

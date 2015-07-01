@@ -613,7 +613,7 @@ def build(id):
 
 
 scheduler = Scheduler(
-    db,
+    db_scheduler,
     discard_results = True,
     heartbeat = settings.scheduler['heartbeat'],
     
