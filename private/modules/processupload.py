@@ -2,11 +2,14 @@ import os
 import tarfile
 resolved = lambda x: os.path.realpath(os.path.abspath(x))
 
+
 def _badpath(path, base):
-    return not resolved(os.path.join(base,path)).startswith(base)
+    return not resolved(os.path.join(base, path)).startswith(base)
 
 # This checks prevents unpacking of illegal files (e.g. absolute pathnames)
 badlist = []
+
+
 def safemembers(members):
     base = resolved(".")
     for finfo in members:
@@ -14,6 +17,7 @@ def safemembers(members):
             badlist.append(finfo.name)
         else:
             yield finfo
+
 
 def extract(archive, path):
     try:
@@ -33,6 +37,6 @@ def extract(archive, path):
         badpaths = ""
         for i in badlist:
             badpaths += i + " "
-        return "The following files were not extracted for security reasons: " + badpaths
-        
-
+        ret = ("The following files were not extracted for security " +
+               "reasons: %s" % badpaths)
+        return ret

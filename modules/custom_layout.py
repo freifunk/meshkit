@@ -24,7 +24,8 @@ def formstyle_bootstrap3(col_label_size=3):
             if isinstance(controls, INPUT):
                 if controls['_type'] == 'submit':
                     controls.add_class('btn btn-primary')
-                    _controls = DIV(controls, _class="%s %s" % (col_class, offset_class))
+                    _controls = DIV(
+                        controls, _class="%s %s" % (col_class, offset_class))
                 if controls['_type'] == 'button':
                     controls.add_class('btn btn-default')
                 elif controls['_type'] == 'file':
@@ -33,12 +34,12 @@ def formstyle_bootstrap3(col_label_size=3):
                     controls.add_class('form-control')
                 elif controls['_type'] == 'checkbox':
                     controls.add_class('form-control checkbox')
-                    
+
                 elif isinstance(controls, (SELECT, TEXTAREA)):
                     controls.add_class('form-control')
-                
+
             elif isinstance(controls, SPAN):
-                _controls = P(controls.components, 
+                _controls = P(controls.components,
                               _class="form-control-static %s" % col_class)
             elif isinstance(controls, UL):
                 for e in controls.elements("input"):
@@ -53,12 +54,12 @@ def formstyle_bootstrap3(col_label_size=3):
 
 def navbar(auth_navbar, user_defaults=False):
     """ create a custom user navbar element (login, register...)
-    
+
         see gluon/tools.py
-        
+
         Args:
             user_defaults: Show user defaults link for logged in users if True
-        
+
     """
     bar = auth_navbar
     user = bar["user"]
@@ -66,28 +67,32 @@ def navbar(auth_navbar, user_defaults=False):
     if not user:
         toggletext = current.T("Log In")
         toggle = A(toggletext,
-           _href="#",
-           _class="dropdown-toggle",
-           _rel="nofollow",
-           ** {"_data-toggle": "dropdown"})
-           
+                   _href="#",
+                   _class="dropdown-toggle",
+                   _rel="nofollow",
+                   ** {"_data-toggle": "dropdown"})
+
         li_login = LI(A(current.T("Log In"), _class="icon-user",
-            _href=bar["login"], _rel="nofollow"))
-            
+                        _href=bar["login"], _rel="nofollow"))
+
         li_register = LI(A(current.T("Sign Up"), _class="icon-user-add",
-            _href=bar["register"], _rel="nofollow"))
-            
-        li_reset_pass = LI(A(current.T("Lost Password?"), _class="icon-mail",
-            _href=bar["request_reset_password"], _rel="nofollow"))
-    
+                           _href=bar["register"], _rel="nofollow"))
+
+        li_reset_pass = LI(A(
+            current.T("Lost Password?"),
+            _class="icon-mail",
+            _href=bar["request_reset_password"],
+            _rel="nofollow"
+        ))
+
         dropdown = UL(li_reset_pass,
                       li_register,
                       LI('', _class="divider"),
                       li_login,
                       _class="dropdown-menu user-menu", _role="menu")
-        
+
         return LI(toggle, dropdown, _class="dropdown")
-            
+
     else:
         toggletext = "%s %s" % (bar["prefix"], user)
         toggle = A(toggletext,
@@ -97,7 +102,7 @@ def navbar(auth_navbar, user_defaults=False):
                    ** {"_data-toggle": "dropdown"})
         li_profile = LI(A(current.T("Account Details"), _class="icon-user",
                         _href=bar["profile"], _rel="nofollow"))
-        
+
         li_builds = LI(
             A(
                 current.T("Your Builds"),
@@ -106,20 +111,20 @@ def navbar(auth_navbar, user_defaults=False):
                 _rel="nofollow",
             )
         )
-        
+
         li_password = LI(A(current.T("Password"), _class="icon-lock",
-                        _href=bar["change_password"], _rel="nofollow"))
-                        
-        
+                           _href=bar["change_password"], _rel="nofollow"))
+
         if user_defaults:
-            li_defaults = LI(A(current.T("Firmware Defaults"), _class="icon-wrench",
-                            _href=URL("user_defaults"), _rel="nofollow"))
+            li_defaults = LI(
+                A(current.T("Firmware Defaults"), _class="icon-wrench",
+                  _href=URL("user_defaults"), _rel="nofollow"))
         else:
             li_defaults = ''
-                        
+
         li_logout = LI(A(current.T("Log Out"), _class="icon-login",
                        _href=bar["logout"], _rel="nofollow"))
-                       
+
         dropdown = UL(li_defaults,
                       li_builds,
                       li_profile,

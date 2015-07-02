@@ -1,11 +1,13 @@
 import os
 import re
 
+
 class UCI(object):
 
     """
-    Class used to work with uci files. At this time only reading of uci files is supported
-    
+    Class used to work with uci files. At this time only reading of uci files
+    is supported
+
     Args:
         config_path: Path where the uci config files are stored
         config_file: filename of the config file
@@ -22,7 +24,7 @@ class UCI(object):
         config 'foo' 'bar' (bar is the name of the section here)
         but not with
         config 'foo'
-    
+
         Returns:
             A nested tuple with all settings from the uci config, e.g.:
             {'sectionname1': {
@@ -40,20 +42,21 @@ class UCI(object):
                 line = line.replace('\n', '')
                 line = line.replace("'", '')
                 line = line.replace('"', '')
-                if line.rstrip().startswith('#'): #remove comments
+                if line.rstrip().startswith('#'):  # remove comments
                     pass
-                elif line.startswith('config'): # new config section starting
+                elif line.startswith('config'):  # new config section starting
                     sectionname = line.split(" ")[2]
                     config[sectionname] = {}
                 elif re.match(r'\s+', line):    # this is an option
-                    line = re.sub(' +',' ', line)
-                    line = re.sub('\t',' ', line)
+                    line = re.sub(' +', ' ', line)
+                    line = re.sub('\t', ' ', line)
                     line = line.split(' ')
                     length = len(line)
                     option = line[2]
-                    # values may be separated by space, so iterate over everything thats left
+                    # values may be separated by space, so iterate over
+                    # everything thats left
                     value = ""
-                    for v in range(3,length):
+                    for v in range(3, length):
                         value = value + " " + line[v]
                     config[sectionname][option] = value.strip()
         else:
@@ -65,4 +68,4 @@ class UCI(object):
             ret = config[section][option]
         except KeyError:
             ret = default
-        return ret          
+        return ret

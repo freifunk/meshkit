@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf8
-from __future__ import with_statement # for compat with 2.5
+from __future__ import with_statement  # for compat with 2.5
 from gluon import *
 from gluon.storage import Storage
 from gluon.cache import Cache
@@ -12,24 +12,25 @@ try:
     import json
 except ImportError:
     import simplejson as json
-    
+
+
 def get_hostname_from_form_vars(vars):
     """ returns the systems hostname
-    
+
         if form.vars.hostname is available use it. If not, try to generate
-        a hostname from one of the wifi ips. If that fails too: use 'OpenWrt' as
-        default.
-        
+        a hostname from one of the wifi ips. If that fails too: use 'OpenWrt'
+        as default.
+
         Args:
-            vars:    a web2py form.vars object
-            
+            vars: a web2py form.vars object
+
         Returns:
             string: system hostname (Default: OpenWrt)
-            
+
     """
-    
+
     hostname = "OpenWrt"
-    
+
     if vars.hostname:
         hostname = vars.hostname
     else:
@@ -40,17 +41,18 @@ def get_hostname_from_form_vars(vars):
 
     return hostname
 
+
 def filter_wifi_interfaces(vars):
     """ filter out all wifi options and write to wifi_interfaces table
-    
+
         Args:
             vars:    a web2py form.vars object
-            
+
         Returns:
             list:    a list containing all wifi options
-    
+
     """
-    
+
     wifi_options = []
     # probably not the most performant way to get the interfaces in order
     for i in range(9):
@@ -68,6 +70,7 @@ def filter_wifi_interfaces(vars):
                     wifi_options[iface_index][option] = vars[v]
 
     return wifi_options
+
 
 def get_communities(path):
     """Get a list of communities we have profiles for
@@ -90,6 +93,7 @@ def get_communities(path):
             communities.append(n)
     return sorted(communities)
 
+
 def get_targets(ibpath):
     """Get a list of build targets
 
@@ -102,12 +106,13 @@ def get_targets(ibpath):
 
     """
     targets = []
-    for filename in os.listdir(ibpath):          
+    for filename in os.listdir(ibpath):
         if os.path.isdir(os.path.join(ibpath, filename)):
             targets.append(filename)
     return sorted(targets)
 
-def dict_pkg_info(ibpath,target,savedir):
+
+def dict_pkg_info(ibpath, target, savedir):
     """Reads the output of 'make info' in the target directory into nested tuples
 
     This function will create nested from the 'make info' imagebuilder command.
@@ -130,13 +135,21 @@ def dict_pkg_info(ibpath,target,savedir):
                 - desc
          -defpkgs (list)
          e.g.:
-         {'info':
-             {'WZRHPG300NH':
-                 {'packages': 'kmod-usb-core kmod-usb2', 'desc': 'Buffalo WZR-HP-G300NH'},
-                     'TLWR741NDV1': {'packages': '', 'desc': 'TP-LINK TL-WR741ND v1'}},
-                 'defpkgs':
-                     ['base-files', 'kmod-ath9k', 'wpad-mini']
-          }
+         {
+            'info':{
+                'WZRHPG300NH':{
+                    'packages': 'kmod-usb-core kmod-usb2',
+                    'desc': 'Buffalo WZR-HP-G300NH'
+                },
+                'TLWR741NDV1':{
+                    'packages': '',
+                    'desc': 'TP-LINK TL-WR741ND v1'
+                }
+            },
+            'defpkgs': [
+                'base-files', 'kmod-ath9k', 'wpad-mini'
+            ]
+        }
 
     """
     try:
@@ -146,7 +159,11 @@ def dict_pkg_info(ibpath,target,savedir):
             f.closed
             return info
     except:
-        pfl = subprocess.Popen(["cd " + ibpath + "/" + target + "; make info", ""], stdout=subprocess.PIPE, shell=True)
+        pfl = subprocess.Popen(
+            ["cd " + ibpath + "/" + target + "; make info", ""],
+            stdout=subprocess.PIPE,
+            shell=True
+        )
         out, err = pfl.communicate()
         out = out.replace("Available Profiles:\n", "")
         info = {}
@@ -155,7 +172,8 @@ def dict_pkg_info(ibpath,target,savedir):
         regex = re.compile(pattern)
         info['defpkgs'] = []
         for match in regex.finditer(out):
-            info['defpkgs'] = match.group(0).replace("Default Packages: ", "").split(" ")
+            info['defpkgs'] = match.group(0).replace(
+                "Default Packages: ", "").split(" ")
 
         # get packages info
         pattern = r'([\w-]+:\n.*\n.*)\s+'
@@ -165,12 +183,12 @@ def dict_pkg_info(ibpath,target,savedir):
             group = match.group(1)
             n = re.search("[\w-]+:", group)
             name = n.group(0).replace(":", "")
-            pattern=re.compile(".*")
+            pattern = re.compile(".*")
             o = pattern.search(group, n.end(0) + 1)
             desc = o.group(0).replace("\t", "")
             p = pattern.search(group, o.end(0) + 1)
             packages = p.group(0).replace("\tPackages: ", "")
-            t = { 'desc': desc, 'packages': packages }
+            t = {'desc': desc, 'packages': packages}
             info['info'][name] = t
 
         # Write info to file
@@ -184,16 +202,18 @@ def dict_pkg_info(ibpath,target,savedir):
             pass
 
         return info
-    
-def get_profiles(ibpath,target,savedir,remove_default=False):
+
+
+def get_profiles(ibpath, target, savedir, remove_default=False):
     """Get a list of available profiles for one target.
 
     Args:
         ibpath: imagebuilder path
         target: target (name of the target/architecture folder in ibpath)
         savedir: directory where the cached files will be saved
-        remove_default: remove Default profiles, they create a lot of images (boolean)
-        
+        remove_default: remove Default profiles, they create a lot of images
+                        (boolean)
+
     Returns:
         A sorted list which contains the names of all profiles for a target
         e.g.
@@ -201,19 +221,20 @@ def get_profiles(ibpath,target,savedir,remove_default=False):
 
     """
     profiles = []
-    info = dict_pkg_info(ibpath,target,savedir)
+    info = dict_pkg_info(ibpath, target, savedir)
     for p in info['info']:
         if remove_default:
             if "ar71xx" in target and p == "Default":
                 pass
             else:
                 profiles.append(p)
-        else:    
+        else:
             profiles.append(p)
-        
+
     return sorted(profiles)
 
-def get_profile(ibpath,target,savedir,profile):
+
+def get_profile(ibpath, target, savedir, profile):
     """Get info of one selected profile for one target.
 
     Args:
@@ -224,13 +245,17 @@ def get_profile(ibpath,target,savedir,profile):
     Returns:
         A tuple which contains packages and description for this profile
         e.g.
-        {'packages': 'kmod-usb-core kmod-usb2', 'desc': 'Buffalo WZR-HP-G300NH'}
+        {
+            'packages': 'kmod-usb-core kmod-usb2',
+            'desc': 'Buffalo WZR-HP-G300NH'
+        }
 
     """
-    info = dict_pkg_info(ibpath,target,savedir)
+    info = dict_pkg_info(ibpath, target, savedir)
     return info['info'][profile]
 
-def get_defaultpkgs(ibpath,target,savedir):
+
+def get_defaultpkgs(ibpath, target, savedir):
     """Get the default packages for one target.
 
     Args:
@@ -243,10 +268,8 @@ def get_defaultpkgs(ibpath,target,savedir):
         ['base-files', 'kmod-ath9k', 'wpad-mini']
 
     """
-    info = dict_pkg_info(ibpath,target,savedir)
+    info = dict_pkg_info(ibpath, target, savedir)
     return info['defpkgs']
-
-
 
 
 def get_luci_themes(ibpath, target):
@@ -264,18 +287,18 @@ def get_luci_themes(ibpath, target):
         [ 'luci-theme-bootstrap', 'luci-theme-fledermaus' ]
 
     """
-	
+
     themes = []
     luci_packages = (
-        ibpath + "/" + target + "/packages/luci-theme-*", 
+        ibpath + "/" + target + "/packages/luci-theme-*",
         ibpath + "/" + target + "/packages/luci/luci-theme-*"
     )
 
     for package_dir in luci_packages:
         for filename in glob.glob(package_dir):
             if not re.match(".*luci-theme-base.*", filename):
-                filename=filename[filename.find("luci-theme"):len(filename)]
-                filename=filename.split("_")[0]
+                filename = filename[filename.find("luci-theme"):len(filename)]
+                filename = filename.split("_")[0]
                 themes.append(filename)
     return sorted(themes)
 
@@ -291,16 +314,23 @@ def create_package_list(ibpath, target, savedir):
     """
     def _generate_packagelist_json(ibpath, target, savedir):
         info = ""
-        if os.path.exists(ibpath + target + '/packages/Packages') :
-            with open(os.path.join(ibpath, target, 'packages', 'Packages'), 'r') as f:
+        package_path = os.path.join(ibpath, target, 'packages')
+        package_list = os.path.join(ibpath, target, 'packages', 'Packages')
+
+        if os.path.exists(package_list):
+            with open(package_list, 'r') as f:
                 info = str(f.read())
                 f.closed
-        else :
-            for directory in os.listdir(os.path.join(ibpath, target, 'packages')):
-                if os.path.exists(ibpath + target + '/packages/' + directory + '/Packages') :
-                    with open(os.path.join(ibpath, target, 'packages', directory, 'Packages'), 'r') as f:
+        else:
+            for directory in os.listdir(package_path):
+                if os.path.exists(package_path + directory + '/Packages'):
+                    alt_packages_path = os.path.join(
+                        package_path, directory, 'Packages'
+                    )
+                    with open(alt_packages_path, 'r') as f:
                         info += str(f.read())
                         f.closed
+
         infolist = re.split('\n\n', info)
         tmplist = {}
         for block in infolist:
@@ -310,15 +340,15 @@ def create_package_list(ibpath, target, savedir):
                 section = re.search("Section: (.*)", block).group(1)
                 version = re.search("Version: (.*)", block).group(1)
                 try:
-                    t = { 'version': version, 'size': size }           
+                    t = {'version': version, 'size': size}
                     tmplist[section][pkgname] = t
                 except:
                     tmplist[section] = {}
-                    t = { 'version': version, 'size': size }           
+                    t = {'version': version, 'size': size}
                     tmplist[section][pkgname] = t
 
-
-        result = json.JSONEncoder(sort_keys=True, separators=(',', ':')).encode(tmplist)
+        result = json.JSONEncoder(
+            sort_keys=True, separators=(',', ':')).encode(tmplist)
         if not os.path.exists(savedir):
             try:
                 os.mkdir(savedir)
@@ -333,11 +363,12 @@ def create_package_list(ibpath, target, savedir):
         finally:
             f.close()
 
-    if os.access(os.path.join(savedir,target), os.R_OK):
+    if os.access(os.path.join(savedir, target), os.R_OK):
         pass
     else:
         _generate_packagelist_json(ibpath, target, savedir)
-   
+
+
 def defip(mesh_network):
     """ Returns the first ip from mesh_network
 
@@ -347,15 +378,19 @@ def defip(mesh_network):
     Returns:
         first IP from that network, e.g. 10.0.0.1
     """
-    ip_first=mesh_network.split("/")[0]
-    octets=ip_first.split(".")
-    return octets[0] + "." + octets[1] + "." + octets[2] + "." + str(int(octets[3]) + 1)
+    ip_first = mesh_network.split("/")[0]
+    octets = ip_first.split(".")
+    return "%s.%s.%s.%s" % (
+        octets[0], octets[1], octets[2], str(int(octets[3]) + 1)
+    )
+
 
 def replace_obsolete_packages(available_packages_file, packages, rtable):
     """Replaces packages in the package list that have been renamed or deleted
 
     Args:
-        available_packages_file (string): Full path to the json-package list (static/package_lists/<target>)
+        available_packages_file (string): Full path to the json-package list
+                                          (static/package_lists/<target>)
         packages (string): List of packages
         rtable (dict): table containing what should be replaced with what
     Returns:
@@ -369,17 +404,17 @@ def replace_obsolete_packages(available_packages_file, packages, rtable):
             available_packages = json.load(f)
             f.closed
 
-	pkgtbl = packages.split(' ')
+        pkgtbl = packages.split(' ')
 
         for pkg in rtable:
-            has_pkg = False   
+            has_pkg = False
             for key in available_packages:
                 if pkg in available_packages[key]:
                     has_pkg = True
 
             if not has_pkg:
                 # packages = packages.replace(pkg, rtable[pkg])
-		pkgtbl = [item for item in pkgtbl if not item.startswith(pkg)]
-		pkgtbl.append(rtable[pkg])
+                pkgtbl = [item for item in pkgtbl if not item.startswith(pkg)]
+                pkgtbl.append(rtable[pkg])
 
         return ' '.join(pkgtbl)

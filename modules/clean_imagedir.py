@@ -19,4 +19,3 @@ def main():
 
 if __name__ == '__main__' and config.keep_images > 0:
     main()
-
