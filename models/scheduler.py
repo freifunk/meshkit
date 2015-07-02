@@ -573,16 +573,65 @@ class BuildImages(object):
             f.write(out)
         
         return status, out, settings_summary_json
+    
+def set_failed():
+    """ Search for builds, where the status in imageconf.status is
+        queued or processing. Then check their status in scheduler_tasks. If the
+        status is any of the failed statuses (FAILED, TIMEOUT,EXPIRED), then
+        set the status in imageconf table to failed, too.
+        This function should be run in regular intervals by the scheduler.
+    """
+    
+    queued_or_processing = db(
+        (db.imageconf.status == 1) | (db.imageconf.status == 4)
+    ).select()
+
+    logger.debug("Checking for failed builds")
+    
+    if len(queued_or_processing) < 1:
+        logger.debug("Nothing to be done")
+    else:
+        for row in queued_or_processing:
+            task_name = "build-%s" % str(row.id)
+            logger.debug("Checking %s" % task_name) 
+            task = db_scheduler(
+                db_scheduler.scheduler_task.task_name == task_name
+            ).select().last()
+
+            if task:
+                if (
+                    task.status == "FAILED" or
+                    task.status == "TIMEOUT" or
+                    task.status == "EXPIRED"
+                ):
+                            
+                    logger.warning("Setting task %s to failed" % task_name)
+                    row.update_record(status=3)
+                    db.commit()
+
+                else:
+                    logger.debug("Task still running")
+            else:
+                logger.warning(
+                    "Task build-%s not found in scheduler_task" % str(row.id)
+                )
+    
 
 def build(id):
     row = db.imageconf[id]
     if not row:
         logger.error("No row found for ID %s" % id)
+        return 3
 
     build_start = datetime.now()
+    
+    # set status to processing
+    row.update_record(status=4)
+    db.commit()
+    
     builder = BuildImages(row)
-    logger.info("starting builder()")
     ret, out, settings_summary_json = builder._build()
+    
     logger.info("ret is: %s" % ret)
     if ret == 0:
         logger.info('Build finished, ID: %s ' % str(row.id))
@@ -612,9 +661,25 @@ def build(id):
     return ret
 
 
+# start the scheduler
 scheduler = Scheduler(
     db_scheduler,
     discard_results = True,
     heartbeat = settings.scheduler['heartbeat'],
     
 )
+
+# check if the set_failed task is there, else insert it
+sched_failed = db_scheduler(
+    db_scheduler.scheduler_task.task_name == "set_failed"
+).select().first()
+
+if not sched_failed:
+    scheduler.queue_task(
+        set_failed,
+        task_name="set_failed",
+        timeout=30,
+        retry_failed = -1,
+        period=60,
+        repeats=0,
+    )

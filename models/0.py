@@ -50,7 +50,7 @@ settings.ui_grid = dict(
 settings.scheduler = dict(
     heartbeat=2,
     timeout=120,
-    retry_failed=1
+    retry_failed=0
 )
 
 # save settings to current, so we can use it in modules

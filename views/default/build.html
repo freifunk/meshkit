@@ -145,7 +145,7 @@ function refreshQueue(){
         }
 	console.log(status);
 
-        if (status == 2) {
+        if (status === 2 || status === 3) {
           msgfailed = "{{=T('Firmware generation failed!')}}"
           jQuery(".flash").html(msgfailed).slideDown();
           document.getElementById('status').innerHTML = "{{=T('Building of your images has failed. See the build.log to see what went wrong.')}}";

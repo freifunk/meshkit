@@ -36,6 +36,7 @@ db.define_table(
                     '1': T("Queued"),
                     '2': T("Build failed"),
                     '3': T("System error"),
+                    '4': T("Processing"),
                 },
                 error_message=T(
                     '%(name)s is invalid'

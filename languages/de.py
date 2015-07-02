@@ -340,6 +340,7 @@
 'Please visit <a href="%(url)s">%(url)s</a> to find instructions for a repository checkout or to browse the source code.': 'Besuche <a href="%(url)s">%(url)s</a> für den Checkout/Browsen des Meshkit Source Codes.',
 'Please visit <a href="https://github.com/freifunk/meshkit/">https://github.com/freifunk/meshkit/</a> to find instructions for a repository checkout or to browse the source code.': 'Please visit <a href="https://github.com/freifunk/meshkit/">https://github.com/freifunk/meshkit/</a> to find instructions for a repository checkout or to browse the source code.',
 'previous 100 rows': 'Vorherige 100 Zeilen',
+'Processing': 'Processing',
 'Production': 'Produktivbetrieb',
 'Profile': 'Profil',
 'Profile updated': 'Profil aktualisiert',
