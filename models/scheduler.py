@@ -51,12 +51,13 @@ def cptree(src, dst):
         logger.debug('Copied %s to %s' % (src, dst))
     except distutils.errors.DistutilsFileError as e:
         logger.warning(
-            'Source directory %s does not exist. %s' %
-            (src, str(e)))
+            'Source directory %s does not exist. %s' % (src, str(e))
+        )
     except IOError as e:
         logger.error(
             'Could not create/write to directory %s. Check permissions.' %
-            dst)
+            dst
+        )
 
 
 class BuildImages(object):
@@ -79,6 +80,7 @@ class BuildImages(object):
                 pass
             return ret
 
+        self.mkconfig = ''  # meshkit configuration (UCI format)
         self.Id = _get('id')
         self.Rand = _get('rand')
         self.Target = _get('target')
@@ -315,20 +317,23 @@ class BuildImages(object):
         """
 
         def add_section(type, name):
-            return "config '" + type + "' '" + name + "'\n"
+            self.mkconfig += "config %s '%s'\n" % (type, name)
 
         def add_option(option, value):
-            return "\toption '" + option + "' '" + value + "'\n"
+            self.mkconfig += "\toption %s '%s'\n" % (option, value)
+
+        def add_list(option, value):
+            self.mkconfig += "\tlist %s '%s'\n" % (option, value)
 
         # section system
-        config = "config 'system' 'system'\n"
-        config += "\toption 'hostname' '" + self.Hostname + "'\n"
-        config += "\toption 'conloglevel' '8'\n"
-        config += "\toption 'cronloglevel' '9'\n"
-        config += "\toption 'latitude' '" + self.Latitude + "'\n"
-        config += "\toption 'longitude' '" + self.Longitude + "'\n"
-        config += "\toption 'location' '" + self.Location + "'\n"
-        config += "\n"
+        add_section('system', 'system')
+        add_option('hostname', self.Hostname)
+        add_option('conloglevel', '8')
+        add_option('cronloglevel', '9')
+        add_option('latitude', self.Latitude)
+        add_option('longitude', self.Longitude)
+        add_option('location', self.Location)
+        self.mkconfig += "\n"
 
         # ssh pubkeys
         if self.Pubkeys:
@@ -338,147 +343,148 @@ class BuildImages(object):
                 if v is not '':
                     keyslist.append("ssh-" + v)
             if len(keyslist) > 0:
-                config += "config 'system' 'ssh'\n"
+                add_section('system', 'ssh')
                 for k in keyslist:
                     k = k.strip("\n")
                     k = k.strip("\r")
-                    config += "\tlist 'pubkey' '" + k + "'\n"
-                config += "\n"
+                    add_list('pubkey', k)
+                self.mkconfig += "\n"
 
         # section community
-        config += "config 'public' 'community'\n"
-        config += "\toption 'name' '" + self.Community + "'\n"
-        config += "\n"
+        add_section('public', 'community')
+        add_option('name', self.Community)
+        self.mkconfig += "\n"
 
         # section contact
-        config += "config 'public' 'contact'\n"
-        config += "\toption 'nickname' '" + self.Nickname + "'\n"
-        config += "\toption 'name' '" + self.Name + "'\n"
-        config += "\list 'homepage' '" + self.Homepage + "'\n"
-        config += "\toption 'mail' '" + self.Email + "'\n"
-        config += "\toption 'phone' '" + self.Phone + "'\n"
-        config += "\toption 'note' '" + self.Note + "'\n"
-        config += "\n"
+        add_section('public', 'contact')
+        add_option('nickname', self.Nickname)
+        add_option('name', self.Name)
+        add_list('homepage', self.Homepage)
+        add_option('mail', self.Email)
+        add_option('phone', self.Phone)
+        add_option('note', self.Note)
+        self.mkconfig += "\n"
 
         # section luci_main
-        config += "config 'core' 'luci_main'\n"
-        config += "\toption 'mediaurlbase' '/luci-static/" + self.Theme + "'\n"
-        config += "\n"
+        add_section('core', 'luci_main')
+        add_option('mediaurlbase', "/luci-static/%s" % self.Theme)
+        self.mkconfig += "\n"
 
         # section netconfig
-        config += "config 'netconfig' 'netconfig'\n"
-
+        add_section('netconfig', 'netconfig')
         wifi_counter = 0
         for row_wifi in self.rows_wifi:
-            config += "\toption 'IB_wifi" + \
-                str(wifi_counter) + "_config' '1'\n"
+            counter = str(wifi_counter)
+            add_option("IB_wifi%s_config" % counter, '1')
+
             if row_wifi.ipv4addr:
-                config += "\toption 'IB_wifi" + \
-                    str(wifi_counter) + "_ip4addr' '" + \
-                    row_wifi.ipv4addr + "'\n"
+                add_option("IB_wifi%s_ip4addr" % counter, row_wifi.ipv4addr)
+
             if row_wifi.chan:
-                config += "\toption 'IB_wifi" + str(
-                    wifi_counter) + "_channel' '" + str(
-                        row_wifi.chan) + "'\n"
+                add_option("IB_wifi%s_channel" % counter, row_wifi.chan)
+
             if row_wifi.dhcp:
-                config += "\toption 'IB_wifi" + str(
-                    wifi_counter) + "_dhcp' '" + (
-                        row_wifi.dhcp and "1" or "0"
-                    ) + "'\n"
+                add_option(
+                    "IB_wifi%s_dhcp" % counter,
+                    row_wifi.dhcp and "1" or "0"
+                )
+
             if row_wifi.dhcprange:
-                config += "\toption 'IB_wifi" + \
-                    str(wifi_counter) + "_dhcprange' '" + \
-                    row_wifi.dhcprange + "'\n"
+                add_option("IB_wifi%s_dhcprange" % counter, row_wifi.dhcprange)
+
             if row_wifi.vap:
-                config += "\toption 'IB_wifi" + str(
-                    wifi_counter) + "_vap' '" + (
-                    row_wifi.vap and "1" or "0") + "'\n"
-            if row_wifi.ipv6addr and \
-               self.Ipv6 and \
-               self.Ipv6_config == 'static' \
-               and wifiipv6:
-                config += "\toption 'IB_wifi" + \
-                    str(wifi_counter) + "_ip6addr' '" + \
-                    row_wifi.wifiipv6 + "'\n"
+                add_option(
+                    "IB_wifi%s_vap" % counter, row_wifi.vap and "1" or "0"
+                )
+
+            if row_wifi.ipv6addr and self.Ipv6 and \
+               self.Ipv6_config == 'static':
+                add_option("IB_wifi%s_ip6addr" % counter, row_wifi.wifiipv6)
+
             if row_wifi.ipv6ra and (
                 self.Ipv6 and (self.Ipv6_config == 'auto-ipv6-random' or
                                self.Ipv6_config == 'auto-ipv6-fromv4' or
                                self.Ipv6_config == 'static')):
-                config += "\toption 'IB_wifi" + str(
-                    wifi_counter) + "_ipv6ra' '" + (
-                    row_wifi.ipv6ra and "1" or "0") + "'\n"
+
+                add_option(
+                    "IB_wifi%s_ipv6ra" % counter,
+                    row_wifi.ipv6ra and "1" or "0"
+                )
 
             if self.Wanproto == 'olsr' and self.Wanipv4addr is not None:
-                config += "\toption 'wan_config' '1'\n"
-                config += "\toption 'wan_proto' '" + self.Wanproto + "'\n"
-                config += "\toption 'wan_ip4addr' '" + self.Wanipv4addr + "'\n"
-                config += "\toption 'wan_netmask' '" + self.Wannetmask + "'\n"
+                add_option('wan_config', '1')
+                add_option('wan_proto', self.Wanproto)
+                add_option('wan_ip4addr', self.Wanipv4addr)
+                add_option('wan_netmask', self.Wannetmask)
 
             if self.Lanproto == 'olsr' and self.Lanipv4addr is not None:
-                config += "\toption 'lan_config' '1'\n"
-                config += "\toption 'lan_proto' '" + self.Lanproto + "'\n"
-                config += "\toption 'lan_dhcp' '" + self.Landhcp + "'\n"
-                config += "\toption 'lan_dhcprange' '" + \
-                    self.Landhcprange + "'\n"
-                config += "\toption 'lan_ip4addr' '" + self.Lanipv4addr + "'\n"
-                config += "\toption 'lan_netmask' '" + self.Lannetmask + "'\n"
-        config += "\n"
+                add_option('lan_config', '1')
+                add_option('lan_proto', self.Lanproto)
+                add_option('lan_dhcp', self.Landhcp)
+                add_option('lan_dhcprange', self.Landhcprange)
+                add_option('lan_ip4addr', self.Lanipv4addr)
+                add_option('lan_netmask', self.Lannetmask)
+
+        self.mkconfig += "\n"
 
         # section netconfig/wan for dhcp/static
         if (self.Wanproto == 'static' and self.Wanipv4addr is not None) or \
            self.Wanproto == 'dhcp':
-            config += "config 'netconfig' 'wan'\n"
-            config += "\toption 'proto' '" + self.Wanproto + "'\n"
+            add_section('netconfig', 'wan')
+            add_option('proto', self.Wanproto)
 
             if self.Wanproto == 'static':
-                config += "\toption 'ip4addr' '" + self.Wanipv4addr + "'\n"
-                config += "\toption 'netmask' '" + self.Wannetmask + "'\n"
+                add_option('ip4addr', self.Wanipv4addr)
+                add_option('netmask', self.Wannetmask)
+
                 if self.Wanproto == 'static':
                     if self.Wangateway is not None:
-                        config += "\toption 'gateway' '" + \
-                            self.Wangateway + "'\n"
+                        add_option('gateway', self.Wangateway)
+
                     if self.Wandns is not None:
-                        config += "\toption 'dns' '" + self.Wandns + "'\n"
+                        add_option('dns', self.Wandns)
 
             if self.Wan_allow_ssh:
-                config += "\toption 'allowssh' '1'\n"
+                add_option('allowssh', '1')
+
             if self.Wan_allow_web:
-                config += "\toption 'allowweb' '1'\n"
-            config += "\n"
+                add_option('allowweb', '1')
+
+            self.mkconfig += "\n"
 
         # section Lan - static
         if self.Lanproto == 'static' and self.Lanipv4addr and self.Lannetmask:
-            config += "config 'netconfig' 'lan'\n"
-            config += "\toption 'proto' '" + self.Lanproto + "'\n"
-            config += "\toption 'ip4addr' '" + self.Lanipv4addr + "'\n"
-            config += "\toption 'netmask' '" + self.Lannetmask + "'\n"
-            config += "\n"
+            add_section('netconfig', 'lan')
+            add_option('proto', self.Lanproto)
+            add_option('ip4addr', self.Lanipv4addr)
+            add_option('netmask', self.Lannetmask)
+            self.mkconfig += "\n"
 
         # Section ipv6
-        config += add_section("defaults", "ipv6")
-        config += add_option("enabled", self.Ipv6 and '1' or '0')
+        add_section("defaults", "ipv6")
+        add_option("enabled", self.Ipv6 and '1' or '0')
         if self.Ipv6 and self.Ipv6_config:
-            config += add_option("config", self.Ipv6_config)
-        config += "\n"
+            add_option("config", self.Ipv6_config)
+        self.mkconfig += "\n"
 
         # Section general
-        config += "config 'general' 'general'\n"
-        config += "\toption 'sharenet' '" + self.Sharenet + "'\n"
-        config += "\toption 'localrestrict' '" + self.Localrestrict + "'\n"
-        config += "\n"
+        add_section('general', 'general')
+        add_option('sharenet', self.Sharenet)
+        add_option('localrestrict', self.Localrestrict)
+        self.mkconfig += "\n"
 
         # Section qos
         if self.Wan_qos == 1:
-            config += "config 'qos' 'wan'\n"
-            config += "\toption 'down' '" + str(self.Wan_qos_down) + "'\n"
-            config += "\toption 'up' '" + str(self.Wan_qos_up) + "'\n"
-            config += "\n"
+            add_section('qos', 'wan')
+            add_option('down', self.Wan_qos_down)
+            add_option('up', self.Wan_qos_up)
+            self.mkconfig += "\n"
 
         # Write config to etc/config/meshwizard
         try:
             f = open(os.path.join(self.FilesDirConfig, 'meshwizard'), "w")
             try:
-                f.write(config)
+                f.write(self.mkconfig)
             finally:
                 f.close()
         except IOError:
@@ -499,22 +505,24 @@ class BuildImages(object):
                 pass
 
         # Write /etc/config/meshkit containing current configuration
-        config_meshkit = add_section('meshkit', 'update')
+        self.mkconfig = ''
+        add_section('meshkit', 'update')
         if self.Profile:
-            config_meshkit += add_option('profile', self.Profile)
-        config_meshkit += add_option('target', self.Target)
-        config_meshkit += add_option('url', self.Url)
+            add_option('profile', self.Profile)
+
+        add_option('target', self.Target)
+        add_option('url', self.Url)
+        self.mkconfig += "\n"
 
         # if a password_hash is available then write it to the meshkit config
         # too
         if self.password_hash:
-            config_meshkit += "\n"
-            config_meshkit += add_section('defaults', 'auth')
-            config_meshkit += add_option('password_hash', self.password_hash)
+            add_section('defaults', 'auth')
+            add_option('password_hash', self.password_hash)
         try:
             f = open(os.path.join(self.FilesDirConfig, 'meshkit'), "w")
             try:
-                f.write(config_meshkit)
+                f.write(self.mkconfig)
             finally:
                 f.close()
         except IOError:
