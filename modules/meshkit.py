@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # coding: utf8
 from __future__ import with_statement  # for compat with 2.5
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from gluon import *
 from gluon.storage import Storage
 from gluon.cache import Cache

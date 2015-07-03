@@ -9,6 +9,7 @@ application.
 
  * python2.5 or python2.6
  * If using python 2.5: python-simplejson
+ * OrderedDict
 
 === 1.2 install web2py ===
 

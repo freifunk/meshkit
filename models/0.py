@@ -23,7 +23,6 @@ appconfig = ConfigParser.RawConfigParser(
         'tls': False,
         'login': None,
     },
-    allow_no_value=True
 )
 appconfig.read(config_file)
 
