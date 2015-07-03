@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf8
 from __future__ import with_statement  # for compat with 2.5
+from collections import OrderedDict
 from gluon import *
 from gluon.storage import Storage
 from gluon.cache import Cache
@@ -215,23 +216,22 @@ def get_profiles(ibpath, target, savedir, remove_default=False):
                         (boolean)
 
     Returns:
-        A sorted list which contains the names of all profiles for a target
-        e.g.
-        [ 'PROFILE1', 'PROFILE2' ]
+        dict(): a sorted dictionary containing the profile shortname as key
+                and the long name as value.
 
     """
-    profiles = []
+    profiles = {}
     info = dict_pkg_info(ibpath, target, savedir)
     for p in info['info']:
         if remove_default:
             if "ar71xx" in target and p == "Default":
                 pass
             else:
-                profiles.append(p)
+                profiles[p] = info['info'][p]['desc']
         else:
-            profiles.append(p)
+            profiles[p] = info['info'][p]['desc']
 
-    return sorted(profiles)
+    return OrderedDict(sorted(profiles.items(), key=lambda x: x[1].lower()))
 
 
 def get_profile(ibpath, target, savedir, profile):
