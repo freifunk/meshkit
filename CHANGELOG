@@ -1,4 +1,5 @@
 Changelog for 0.1.0
+ * Add an external config file (/conf/meshkit.conf)
  * Upgrade Bootstrap to version 3. This requires a recent version of web2py
    (2.11 or newer)
  * Remove jquery-ui, do tabs with bootstrap.js instead

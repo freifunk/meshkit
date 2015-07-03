@@ -280,5 +280,5 @@ mail.settings.login = settings.email_login
 
 # if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 # register with janrain.com, write your domain:api_key in private/janrain.key
-from gluon.contrib.login_methods.rpx_account import use_janrain
-use_janrain(auth, filename='private/janrain.key')
+# from gluon.contrib.login_methods.rpx_account import use_janrain
+# use_janrain(auth, filename='private/janrain.key')

@@ -75,7 +75,7 @@
             <!-- Main ========================================= -->
             <!-- Begin page content -->
             <div class="container main-content">
-                {{if current.config and current.config.mode == 'development':}}
+                {{if settings.app_mode == 'development':}}
                     <div class="app-toolbar">
                         {{=response.toolbar()}}
                     </div>

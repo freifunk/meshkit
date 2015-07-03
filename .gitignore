@@ -3,6 +3,7 @@ errors
 databases
 sessions
 uploads
+conf/meshkit.conf
 static/temp
 *.bak
 *.svn

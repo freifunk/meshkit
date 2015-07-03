@@ -309,6 +309,7 @@
 'Nickname': 'Nickname',
 'No': 'Nein',
 'No configuration': 'Keine Konfiguration',
+'No configuration found. Copy conf/meshkit_example.conf to conf.meshkit.conf and edit it.': 'No configuration found. Copy conf/meshkit_example.conf to conf.meshkit.conf and edit it.',
 'No databases in this application': 'Keine Datenbank in der Anwendung',
 'No password set. Click button to set a new one.': 'Kein Passwort gesetzt. Klicken, um eines einzugeben.',
 'No records found': 'Keine Datensätze gefunden',
