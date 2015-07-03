@@ -45,7 +45,9 @@ class UCI(object):
                 if line.rstrip().startswith('#'):  # remove comments
                     pass
                 elif line.startswith('config'):  # new config section starting
-                    sectionname = line.split(" ")[2]
+                    line = re.sub(' +', ' ', line)
+                    line = re.sub('\t', ' ', line)
+                    sectionname = line.split()[2]
                     config[sectionname] = {}
                 elif re.match(r'\s+', line):    # this is an option
                     line = re.sub(' +', ' ', line)

@@ -13,6 +13,7 @@ try:
     import json
 except ImportError:
     import simplejson as json
+import uci
 
 
 def get_hostname_from_form_vars(vars):
@@ -79,20 +80,21 @@ def get_communities(path):
     Args:
         path: path where the community profiles are stored
     Returns:
-        A sorted list containing the community names. The name is extracted
-        from the filename by removing "profile_" from it, e.g. profile_aachen
-        becomes aachen.
-        e.g.
-        ['aachen', 'augsburg', 'muchmore']
-
-    """
-    communities = []
+        dict: key is extracted from the filename by removing "profile_" from it
+              value is read from each profiles (option name)
+      """
+    communities = {}
     for filename in os.listdir(path):
         if "profile" in filename and not filename == "profile_Freifunk":
             m = re.search('(?<=profile_).*', filename)
-            n = m.group(0)
-            communities.append(n)
-    return sorted(communities)
+            key = m.group(0)
+            c = uci.UCI(path, filename)
+            community_defaults = c.read()
+            name = c.get(community_defaults, 'profile', 'name', key)
+            communities[key] = name
+            
+    return OrderedDict(sorted(communities.items(), key=lambda x: x[1].lower()))
+    
 
 
 def get_targets(ibpath):
