@@ -7,6 +7,12 @@
   "ascent": 850,
   "glyphs": [
     {
+      "uid": "72109d2fb3088d0e66ea6a9204297651",
+      "css": "spin1",
+      "code": 59413,
+      "src": "fontelico"
+    },
+    {
       "uid": "7222571caa5c15f83dcfd447c58d68d9",
       "css": "search",
       "code": 59405,
@@ -88,6 +94,12 @@
       "uid": "a204f0fa972408eaae5a363c444991b2",
       "css": "login",
       "code": 59398,
+      "src": "entypo"
+    },
+    {
+      "uid": "7f6916533c0842b6cec699fd773693d3",
+      "css": "hourglass",
+      "code": 59412,
       "src": "entypo"
     },
     {

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 # required - do no delete
-
-
 def user():
     return dict(form=auth())
-
 
 def download():
     return response.download(request, db)
@@ -284,6 +281,9 @@ def wizard():
         session.noconf = form.vars.noconf or config.noconf
         session.rand = form.vars.rand
         session.id = form.vars.id
+        session.hostname = get_hostname_from_form_vars(form.vars)
+        session.lanipv4addr = form.vars.lanipv4addr or '192.168.1.1'
+        session.location = session.location or '-'
 
         wifi_options = filter_wifi_interfaces(form.vars)
 
@@ -293,7 +293,7 @@ def wizard():
 
         # auto-set hostname if it is empty
         if not form.vars.hostname:
-            form.vars.hostname = get_hostname_from_form_vars(form.vars)
+            form.vars.hostname = session.hostname
 
         if id:
             query = (db.imageconf.id == id)
@@ -302,6 +302,7 @@ def wizard():
             id = db.imageconf.insert(**db.imageconf._filter_fields(form.vars))
             session.id = id
 
+        session.main_mesh_ip = None
         for i in wifi_options:
             if i["enabled"]:
                 id_row = db.wifi_interfaces.insert(
@@ -311,6 +312,9 @@ def wizard():
                     row = db(db.wifi_interfaces.id == id_row).select().first()
                     row.update_record(id_build=id, enabled=True)
                     db.commit()
+                if not session.main_mesh_ip:
+                    if i["ipv4addr"]:
+                        session.main_mesh_ip = i["ipv4addr"]
 
         # schedule task
         scheduler.queue_task(
@@ -431,9 +435,18 @@ def user_builds():
 
 def build():
     queuedimg = str(
-        cache.ram('queuedimg',
-                  lambda: len(db(db.imageconf.status == '1').select()),
-                  time_expire=60))
+        cache.ram(
+            'queuedimg',
+            lambda: len(db(db.imageconf.status == '1').select()),
+            time_expire=60
+        )
+    )
+    url_summary = A(
+        "summary.json",
+        _title=T('Summary of the configuration (JSON)'),
+        _target="blank",
+        _href="%s/%s/bin/summary.json" % (config.images_web_dir, session.rand)
+    )
     return locals()
 
 

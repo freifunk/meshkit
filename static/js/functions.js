@@ -713,6 +713,124 @@ $( document ).ready(function() {
         set_lang($(this).val())
     });
 });
-
-
 /* end wizard step2 */
+
+/* START functions for the build.html page (build status/output) */
+
+function update_buildqueue_status() {
+    var timeout = 5000;
+    var retries = 10;
+    var tryCount = 0;
+
+    $.ajax({
+        url: url.status_ajax,
+        type: 'get',
+        data: '',
+        dataType: 'json',
+        timeout: timeout,
+        tryCount: 0,
+        retryLimit: retries,
+        success: function(json) {
+            function addLinks(name, size) {
+                var size = (o.size / 1024 / 1024).toFixed(2);
+                var addnew = "<a href='" + url.baseurl_bin + name + "'>" + name + "</a> (" + size + " M)<br/>";
+                files = files + addnew;
+            }
+            var files = "";
+            var meta = "";
+            for (var i = json.length - 1; i >= 0; --i) {
+                var o = json[i];
+                var name = o.name;
+                if (name == "md5sums" || name == "summary.json" || name == "build.log" || name == "sha256sums") {
+                    var size = (o.size / 1024 / 1024).toFixed(2);
+                    var addnew = "<a href='" + url.baseurl_bin + name + "'>" + name + "</a>";
+                    meta = meta + " " + addnew;
+                } else {
+                    if (name.search("openwrt-ar71xx") != -1) {
+                        if (name.search("sysupgrade") != -1 || name.search("factory") != -1) {
+                            addLinks(name, o.size);
+                        }
+                    } else {
+                        addLinks(name, o.size);
+                    }
+                }
+            }
+            meta = meta + "<br /><a href='" + url.baseurl_bin + "'>" + i18n.show_bindir + "</a>";
+            $('#imagelist').html(
+                files + "<br /><strong>" + i18n.metadata + "</strong>" + meta + "<br />"
+            );
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            if (textStatus == 'timeout') {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                alert('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+                return;
+            }
+            if (xhr.status == 500) {
+                alert('There seems to be a server problem, please try again later.');
+            }
+            else if (xhr.status == 404) {
+                tryCount++;
+                if (tryCount <= retries) {
+                    setTimeout("ajax()", timeout);
+                    return;
+                }
+            } else {
+                alert('Oops! There was a problem, sorry.');
+            }
+        }
+    });
+
+}
+
+function set_buildqueue_status_icon(classname) {
+    $("#status .buildqueue-status")
+            .removeClass('icon-hourglass icon-status-ok icon-status-notok icon-spin1')
+            .addClass(classname);
+}
+
+function refreshQueue() {
+    $.getJSON(url.status_api, '', function(json, textStatus) {
+        var queued = json.queued;
+//        if (queued >= 0) {
+//            msgqueued = i18n.builds_in_queue + ' <span id=\'queued\'>' + queued + '</span>';
+//            jQuery(".flash").html(msgqueued).slideDown();
+//        }
+        var status = json.status;
+        if (status === 0) {
+            msgsuccess = i18n.success;
+            jQuery(".flash").html(msgsuccess).slideDown();
+            set_buildqueue_status_icon("icon-status-ok");
+            $("#status .buildqueue-status").html(i18n.success_msg);
+            update_buildqueue_status();
+            clearInterval(refreshInterval);
+        }
+
+        if (status === 1) {
+            set_buildqueue_status_icon("icon-hourglass");
+            $("#status .buildqueue-status").html(i18n.queued_msg + " " + queued);
+        };
+
+        if (status === 2 || status === 3) {
+            msgfailed = i18n.failed;
+            jQuery(".flash").html(msgfailed).slideDown();
+            $("#status .buildqueue-status").html(i18n.failed_msg);
+            set_buildqueue_status_icon("icon-status-notok");
+            update_buildqueue_status();
+            clearInterval(refreshInterval);
+        }
+        ;
+
+        if (status === 4) {
+            set_buildqueue_status_icon("icon-spin1");
+            $("#status .buildqueue-status").html(i18n.processing);
+        }
+    });
+}
+
+/* END functions for the build.html page (build status/output) */
