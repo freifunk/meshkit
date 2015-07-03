@@ -531,6 +531,7 @@ class BuildImages(object):
     def _build(self):
         status = 3
         out = ''
+	settings_summary_json = {}
         logger.info(
             'Build started, ID: %s, Target: %s' %
             (self.Id, self.Target))
