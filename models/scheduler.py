@@ -222,7 +222,7 @@ class BuildImages(object):
                 mailmessage += "\n" + T("Community") + ": " + self.Community
             if self.Hostname:
                 mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
-            if self.location:
+            if self.Location:
                 mailmessage += "\n" + T("Location") + ": " + self.Location
             if self.Community == 'weimar':
                 mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
@@ -531,7 +531,7 @@ class BuildImages(object):
     def _build(self):
         status = 3
         out = ''
-	settings_summary_json = {}
+        settings_summary_json = {}
         logger.info(
             'Build started, ID: %s, Target: %s' %
             (self.Id, self.Target))
@@ -609,10 +609,10 @@ class BuildImages(object):
                     except:
                         logger.warning('Could not delete %s' % uploaded_file)
 
-            if self.Profile:
+            if len(self.Profile) > 0:
                 option_profile = "PROFILE=%s" % self.Profile
             else:
-                option_profile = ""
+                option_profile = 'PROFILE='
 
             # Copy community profile
             if config.communitysupport and self.Community:
@@ -633,12 +633,12 @@ class BuildImages(object):
             if len(os.listdir(self.FilesDir)) > 0:
                 option_files = "FILES=%s" % self.FilesDir
             else:
-                option_files = ""
+                option_files = 'FILES='
 
             if self.Pkgs:
                 option_pkgs = "PACKAGES=%s" % self.Pkgs
             else:
-                option_pkgs = ""
+                option_pkgs = 'PACKAGES='
 
             option_bin_dir = "BIN_DIR=%s" % self.BinDir
 
