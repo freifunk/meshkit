@@ -5668,7 +5668,7 @@ h1 {
   transform: rotateX(180deg);
 }
 header.header {
-  height: 330px;
+  height: 200px;
   background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
 }
 header.header > .container {
@@ -5676,7 +5676,7 @@ header.header > .container {
   position: relative;
 }
 header.header > .container > .row {
-  margin-top: 45px;
+  margin-top: 30px;
 }
 header.header .statusbar {
   background: #000000;
@@ -5748,10 +5748,13 @@ header.header .site-title {
   padding-left: 15px;
   padding-right: 15px;
 }
+header.header .site-title h1 {
+  color: #ffb400;
+}
 header.header .site-title small {
   display: block;
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 12px;
 }
 header.header .site-logo {
   display: none;
@@ -6311,6 +6314,12 @@ input:-webkit-autofill:focus {
   }
   .navbar-header .site-logo {
     display: none;
+  }
+  header.header {
+    height: 330px;
+  }
+  header.header > .container > .row {
+    margin-top: 100px;
   }
   header.header .site-logo {
     position: relative;

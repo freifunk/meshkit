@@ -3,11 +3,11 @@
         <div class="row">
             <a href="{{=URL("index")}}">
                 <header class="site-title">
-                    <h1 class="remove-bottom title" style="margin-top: .5em;">
+                    <h1 class="title">
                         {{=response.title or request.application}}
                         <small>{{=response.subtitle or ''}}</small>
-                        {{if session.target:}}
-                        <small>[{{=session.target}}]</small>
+                        {{if session.target_short:}}
+                        <small>[{{=session.target_short}}]</small>
                         {{pass}}
                     </h1>
                 </header>

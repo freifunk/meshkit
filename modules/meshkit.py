@@ -117,6 +117,19 @@ def get_targets(ibpath):
             targets.append(filename)
     return sorted(targets)
 
+def target_shorten(target):
+    """ Remove some parts of target for nicer display
+
+    Args:
+        target (string): The string to shorten
+
+    Returns
+        string: the shortened target
+    """
+    short_target = target.replace('OpenWrt-ImageBuilder-', '')
+    return short_target.replace('.Linux-x86_64', '')
+
+
 
 def dict_pkg_info(ibpath, target, savedir):
     """Reads the output of 'make info' in the target directory into nested tuples

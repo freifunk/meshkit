@@ -13,6 +13,7 @@ import mkutils
 import os
 import subprocess
 import formhelpers
+from meshkit import target_shorten
 
 
 def error():
@@ -139,6 +140,8 @@ def wizard():
     # list of profiles
     if not session.target:
         redirect((URL('error')))
+
+    session.target_short = target_shorten(session.target)
 
     session.profiles = get_profiles(
         config.buildroots_dir,
