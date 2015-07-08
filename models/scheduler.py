@@ -336,19 +336,13 @@ class BuildImages(object):
         self.mkconfig += "\n"
 
         # ssh pubkeys
-        if self.Pubkeys:
-            keyslist = []
-            k = self.Pubkeys.split("ssh-")
-            for v in k:
-                if v is not '':
-                    keyslist.append("ssh-" + v)
-            if len(keyslist) > 0:
-                add_section('system', 'ssh')
-                for k in keyslist:
-                    k = k.strip("\n")
-                    k = k.strip("\r")
-                    add_list('pubkey', k)
-                self.mkconfig += "\n"
+        if self.Pubkeys and len(self.Pubkeys) > 0:
+            add_section('system', 'ssh')
+            for k in self.Pubkeys:
+                #k = k.strip("\n")
+                #k = k.strip("\r")
+                add_list('pubkey', k)
+            self.mkconfig += "\n"
 
         # section community
         add_section('public', 'community')

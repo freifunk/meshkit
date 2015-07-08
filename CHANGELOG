@@ -11,6 +11,7 @@ Changelog for 0.1.0
    for each run. ATTENTION: You need to start/setup at least one worker to
    process the queue tasks, see INSTALL file
  * New configuration options: QOS, set password hash, homepage
+ * pubkeys are now of type string and use a multiple input widget
  * Add a seperate user defaults profile with more options to set as defaults
  * add a overview page of all builds of a user with an option to edit/rebuild
  * fixes for OpenWrt Chaos Calmer

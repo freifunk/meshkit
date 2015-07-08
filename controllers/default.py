@@ -392,6 +392,9 @@ def user_defaults():
         keepvalues=True
     ).accepted:
         response.flash = 'form accepted'
+        # reload page to get list:string options correct
+        redirect(URL('user_defaults'))
+        
     elif form.errors:
         errormsg = ''
         for i in form.errors:

@@ -54,17 +54,32 @@ div.error {
 ul.w2p_list {
     margin-left: 0;
     padding-left: 0;
-}
-.w2p_list li {
-    margin-bottom: 6px;
-}
-.w2p_list li input {
-    display: inline-block;
-    width: 85%;
-    margin-right: 4px;
-}
-.w2p_list li a {
-    margin-bottom: 2px;
+    margin-right: (@baseUnit * 3);
+
+    li {
+        position: relative;
+        input {
+            display: inline-block;
+            margin-right: 60px;
+        }
+        a.btn-default {
+            position: absolute;
+            right: ( @baseUnit * -3 - 4);
+            top: 0px;
+            color: @white;
+            height: ( @baseUnit * 1.5);
+            width: ( @baseUnit * 1.5);
+            background-color: lighten( @ff-yellow, 15%);
+            font-size: @font-size-large;
+            text-transform: uppercase;
+            border: 0;
+            .transition(background .2s ease-in-out);
+            &:first-of-type {
+                right: ( @baseUnit * -1.5 - 4 );
+                background-color: @ff-yellow;
+            }
+        }
+    }
 }
 div[id^=_autocomplete_] {
     margin-top: -10px;

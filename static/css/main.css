@@ -4925,17 +4925,33 @@ div.error {
 ul.w2p_list {
   margin-left: 0;
   padding-left: 0;
+  margin-right: 90px;
 }
-.w2p_list li {
-  margin-bottom: 6px;
+ul.w2p_list li {
+  position: relative;
 }
-.w2p_list li input {
+ul.w2p_list li input {
   display: inline-block;
-  width: 85%;
-  margin-right: 4px;
+  margin-right: 60px;
 }
-.w2p_list li a {
-  margin-bottom: 2px;
+ul.w2p_list li a.btn-default {
+  position: absolute;
+  right: -94px;
+  top: 0px;
+  color: #ffffff;
+  height: 45px;
+  width: 45px;
+  background-color: #ffcb4d;
+  font-size: 20px;
+  text-transform: uppercase;
+  border: 0;
+  -webkit-transition: background 0.2s ease-in-out;
+  -o-transition: background 0.2s ease-in-out;
+  transition: background 0.2s ease-in-out;
+}
+ul.w2p_list li a.btn-default:first-of-type {
+  right: -49px;
+  background-color: #ffb400;
 }
 div[id^=_autocomplete_] {
   margin-top: -10px;
@@ -5786,11 +5802,13 @@ dl dd {
   margin-bottom: 25px;
 }
 /* do not wrap pubkey text fields */
+/*
 textarea[id$="_pubkeys"] {
-  white-space: pre;
-  word-wrap: normal;
-  overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-x: auto;
 }
+*/
 input.pass-edit.match {
   background-color: #5cb85c;
 }
@@ -6268,10 +6286,10 @@ input:-webkit-autofill:focus {
 .required {
   color: red;
 }
-#auth_user_pubkeys {
-  white-space: nowrap;
-  overflow: auto;
-}
+/*#auth_user_pubkeys {
+	white-space:nowrap;
+	overflow:auto;
+}*/
 #custom_text_start {
   margin-bottom: 20px;
 }

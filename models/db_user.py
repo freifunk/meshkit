@@ -179,26 +179,18 @@ if config and config.communitysupport:
             ),
             widget=password_md5crypt
         ),
-        # TODO: Make a list:string
         Field(
             'pubkeys',
-            type='text',
+            'list:string',
             label=T('Public Keys'),
-            comment=T('Add ssh public keys, one per line.'),
-            requires=IS_EMPTY_OR([
-                IS_LENGTH(
-                    32768, 0,
-                    error_message=T(
-                        '%(name)s can only be up to %(len)s characters long'
-                    ) % dict(name=T('Pubkeys'), len='32768')
-                ),
-                IS_MATCH(
-                    '[a-zA-Z0-9\/\+,-@\.\=]+',
-                    error_message=T(
-                        '%(name)s contains invalid characters'
-                    ) % dict(name=T('Pubkeys'))
+            comment=T('Add ssh public keys.'),
+            requires=IS_LIST_OF(
+                IS_EMPTY_OR([
+                        IS_LENGTH(16384, 0),
+                        IS_MATCH('[a-zA-Z0-9\/\+,-@\.\=]+')
+                    ]
                 )
-            ])
+            )
         ),
         Field(
             'id_auth_user',
@@ -221,7 +213,7 @@ if config and config.communitysupport:
                 '%(name)s can only be up to %(len)s characters long'
             ) % dict(name=T('Nickname'), len='32')
         ),
-        IS_MATCH('[a-zA-Z0-9:ÜÄÖüöä \.,\-\_\n]+', )
+        IS_MATCH('[a-zA-Z0-9:ÜÄÖüöä \.,\-\_\n]+')
     ])
     db.user_defaults.phone.requires = IS_EMPTY_OR([
         IS_MATCH(

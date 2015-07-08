@@ -15,14 +15,8 @@
 </div>
 <script language="javascript"><!--
       jQuery("#web2py_user_form input:visible:enabled:first").focus();
-      //--></script>
-
-{{if request.args(0)=='profile':}}
-<script type='text/javascript'>
-  document.getElementById("auth_user_pubkeys").wrap='off';
+      //-->
 </script>
-{{pass}}
-
 
 {{block footer}}
 {{include 'footer.html'}}
