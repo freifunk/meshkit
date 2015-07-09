@@ -37,8 +37,10 @@
 
 <script type="text/javascript">
   // Keep interval in a variable to be able to cancel it later.
-  var refreshInterval = setInterval(refreshStats, 50000);
-  refreshStats();
+  $( document ).ready(function() {
+    var refreshInterval = setInterval(refreshStats, 50000);
+    refreshStats();
+  });
 </script>
 
 {{block footer}}
