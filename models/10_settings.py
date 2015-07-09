@@ -128,8 +128,8 @@ if settings.app_mode == "development":
     settings.fake_migrate_all = False
 else:
     # optimize handling of static files
-    response.optimize_css = 'concat,minify,inline'
-    response.optimize_js = 'concat,minify,inline'
+    response.optimize_css = 'concat,minify'
+    response.optimize_js = 'concat,minify'
 
 # save settings to current, so we can use it in modules
 current.settings = settings
