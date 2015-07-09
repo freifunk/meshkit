@@ -7,6 +7,10 @@
     var ajax_error_500 = '{{=T.M('An error occured, please [[reload %s]] the page') % URL(args=request.args, vars=request.get_vars) }}';
     var msg_show_help = '{{=T("Click to show help")}}';
     var msg_hide_help = '{{=T("Click to hide help")}}';
+    var i18n = {
+        yes: "{{=T('Yes')}}",
+        no:"{{=T('No')}}",
+    };
     //--></script>
 {{
 response.files.append(URL('static','css/main.css'))

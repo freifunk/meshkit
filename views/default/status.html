@@ -1,73 +1,43 @@
 {{extend 'layout.html'}}
-<h2>{{=T('Status')}}</h2>
+{{response.files.append(URL(r=request,c='static',f='js/jquery.flot.js'))}}
+{{response.files.append(URL(r=request,c='static',f='js/jquery.flot.pie.js'))}}
+{{response.files.append(URL(r=request,c='static',f='js/jquery.flot.resize.js'))}}
+{{response.include_files()}}
 
-<table width="99%">
-  <tr>
-    <td width="30%">{{=T('Buildqueue running?')}}</td>
-    <td>
-        <span class='worker'>
-            <span class="sr-only">{{=T("No")}}</span>
-            {{=T('Workers')}}: <span id="num-worker">-</span>
-        </span>
-    </td>
-  </tr>
-  <tr>
-    <td>{{=T('Load average')}}</td><td><strong><span id="loadavg">-</span></strong></td>
-  <tr>
-  <tr>
-    <td>{{=T('Memory usage')}}</td>
-    <td><strong><span id="memfree">-</span> {{=T('MB')}}</strong> {{=T('free')}} /
-                <strong><span id="memused">-</span> {{=T('MB')}}</strong> {{=T('used')}}</td>
+<h2>{{=T('System Status')}}</h2>
+<table class="table status">
+    <tr>
+        <td>{{=T('Buildqueue running?')}}</td>
+        <td>
+            <span class='worker'>
+                <span class="sr-only">{{=T("No")}}</span>
+                {{=T('Workers')}}: <span id="num-worker">-</span>
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <td>{{=T('Load average')}}</td><td><strong><span id="loadavg">-</span></strong></td>
+    <tr>
+    <tr>
+        <td>{{=T('Memory usage')}}</td>
+        <td><strong><span id="memfree">-</span> {{=T('MB')}}</strong> {{=T('free')}} /
+            <strong><span id="memused">-</span> {{=T('MB')}}</strong> {{=T('used')}}</td>
 </table>
 
-<h2>{{=T('Statistics')}}</h2>
-<table width="99%">
-  <tr>
-    <td width="30%">{{=T('Total images generated')}}</td>
-    <td><strong><span id="totalimg">-</span></strong></td>
-  </tr>
-  <tr>
-    <td width="30%">{{=T('Successful')}}</td>
-    <td><span style="color:green" id="successimg">-</span></td>
-  </tr>
-  <tr>
-    <td width="30%">{{=T('Failed')}}</td>
-    <td><span style="color:red" id="failedimg">-</span></td>
-  </tr>
-  <tr>
-    <td width="30%">{{=T('Queued')}}</td>
-    <td><span id="queuedimg">-</span></td>
-  </tr>
-</table>
+<div id="row">
+    <h2>{{=T('Build Status')}}</h2>
+    <div id="builds-overview" class="chart pie col-md-6"></div>
+    <div id="builds-community" class="chart pie col-md-6"></div>
+</div>
+
+<div id="row">
+    <div id="builds-target" class="chart pie col-md-6"></div>
+    <div id="builds-profile" class="chart pie col-md-6"></div>
+</div>
 
 <script type="text/javascript">
-
-function refreshStats(){
-  $.getJSON('api/json/status', '', function (json, textStatus){
-        var workers_running = json.num_workers;        
-        if (workers_running > 0) {
-            $(".worker").removeClass("icon-status-notok")
-                    .addClass("icon-status-ok");
-            $(".worker > .sr-only").html('{{=T("Yes")}}');
-        } else {
-            $(".worker").removeClass("icon-status-ok")
-                    .addClass("icon-status-notok");
-            $(".worker > .sr-only").html('{{=T("No")}}');
-        }
-        $("#num-worker").html(workers_running);
-        
-        document.getElementById('memfree').innerHTML = json.memfree;
-        document.getElementById('memused').innerHTML = json.memused;
-        document.getElementById('loadavg').innerHTML = json.loadavg;
-        document.getElementById('totalimg').innerHTML = json.totalimg;
-        document.getElementById('successimg').innerHTML = json.successimg;
-        document.getElementById('failedimg').innerHTML = json.failedimg;
-        document.getElementById('queuedimg').innerHTML = json.queuedimg;
-  });
-}
-
-  // Keep interval in a variable in case you want to cancel it later.
-  var refreshInterval = setInterval(refreshStats, 5000);
+  // Keep interval in a variable to be able to cancel it later.
+  var refreshInterval = setInterval(refreshStats, 50000);
   refreshStats();
 </script>
 

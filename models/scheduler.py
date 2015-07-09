@@ -106,7 +106,7 @@ class BuildImages(object):
         self.Ipv6 = _get('ipv6')
         self.Ipv6_config = _get('ipv6_config')
         self.Location = _get('location') or ''
-        self.Community = _get('community') or 'augsburg'
+        self.Community = _get('community')
         self.nodenumber = _get('nodenumber') or '1024'
         self.Nickname = _get('nickname') or ''
         self.Name = _get('name') or ''
@@ -339,8 +339,6 @@ class BuildImages(object):
         if self.Pubkeys and len(self.Pubkeys) > 0:
             add_section('system', 'ssh')
             for k in self.Pubkeys:
-                #k = k.strip("\n")
-                #k = k.strip("\r")
                 add_list('pubkey', k)
             self.mkconfig += "\n"
 
@@ -748,6 +746,9 @@ def build(id):
     row.update_record(status=status)
     db.build_log.insert(
         id_build=row.id,
+        community=row.community,
+        target=row.target,
+        profile=row.profile,
         status=status,
         output=out,
         settings=settings_summary_json,

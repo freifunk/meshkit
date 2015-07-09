@@ -4,6 +4,15 @@ html, body {
 
 h1 {
     text-transform: uppercase;
+    margin-bottom: @baseUnit;
+}
+
+h2 {
+    margin-bottom: @baseUnit;
+}
+
+h3 {
+    margin-bottom: @line-height-computed;
 }
 
 .border-top {
@@ -598,7 +607,6 @@ input:-webkit-autofill:focus {
     max-width: 100%;
     overflow-x: auto;
 }
-
 
 @media (min-width: @screen-sm) {
     .navbar.navbar-default {

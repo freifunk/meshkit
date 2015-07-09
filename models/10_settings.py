@@ -105,6 +105,12 @@ settings.ui_grid = dict(
     buttonview='icon-eye big'
 )
 
+settings.colors = {
+    "ff-yellow": "#ffb400",
+    "ff-magenta": "#dc0067",
+    "ff-blue": "#009ee0",
+}
+
 # scheduler settings
 settings.scheduler = dict(
     heartbeat=2,

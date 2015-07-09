@@ -10,21 +10,25 @@ db.define_table(
         comment=T(
             'ID of the config, that started this build.'
         ),
-        #requires=IS_IN_DB(db, db.imageconf.id, '%(hostname)s'),
+        # requires=IS_IN_DB(db, db.imageconf.id, '%(hostname)s'),
     ),
+    Field('community', length=128),
+    Field('community', length=128),
+    Field('target', length=128),
+    Field('profile', length=128),
     Field(
         'start',
         'datetime',
         label=T('Started at'),
-        #writable=False,
-        #readable=False
+        # writable=False,
+        # readable=False
     ),
     Field(
         'finished',
         'datetime',
         label=T('Finished at'),
-        #writable=False,
-        #readable=False
+        # writable=False,
+        # readable=False
     ),
     Field(
         'status',
@@ -49,15 +53,15 @@ db.define_table(
         'output',
         type='text',
         label=T('Build Log'),
-        length = 1048576,
-        requires = IS_LENGTH(1048576),
+        length=1048576,
+        requires=IS_LENGTH(1048576),
     ),
     Field(
         'settings',
         type='text',
         label=T('Settings (JSON)'),
-        length = 1048576,
-        requires = IS_EMPTY_OR(
+        length=1048576,
+        requires=IS_EMPTY_OR(
             [
                 IS_LENGTH(1048576),
                 IS_JSON(),

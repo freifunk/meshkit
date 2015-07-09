@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # required - do no delete
+
+
 def user():
     return dict(form=auth())
+
 
 def download():
     return response.download(request, db)
@@ -394,7 +397,7 @@ def user_defaults():
         response.flash = 'form accepted'
         # reload page to get list:string options correct
         redirect(URL('user_defaults'))
-        
+
     elif form.errors:
         errormsg = ''
         for i in form.errors:
@@ -476,6 +479,7 @@ def targets():
 
 @service.json
 def status():
+    import status
     ret = {}
     ret['num_workers'] = mkutils.workers_online()
     ret['loadavg'] = cache.ram(
@@ -488,33 +492,55 @@ def status():
         lambda: mkutils.memory_stats(),
         time_expire=10
     )
-    ret['memused'], ret['memfree'] = str(memory[1]), str(memory[2])
-    ret['totalimg'] = cache.ram(
-        'totalimg',
-        lambda: db(db.imageconf).select(
-            db.imageconf.id.max()
-        ).first()['MAX(imageconf.id)'],
-        time_expire=60
-    )
-    ret['queuedimg'] = cache.ram(
+
+    queued = cache.ram(
         'queuedimg',
-        lambda: len(db(db.imageconf.status == '1').select()),
+        lambda: db(db.imageconf.status == '1').count(),
         time_expire=60
     )
-    ret['failedimg'] = cache.ram(
+
+    failed = cache.ram(
         'failedimg',
-        lambda: len(
-            db(
-                (db.imageconf.status == '2') | (db.imageconf.status == '3')
-            ).select()
-        ),
+        lambda: db(
+            (db.build_log.status == '2') | (db.build_log.status == '3')
+        ).count(),
         time_expire=60
     )
-    ret['successimg'] = cache.ram(
+
+    success = cache.ram(
         'successimg',
-        lambda: ret['totalimg'] - ret['failedimg'],
+        lambda: db(db.build_log.status == '0').count(),
         time_expire=60
     )
+
+    ret['memused'], ret['memfree'] = str(memory[1]), str(memory[2])
+
+    ret['build_status'] = {
+        "data": {
+            "queued": [queued, T("queued"), settings.colors["ff-blue"]],
+            "success": [success, T("successful"), settings.colors["ff-yellow"]],
+            "failed": [failed, T("failed"), settings.colors["ff-magenta"]]
+        },
+        "title": T("Build status")
+    }
+
+    ret['builds_community'] = {
+        "data": cache.ram(
+            'builds_community',
+            lambda: status.community_builds(),
+            time_expire=60
+        ),
+        "title": T("Builds per community")
+    }
+    ret['builds_target'] = {
+        "data": cache.ram(
+            'builds_target',
+            lambda: status.target_builds(),
+            time_expire=60
+        ),
+        "title": T("Builds per target")
+    }
+
     return ret
 
 

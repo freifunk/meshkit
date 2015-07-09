@@ -834,3 +834,134 @@ function refreshQueue() {
 }
 
 /* END functions for the build.html page (build status/output) */
+
+/* functions for status page */
+
+
+
+function refreshStats() {
+    $.getJSON('api/json/status', '', function(json, textStatus) {
+        var workers_running = json.num_workers;
+        if (workers_running > 0) {
+            $(".worker").removeClass("icon-status-notok")
+                    .addClass("icon-status-ok");
+            $(".worker > .sr-only").html(i18n.yes);
+        } else {
+            $(".worker").removeClass("icon-status-ok")
+                    .addClass("icon-status-notok");
+            $(".worker > .sr-only").html(i18n.no);
+        }
+        $("#num-worker").html(workers_running);
+
+        document.getElementById('memfree').innerHTML = json.memfree;
+        document.getElementById('memused').innerHTML = json.memused;
+        document.getElementById('loadavg').innerHTML = json.loadavg;
+        updateGraphs(json);
+    });
+}
+/* End functions for status page */
+
+/* graphs (flotcharts.js) */
+
+/* add an additional legent/annotation to a flotchart graph */
+function graph_add_label(target, label) {
+    var placeholder = $(target);
+    placeholder.append(
+        '<div class="annotation">' + label + '</div>'
+    );    
+}
+
+/* format labels for flotchart pie graphs */
+function labelFormatter(label, series) {
+    return "<div class='pie-label'>" + label + "<br/>" + series.data[0][1] + "</div>";
+}
+
+/* render a pie chart */
+function graph_pie(target, data) {
+    var placeholder = $(target);
+    /* set height of the placeholder */
+    placeholder.css({height:placeholder.width() * 0.6});    
+    $.plot(placeholder, data, {
+        series: {
+            pie: {
+                innerRadius: 0.2,
+                show: true,
+                tilt: 0.4,
+                opacity: 0.5,
+                label: {
+                    show: true,
+                    radius: 0.75,
+                    threshold: 0.05,
+                    formatter: labelFormatter,
+                    border: 1,
+                    background: {
+                        color: "#efefef",
+                        opacity: 0.7
+                    }
+                },
+            },
+        },
+    })
+}
+
+function graph_labels_and_colors(i, val) {
+    var label = i;
+    if (typeof val[1] !== 'undefined') {
+        label = val[1];
+    }
+    var data = {
+        data: val[0],
+        label: label
+    };
+    if (typeof val[2] !== 'undefined') {
+        data["color"] = val[2];
+    }
+    return data;
+}
+
+function graph_builds(stats) {
+    /* graph build statistics */
+    var data_status = [];
+    var builds_total = 0;
+    jQuery.each(stats["data"], function(i, val) {
+        var data = graph_labels_and_colors(i, val);
+        data_status.push(data);
+        builds_total = builds_total + val[0];
+    });
+    var target = "#builds-overview";
+    graph_pie(target, data_status);
+    var title = stats["title"] + " | " + "Total: " + builds_total;
+    graph_add_label(target, title);
+}
+
+function graph_builds_community(stats) {
+    /* graph build count per community */
+    var data = [];
+    jQuery.each(stats["data"], function(i, val) {
+        data.push(graph_labels_and_colors(i, val));
+    });
+    var target = "#builds-community";
+    graph_pie(target, data);
+    var title = stats["title"];
+    graph_add_label(target, title);
+}
+
+function graph_builds_target(stats) {
+    /* graph build count per target */
+    var data = [];
+    jQuery.each(stats["data"], function(i, val) {
+        data.push(graph_labels_and_colors(i, val));
+    });
+    var target = "#builds-target";
+    graph_pie(target, data);
+    var title = stats["title"];
+    graph_add_label(target, title);
+}
+
+function updateGraphs(json) {
+    graph_builds(json.build_status);
+    graph_builds_community(json.builds_community)
+    graph_builds_target(json.builds_target)
+}
+
+/* end graphs */

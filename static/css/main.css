@@ -5472,12 +5472,66 @@ input[type=radio] {
 .noUi-marker-vertical.noUi-marker-large {
   width: 15px;
 }
+/* flotcharts */
+#graph-tooltip {
+  position: absolute;
+  display: none;
+  border: 1px solid #ffb400;
+  padding: 10px;
+  background-color: #ffffff;
+  opacity: 0.80;
+  z-index: 10;
+}
+.chart {
+  margin-bottom: 30px;
+}
+.chart.pie {
+  height: auto;
+}
+.chart.pie:before,
+.chart.pie:after {
+  content: " ";
+  display: table;
+}
+.chart.pie:after {
+  clear: both;
+}
+.chart.pie:before,
+.chart.pie:after {
+  content: " ";
+  display: table;
+}
+.chart.pie:after {
+  clear: both;
+}
+.chart.pie .pie-label {
+  font-size: 12px;
+  padding: 3px 10px;
+  text-align: center;
+}
+.chart .annotation {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px 0 15px 0;
+  text-align: center;
+  color: #555555;
+  font-size: 14px;
+}
 html,
 body {
   height: 101%;
 }
 h1 {
   text-transform: uppercase;
+  margin-bottom: 30px;
+}
+h2 {
+  margin-bottom: 30px;
+}
+h3 {
+  margin-bottom: 22px;
 }
 .border-top:before {
   display: block;
