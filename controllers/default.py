@@ -517,9 +517,21 @@ def status():
 
     ret['build_status'] = {
         "data": {
-            "queued": [queued, T("queued"), settings.colors["ff-blue"]],
-            "success": [success, T("successful"), settings.colors["ff-yellow"]],
-            "failed": [failed, T("failed"), settings.colors["ff-magenta"]]
+            "queued": [
+                queued,
+                T("queued"),
+                settings.colors["flotcharts-blue"]
+            ],
+            "success": [
+                success,
+                T("successful"),
+                settings.colors["flotcharts-yellow"]
+            ],
+            "failed": [
+                failed,
+                T("failed"),
+                settings.colors["flotcharts-red"]
+            ]
         },
         "title": T("Build status")
     }

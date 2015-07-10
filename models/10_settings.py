@@ -109,6 +109,9 @@ settings.colors = {
     "ff-yellow": "#ffb400",
     "ff-magenta": "#dc0067",
     "ff-blue": "#009ee0",
+    "flotcharts-yellow": "#EDC240",
+    "flotcharts-blue": "#AFD8F8",
+    "flotcharts-red": "#CB4B4B",
 }
 
 # scheduler settings
