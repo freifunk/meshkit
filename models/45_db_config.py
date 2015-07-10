@@ -5,46 +5,6 @@ from gluon import current
 from meshkit import *
 
 db.define_table(
-    'gui',
-    Field(
-        'short_name',
-        label=T('Short internal name'),
-        comment=T(
-            'A short internal name. Only Alphanumeric characters allowed.'
-        ),
-        requires=IS_ALPHANUMERIC(
-            error_message=T('%(name)s is invalid') %
-            dict(name=T('Short internal name'))
-        )
-    ),
-    Field(
-        'full_name',
-        label=T('Full name'),
-        comment=T('Full name of the Webinterface that is shown to users.'),
-        requires=IS_MATCH(
-            '^[a-zA-Z0-9\s-]*$', error_message=T('%(name)s is invalid') %
-            dict(name=T('Full name'))
-        )
-    ),
-    Field(
-        'is_default',
-        'boolean',
-        label=T('Default'),
-        comment=T('Use this GUI as the default. Should only be selected once.')
-    ),
-    Field(
-        'packages',
-        type='text',
-        label=T('Packages'),
-        comment=T('Packages to install when this GUI is selected.'),
-        requires=IS_MATCH(
-            '^[a-zA-Z0-9\s-]*$', error_message=T('%(name)s is invalid') %
-            dict(name=T('Packages'))
-        )
-    ),
-)
-
-db.define_table(
     'config',
     Field(
         'gui',
@@ -112,13 +72,6 @@ db.define_table(
     ),
     Field('keep_images', 'integer'),
     Field(
-        'webifs',
-        requires=IS_MATCH(
-            '^[a-zA-Z0-9,\s]*$', error_message=T('%(name)s is invalid') %
-            dict(name=T('Webinterfaces'))
-        )
-    ),
-    Field(
         'lucipackages',
         type='text',
         requires=IS_MATCH(
@@ -171,8 +124,6 @@ db.define_table(
 config = db.config[1]
 
 if config:
-    if config.webifs and config.webifs is not None:
-        config.webifs = [x.strip(' ') for x in config.webifs.split(',')]
     if config.lanprotos:
         config.lanprotos = [x.strip(' ') for x in config.lanprotos.split(',')]
     if config.wanprotos:
