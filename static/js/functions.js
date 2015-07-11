@@ -383,7 +383,7 @@ function pass_edit(container) {
 
 function set_packages() {
     var selected = $("#imageconf_profile").val();
-    ProfilePkgs(ajaxUrl + session.target, selected);
+    ProfilePkgs(ajaxUrl + '/' + session.target, selected);
 }
 
 function themeselect() {
@@ -654,7 +654,7 @@ function toggle_map_container(cmd, target) {
             ).addClass('visible').slideDown();
             loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
             var osm2 = function() {
-                loadScript(assets_js + "osm.js", do_map);
+                loadScript(assets_js + "/osm.js", do_map);
             };
             var do_map = function() {
                 init();
