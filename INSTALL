@@ -135,9 +135,6 @@ Webifs:			Webinterfaces to offer in the select field for webinterface
 			seperated by comma, e.g.
 			luci, none
 
-Lucipackages:		Packages to add to the package list to install if luci
-			is selected as webinterface. Seperated by space.
-
 IPv6Packages		Packages to add to the package list if IPv6 is enabled.
 			Only used when Communitysupport is enabled.
 			Seperated by space.
