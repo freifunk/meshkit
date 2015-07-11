@@ -297,6 +297,10 @@ th {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.btn-default[class*=" icon-"]:before {
+  margin-left: 0;
+  margin-right: 0.75em;
+}
 /* spinner */
 @-moz-keyframes spin {
   0% {
@@ -516,6 +520,12 @@ th {
   -webkit-animation: spin 2s infinite linear;
   animation: spin 2s infinite linear;
   display: inline-block;
+}
+.icon-location {
+  /* '' */
+}
+.icon-location:before {
+  content: '\e816';
 }
 .icon-status-ok {
   /* '' */
@@ -2426,9 +2436,7 @@ select[multiple].form-group-lg .form-control {
 .btn.focus,
 .btn:active.focus,
 .btn.active.focus {
-  outline: thin dotted;
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
+  outline: 0;
 }
 .btn:hover,
 .btn:focus,
@@ -2440,8 +2448,6 @@ select[multiple].form-group-lg .form-control {
 .btn.active {
   outline: 0;
   background-image: none;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 .btn.disabled,
 .btn[disabled],
@@ -5872,6 +5878,9 @@ input.pass-edit.mismatch {
 input.password-hash {
   display: none;
 }
+input[type="file"] {
+  line-height: 20px;
+}
 .password-edit-toggle {
   width: 100%;
   height: 45px;
@@ -5978,6 +5987,7 @@ input.password-hash {
 }
 .panel-group .panel-heading .panel-title a:before {
   float: right;
+  margin-right: 15px;
   -webkit-transition: transform 0.4s;
   -o-transition: transform 0.4s;
   transition: transform 0.4s;
@@ -5989,19 +5999,7 @@ input.password-hash {
   transform: rotateX(180deg);
 }
 .panel-group .panel-description {
-  padding: 15px 0;
-  position: relative;
-  /*        .icon-base();
-        .icon-info();
-        &:before {
-            margin-left: 0;
-            margin-right: 0;
-            color: @gray;
-            font-size: @font-size-h3;
-            position: absolute;
-            left: 0;
-            top: 15px;
-        }*/
+  padding: 30px 15px;
 }
 /* Forms & Inputs */
 /* remove dotted outline in firefox */
@@ -6155,6 +6153,9 @@ select.form-control,
   color: #777777;
   font-weight: normal;
 }
+.form-horizontal .panel-body {
+  padding: 0;
+}
 .help-toggle,
 .advanced {
   font-weight: 500;
@@ -6301,8 +6302,11 @@ input:-webkit-autofill:focus {
   border-top-right-radius: 0px;
   cursor: pointer;
 }
-#default-packages {
-  margin-bottom: 30px;
+.default-packages-container {
+  padding: 15px;
+}
+.available-packages-container {
+  padding: 15px;
 }
 .packages_table {
   width: 100%;
@@ -6330,9 +6334,6 @@ input:-webkit-autofill:focus {
   padding-top: 6%;
   text-align: center;
   z-index: 20;
-}
-#map_container {
-  margin-top: 20px;
 }
 .sectionremove {
   padding-left: 20px;
@@ -6376,6 +6377,149 @@ input:-webkit-autofill:focus {
   margin-bottom: 30px;
   max-width: 100%;
   overflow-x: auto;
+}
+#map-container {
+  background-color: #f5f5f5;
+  height: 0;
+  position: relative;
+}
+#map-container.visible {
+  height: 450px;
+}
+#map-container.visible:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#map-container.visible:before {
+  content: '\e815';
+  /* '' */
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+  display: inline-block;
+}
+#map-container.visible:before:before {
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+  display: inline-block;
+}
+#map-container.visible:before {
+  content: '\e815';
+  /* '' */
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+  display: inline-block;
+}
+#map-container.visible:before:before {
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+  display: inline-block;
+}
+#map-container.visible:before {
+  font-size: 40px;
+  left: 50%;
+  top: 50%;
+  margin-left: -20px;
+  margin-right: 0;
+  margin-top: -20px;
+  z-index: 0;
+  position: absolute;
+}
+#map-container .powered-by-osm {
+  font-size: 14px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 2px 5px;
+  background: #dddddd;
+  background: transparent\9;
+  background: rgba(221, 221, 221, 0.8);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#ccdddddd, endColorstr=#ccdddddd);
+  zoom: 1;
+}
+#map-container .powered-by-osm:nth-child(n) {
+  filter: none;
+}
+#map-container [id^=OpenLayers_Layer_Markers_] .olAlphaImg {
+  display: none;
+}
+#map-container [id^=OpenLayers_Layer_Markers_] [id^="OL_Icon_"] {
+  /* '' */
+  /* '' */
+}
+#map-container [id^=OpenLayers_Layer_Markers_] [id^="OL_Icon_"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#map-container [id^=OpenLayers_Layer_Markers_] [id^="OL_Icon_"]:before {
+  content: '\e816';
+}
+#map-container [id^=OpenLayers_Layer_Markers_] [id^="OL_Icon_"]:before {
+  content: '\e816';
+}
+#map-container [id^=OpenLayers_Layer_Markers_] [id^="OL_Icon_"]:before {
+  color: #dc0067;
+  font-size: 60px;
+}
+#osm > button {
+  width: 100%;
+  margin-top: 15px;
+}
+fieldset.wifi-interface legend {
+  padding: 15px;
+}
+.wifi-add-remove-buttons {
+  padding: 15px;
 }
 @media (min-width: 768px) {
   .navbar.navbar-default {
@@ -6518,10 +6662,6 @@ input:-webkit-autofill:focus {
   .form-horizontal > .panel-group {
     margin-left: -15px;
     margin-right: -15px;
-  }
-  .form-horizontal .panel-body {
-    padding-left: 0;
-    padding-right: 0;
   }
   header.header .statusbar {
     left: 0;

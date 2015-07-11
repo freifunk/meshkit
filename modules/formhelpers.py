@@ -134,17 +134,22 @@ class customField:
         self.form = form
         self.tablename = tablename
 
-    def field(self, col, advanced=None, suboption=False):
+    def field(self, col, advanced=None, suboption=False, widget_class=None):
         """ Create a form field
 
         Args:
             col -- a database column (string)
             advanced -- id of a div with advanced options
+            class -- extra class(es) to add to the widget. works only for INPUT
 
         """
         id = "%s_%s" % (self.tablename, col)
         label = self.form.custom.label[col]
         widget = self.form.custom.widget[col]
+        if widget_class:
+            for input in widget.elements('input'):
+                input['_class'] += " %s" % widget_class
+
         comment = self.form.custom.comment[col]
 
         advancedToggle = ''

@@ -56,12 +56,10 @@ function dynwifi_remove_last() {
     last_if.remove();
     var new_count = parseInt($("#wifiifsnr").val()) - 1;
     $("#wifiifsnr").val(new_count);
-    console.log("remove, wifi count is now " + new_count);
     dynwifi_buttons(new_count);
 }
 
 function dynwifi_buttons(wifi_count) {
-    console.log("changed" + wifi_count);
     if (wifi_count < 1) {
         $("#wifi-interface-remove").addClass("hidden");
     } else {
@@ -89,7 +87,6 @@ function dynwifi() {
         //var last_index = $("#wifiifsnr").val();
         var last_index = $("#wifi-interfaces").find("fieldset.wifi-interface").last().data("index");
         var index = parseInt(last_index) + 1;
-        console.log("foo" + last_index);
         if ( last_index === undefined) {
             last_index = -1;
         }
@@ -391,9 +388,7 @@ function set_packages() {
 
 function themeselect() {
     var webif_packages = $("#imageconf_webif").find('option:selected').data('packages');
-    console.log(webif_packages);
     if ( webif_packages.indexOf('luci-mod-admin') >= 0) {
-        console.log("selected luci");
         $("#theme_options").html(fields.theme);
         webifpackages = webif_packages;
         themepkgs();
@@ -404,35 +399,7 @@ function themeselect() {
         themepackages = "";
         update_defaultpkgs();   
     }
-    //var selected = $("#imageconf_gui").val();
-//    if (selected === "none") {
-//        $("#theme_options").html('');
-//        guipackages = "";
-//        themepackages = "";
-//        update_defaultpkgs();
-//    }
-//    if (selected === "luci") {
-//        var newdiv = fields.theme;
-//        document.getElementById("theme_options").innerHTML = newdiv;
-//        guipackages = $("#imageconf_gui").selected().data('packages');
-//        themepkgs();
-//        update_defaultpkgs();
-//    };
 }
-
-//function init_range_sliders() {
-//    console.log("init");
-//    $(".range-slider").each(functiown(){
-//       var input_slider = $(this).find("input") ;
-//       console.log(input_slider);
-//       var input = $(this).siblings("input");
-//       input_slider.on('input', function() {
-//           console.log(input_slider.val());
-//          input.val(input_slider.val());
-//       });
-//    });
-//}
-
 
 var range_bandwidth_sliders = {
 	'min': [ 128, 16],
@@ -515,28 +482,6 @@ function wanselect() {
         }
     });
     $('#wan_options').html(wan_options);
-}
-;
-wanselect();
-
-function toggle_map_container(cmd, target) {
-    if (cmd == 'show') {
-        var osm1 = function() {
-            loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
-        };
-        $(target).html("<div id='map'></div><div style='font-size:0.8em'>Map by <a href='http://www.openstreetmap.org' title='www.openstreetmap.org'>openstreetmap.org</a>, License CC-BY-SA</div>");
-        loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
-        var osm2 = function() {
-            loadScript(assets_js + "osm.js", do_map);
-        };
-        var do_map = function() {
-            init();
-            drawmap();
-        };
-
-    } else {
-        $(target).html("");
-    }
 }
 
 function nosharepkgs() {
@@ -642,9 +587,6 @@ function ipv6pkgs() {
 }
 
 function init_step2() {
-//    $("#accordion").accordion({
-//        heightStyle: "content" }
-//    );
     set_packages();
     update_defaultpkgs();
     themeselect();
@@ -687,16 +629,6 @@ function init_step2() {
     $("#imageconf_wan_qos").change(function() {
         qospkgs();
     });
-    $("#showmap").click(function() {
-        var button = $(this);
-        if (button.html() === button.data("hidden")) {
-                button.html(button.data("visible"));
-                toggle_map_container('show', "#map-container");
-        } else {
-            button.html(button.data("hidden"));
-            toggle_map_container('hide', "#map-container");
-        }
-    });
 }
 
 function set_lang(lang) {
@@ -706,14 +638,79 @@ function set_lang(lang) {
     window.location.reload();
 }
 
+/* Map init and control functions */
+function toggle_map_container(cmd, target) {
+    if (cmd === 'show') {
+        if ( $("#map").length ) {
+            $(target).addClass('visible').slideDown();
+        } else {
+            var osm1 = function() {
+                loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
+            };
+            $(target).html("<div id='map'></div><div class='powered-by-osm'>" +
+                    "Map by <a href='http://www.openstreetmap.org' " +
+                    "title='www.openstreetmap.org'>openstreetmap.org</a>, " +
+                    "License CC-BY-SA</div>"
+            ).addClass('visible').slideDown();
+            loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
+            var osm2 = function() {
+                loadScript(assets_js + "osm.js", do_map);
+            };
+            var do_map = function() {
+                init();
+                drawmap();
+            };
+        }
+    } else {
+        $(target).slideUp().removeClass('visible');
+    }
+}
+
+function map_init() {
+    $("#showmap").click(function(e) {
+        e.preventDefault();
+        var button = $(this);
+        if (button.html() === button.data("hidden")) {
+            button.html(button.data("visible"));
+            toggle_map_container('show', "#map-container");
+        } else {
+            button.html(button.data("hidden"));
+            toggle_map_container('hide', "#map-container");
+        }
+    });
+    
+    $('.map-latitude, .map-longitude').change(function() {
+        var lat = $('.map-latitude').val();
+        var lon = $('.map-longitude').val();
+        if ( $("#map") && parseFloat(lat) && parseFloat(lon)) {
+            var y = lat2merc(lat);
+            var x = lon2merc(lon);
+            
+            var lonLat = new OpenLayers.LonLat(lon, lat)
+                    .transform(
+                            new OpenLayers.Projection("EPSG:4326"), // Transformation aus dem Koordinatensystem WGS 1984
+                            map.getProjectionObject() // in das Koordinatensystem 'Spherical Mercator Projection'
+                            );
+            map.panTo(lonLat);
+            marker = markers['markers'][0];
+            
+            markers.removeMarker(marker);
+            markers.addMarker(new OpenLayers.Marker(lonLat));
+        }
+    });
+}
+
+/* End Map init and control functions */
+
 $( document ).ready(function() {
     help_toggle_init();
     pass_init();
+    map_init();
     $("#language-select").change(function() {
-        set_lang($(this).val())
+        set_lang($(this).val());
     });
 });
-/* end wizard step2 */
+
 
 /* START functions for the build.html page (build status/output) */
 
@@ -797,10 +794,6 @@ function set_buildqueue_status_icon(classname) {
 function refreshQueue() {
     $.getJSON(url.status_api, '', function(json, textStatus) {
         var queued = json.queued;
-//        if (queued >= 0) {
-//            msgqueued = i18n.builds_in_queue + ' <span id=\'queued\'>' + queued + '</span>';
-//            jQuery(".flash").html(msgqueued).slideDown();
-//        }
         var status = json.status;
         if (status === 0) {
             msgsuccess = i18n.success;
@@ -836,9 +829,6 @@ function refreshQueue() {
 /* END functions for the build.html page (build status/output) */
 
 /* functions for status page */
-
-
-
 function refreshStats() {
     $.getJSON('api/json/status', '', function(json, textStatus) {
         var workers_running = json.num_workers;

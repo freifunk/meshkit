@@ -18,9 +18,21 @@
         {{=fh.field("name")}}
         {{=fh.field("email")}}
         {{=fh.field("phone")}}
-        {{=fh.field("location")}}
         {{=fh.field("note")}}
         {{=fh.field("homepage")}}
+    {{=formhelpers.panel_end()}}
+    
+    
+    {{=formhelpers.panel_start("location", T('Location'), T('Location for this node'), True)}}
+        
+        <div id='osm'>
+            {{=fh.field("location")}}
+            {{=fh.field("latitude", widget_class="map-latitude")}}
+            {{=fh.field("longitude", widget_class="map-longitude")}}
+            <button type="button" class="btn btn-primary icon-location" data-hidden="{{=T('Show map')}}" data-visible="{{=T('Hide map')}}" id="showmap">{{=T('Show map')}}</button>
+        </div>
+        <div id='map-container'></div>
+        
     {{=formhelpers.panel_end()}}
     
     <!-- Auth Tab -->

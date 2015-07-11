@@ -57,6 +57,10 @@
     .icon-base();
 }
 
+.btn-default[class*=" icon-"]:before {
+    margin-left: 0;
+    margin-right: 0.75em;
+}
 /* spinner */
 
 .animate-spin() {
@@ -228,6 +232,10 @@
     } 
 }
 
+.icon-location() {
+    &:before { content: '\e816'; } /* '' */
+}
+
 .icon-down-open-big {
     .icon-down-open-big();
 }
@@ -314,6 +322,10 @@
 
 .icon-spin1 {
     .icon-spin1();
+}
+
+.icon-location {
+    .icon-location();
 }
 
 .icon-status-ok {

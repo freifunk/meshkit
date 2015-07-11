@@ -232,7 +232,9 @@ input {
     }
 }
 
-//input[type="range"]:after { content:attr(value); }
+input[type="file"]{
+    line-height: 20px;
+}
 
 .password-edit-toggle {
     width: 100%;
@@ -278,6 +280,7 @@ input {
                 .icon-up-open-big();
                 &:before {
                     float: right;
+                    margin-right: (@baseUnit / 2);
                     .transition(transform 0.4s);
                 }
 
@@ -291,20 +294,7 @@ input {
         }
     }
     .panel-description {
-        padding: ( @baseUnit / 2 ) 0;
-        position: relative;
-        //text-transform: uppercase;
-/*        .icon-base();
-        .icon-info();
-        &:before {
-            margin-left: 0;
-            margin-right: 0;
-            color: @gray;
-            font-size: @font-size-h3;
-            position: absolute;
-            left: 0;
-            top: 15px;
-        }*/
+        padding: @baseUnit ( @baseUnit / 2 );
     }
 }
 
@@ -403,6 +393,9 @@ select.form-control, #language-select {
         text-transform: uppercase;
         color: @gray-light;
         font-weight: normal;
+    }
+    .panel-body {
+        padding: 0;
     }
 }
 
@@ -526,8 +519,12 @@ input:-webkit-autofill:focus {
 	cursor:pointer;
 }
 
-#default-packages {
-    margin-bottom: @baseUnit;
+.default-packages-container {
+    padding: 15px;
+}
+
+.available-packages-container {
+    padding: 15px;
 }
 
 .packages_table{
@@ -557,10 +554,6 @@ input:-webkit-autofill:focus {
 	padding-top: 6%;
 	text-align:center;
 	z-index:20;
-}
-
-#map_container {
-	margin-top: 20px;
 }
 
 .sectionremove {
@@ -607,6 +600,68 @@ input:-webkit-autofill:focus {
     max-width: 100%;
     overflow-x: auto;
 }
+
+#map-container {
+    background-color: @gray-extralight;
+    height: 0;
+    position: relative;
+    &.visible {
+        height: 450px;
+        .icon-base();
+        .icon-spin1();
+        &:before {
+            font-size: 40px;
+            left: 50%;
+            top: 50%;
+            margin-left: -20px;
+            margin-right: 0;
+            margin-top: -20px;
+            z-index: 0;
+            position: absolute;
+        }
+        
+    }
+    .powered-by-osm {
+        font-size: @font-size-small;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 2px 5px;
+        .transparentBackground(@gray-lighter, 80%);
+    }
+    [id^=OpenLayers_Layer_Markers_] {
+        .olAlphaImg{
+            display: none;
+        }
+        [id^="OL_Icon_"] {
+            .icon-base();
+            .icon-location();
+            &:before {
+                color: @ff-magenta;
+                font-size: 60px;
+            }
+        }
+    }
+}
+
+#osm {
+    >button {
+        width: 100%;
+        margin-top: (@baseUnit / 2);
+    }
+}
+
+fieldset.wifi-interface {
+    legend {
+        padding: (@baseUnit / 2);
+    }
+}
+
+.wifi-add-remove-buttons {
+    padding: (@baseUnit / 2);
+}
+
 
 @media (min-width: @screen-sm) {
     .navbar.navbar-default {
@@ -713,10 +768,6 @@ input:-webkit-autofill:focus {
         >.panel-group {
             margin-left: ( @baseUnit / -2 );
             margin-right: ( @baseUnit / -2 );
-        }
-        .panel-body {
-            padding-left: 0;
-            padding-right: 0;
         }
     }
     header.header {

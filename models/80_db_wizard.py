@@ -184,34 +184,8 @@ if config is not None:
                 'from the IPv4 address'
             )
         ),
-        Field(
-            'latitude',
-            label=("Latitude"),
-            comment=T('Latitude') + " " + T('in decimal notation.'),
-            requires=IS_EMPTY_OR(
-                IS_DECIMAL_IN_RANGE(
-                    -180, 180,
-                    error_message=T(
-                        '%(name)s must be a decimal value between -180 and ' +
-                        '180, e.g. 12.34567.'
-                    ) % dict(name=T('Latitude'))
-                )
-            )
-        ),
-        Field(
-            'longitude',
-            label=T('Longitude'),
-            comment=T('Longitude') + " " + T('in decimal notation.'),
-            requires=IS_EMPTY_OR(
-                IS_DECIMAL_IN_RANGE(
-                    -180, 180,
-                    error_message=T(
-                        '%(name)s must be a decimal value between -180 ' +
-                        'and 180, e.g. 12.34567.'
-                    ) % dict(name=T('Longitude'))
-                )
-            )
-        ),
+        db.user_defaults.latitude,
+        db.user_defaults.longitude,
         Field(
             'upload',
             'upload',
@@ -609,18 +583,6 @@ if session.community:
         'profile',
         'theme',
         config.defaulttheme
-    )
-    db.imageconf.latitude.default = c.get(
-        community_defaults,
-        'profile',
-        'latitude',
-        '48'
-    )
-    db.imageconf.longitude.default = c.get(
-        community_defaults,
-        'profile',
-        'longitude',
-        '10'
     )
     if ipv6 == '1':
         db.imageconf.ipv6.default = True

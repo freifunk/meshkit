@@ -5,6 +5,7 @@
 
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db, hmac_key=Auth.get_or_create_key())
+import uci
 
 # We don't use first/lastname, so replace firstname with username to show
 # in navbar
@@ -64,7 +65,9 @@ if config and config.communitysupport:
             'community',
             label=T('Community'),
             comment=T(
-                'Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.'
+                'Please select your wireless community here. This will ' +
+                'select reasonable defaults for step 2 of the image ' +
+                'configuration.'
             ),
             requires=IS_IN_SET(
                 communities,
@@ -78,7 +81,8 @@ if config and config.communitysupport:
             'boolean',
             label=T('Expert mode'),
             comment=T(
-                'Enable this to show much more options for customizing your firmware.'
+                'Enable this to show much more options for customizing ' +
+                'your firmware.'
             )
         ),
         Field(
@@ -124,8 +128,8 @@ if config and config.communitysupport:
                     32, 0,
                     error_message=T(
                         '%(name)s can only be up to %(len)s characters long'
-                        ) % dict(name=T('Phone'), len='32'))
-                )
+                    ) % dict(name=T('Phone'), len='32'))
+            )
         ),
         Field(
             'location',
@@ -137,6 +141,36 @@ if config and config.communitysupport:
                     error_message=T(
                         '%(name)s can only be up to %(len)s characters long'
                     ) % dict(name=T('Location'), len='64')
+                )
+            )
+        ),
+        Field(
+            'latitude',
+            label=("Latitude"),
+            comment=T('Latitude') + " " + T('in decimal notation.'),
+            default=48,
+            requires=IS_EMPTY_OR(
+                IS_DECIMAL_IN_RANGE(
+                    -180, 180,
+                    error_message=T(
+                        '%(name)s must be a decimal value between -180 and ' +
+                        '180, e.g. 12.34567.'
+                    ) % dict(name=T('Latitude'))
+                )
+            )
+        ),
+        Field(
+            'longitude',
+            label=T('Longitude'),
+            comment=T('Longitude') + " " + T('in decimal notation.'),
+            default=10,
+            requires=IS_EMPTY_OR(
+                IS_DECIMAL_IN_RANGE(
+                    -180, 180,
+                    error_message=T(
+                        '%(name)s must be a decimal value between -180 ' +
+                        'and 180, e.g. 12.34567.'
+                    ) % dict(name=T('Longitude'))
                 )
             )
         ),
@@ -175,7 +209,10 @@ if config and config.communitysupport:
             ),
             label=T('Default password'),
             comment=T(
-                'Default password that is set on the router. We only store a salted hash of the password on the server. Still you should change the password after you flashed the image and log in for the first time.'
+                'Default password that is set on the router. We only store ' +
+                'a salted hash of the password on the server. Still you ' +
+                'should change the password after you flashed the image and ' +
+                'log in for the first time.'
             ),
             widget=password_md5crypt
         ),
@@ -186,10 +223,10 @@ if config and config.communitysupport:
             comment=T('Add ssh public keys.'),
             requires=IS_LIST_OF(
                 IS_EMPTY_OR([
-                        IS_LENGTH(16384, 0),
-                        IS_MATCH('[a-zA-Z0-9\/\+,-@\.\=]+')
-                    ]
-                )
+                            IS_LENGTH(16384, 0),
+                            IS_MATCH('[a-zA-Z0-9\/\+,-@\.\=]+')
+                            ]
+                            )
             )
         ),
         Field(
@@ -257,6 +294,53 @@ if config and config.communitysupport:
 
 
 auth.define_tables(migrate=settings.migrate)
+
+has_user_defaults_latitude = False
+has_user_defaults_longitude = False
+user_defaults_community = None
+
+if auth:
+    # try to get the default location from user_defaults
+    user_defaults = db(
+        db.user_defaults.id_auth_user == auth.user_id).select(
+    ).first()
+
+if user_defaults:
+    if user_defaults.latitude is not None:
+        db.user_defaults.latitude.default = user_defaults.latitude
+        has_user_defaults_latitude = True
+
+    if user_defaults.longitude is not None:
+        db.user_defaults.longitude.default = user_defaults.longitude
+        has_user_defaults_longitude = True
+
+if not (has_user_defaults_latitude and has_user_defaults_longitude):
+    community = None
+    if session.community:
+        community = session.community
+    else:
+        if user_defaults and user_defaults.community:
+            community = user_defaults.community
+
+    if community:
+        c = uci.UCI(config.profiles, "profile_" + session.community)
+        community_defaults = c.read()
+
+        if not has_user_defaults_latitude:
+            db.user_defaults.latitude.default = c.get(
+                community_defaults,
+                'profile',
+                'latitude',
+                '48'
+            )
+
+        if not has_user_defaults_longitude:
+            db.user_defaults.longitude.default = c.get(
+                community_defaults,
+                'profile',
+                'longitude',
+                '10'
+            )
 
 # configure auth policy
 auth.settings.registration_requires_verification = False

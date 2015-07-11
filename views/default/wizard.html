@@ -13,7 +13,6 @@
         user_packagelist = '{{=user_packagelist}}',
         addpackages = '{{=addpackages}}',
         ajaxUrl = '{{=URL("static", "ajax/")}}',
-        assets_js = '{{=URL("static", "js/")}}',
         session = new Object();
         session.target = '{{=session.target}}';
         wifi_ifs_initial = 1;
@@ -91,7 +90,7 @@
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         <!-- SYSTEM TAB -->
-        {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), True)}}
+        {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), False)}}
         
         {{=fh.field("password_hash")}}
 
@@ -129,13 +128,13 @@
 
         <!-- LOCATION TAB -->
         {{if not session.noconf == True and session.communitysupport == True:}}
-        {{=formhelpers.panel_start("location", T('Location'), T('Location for this node'))}}
+        {{=formhelpers.panel_start("location", T('Location'), T('Location for this node'), True)}}
         
         <div id='osm'>
             {{=fh.field("location")}}
-            {{=fh.field("latitude")}}
-            {{=fh.field("longitude")}}
-            <button type="button" data-hidden="{{=T('Show map')}}" data-visible="{{=T('Hide map')}}" id="showmap">{{=T('Show map')}}</button>
+            {{=fh.field("latitude", widget_class="map-latitude")}}
+            {{=fh.field("longitude", widget_class="map-longitude")}}
+            <button type="button" class="btn btn-primary icon-location" data-hidden="{{=T('Show map')}}" data-visible="{{=T('Hide map')}}" id="showmap">{{=T('Show map')}}</button>
         </div>
         <div id='map-container'></div>
         
@@ -165,20 +164,28 @@
         <div id="wifi-interfaces">
             <!-- populated by js -->
         </div>
-        <a href="javascript:void(0)" id="wifi-interface-add">{{=T('Add another wifi interface.')}}</a>
-        <a href="javascript:void(0)" id="wifi-interface-remove">{{=T('Remove last wifi interface.')}}</a>
+        <div class="wifi-add-remove-buttons">
+            <a href="javascript:void(0)" id="wifi-interface-add">{{=T('Add another wifi interface.')}}</a>
+            <a href="javascript:void(0)" id="wifi-interface-remove">{{=T('Remove last wifi interface.')}}</a>
+        </div>
 
         {{=formhelpers.panel_end()}}
         {{pass}}
         <!-- End wifi tab -->
         
         <!-- LAN TAB -->
+        
+        {{
+            lan_descr = '<p>%s</p>' % T('You can change the settings for the LAN interface here.')
+            lan_descr += '<ul>'
+            lan_descr += '<li>%s</li>' % T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')
+            lan_descr += '<li>%s</li>' % T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')
+            lan_descr += '</ul>'
+        }}
+    
         {{if session.community <> 'weimar' and not session.noconf == True:}}
-        {{=formhelpers.panel_start("lan", T('LAN'), T('You can change the settings for the LAN interface here.'))}}
-        <ul>
-            <li>{{=T('Per default OpenWrt uses the "static" protocol and an ip address of "192.168.1.1" with netmask "255.255.255.0".')}}</li>
-            <li>{{=T('If you choose protocol "olsr" then use an ip address from the mesh network. In this case olsr will be enabled on this interface and it will be added to the firewall zone "freifunk".')}}</li>
-        </ul>
+        {{=formhelpers.panel_start("lan", T('LAN'), lan_descr)}}
+
         {{=fh.field("lanproto")}}
         {{=fh.field("lanipv4addr")}}
         {{=fh.field("lannetmask")}}
@@ -206,18 +213,20 @@
 
         <!-- PACKAGES TAB -->
         {{=formhelpers.panel_start("packages", T('Packages'), T('Add or remove packages which are going to be installed into your firmware image here.'))}}
-        <strong>{{=T('Default Packages')}}:</strong> 
-        <div id='default-packages'></div>
-        <div style="clear:both"></div>
+        <div class="default-packages-container">
+            <strong>{{=T('Default Packages')}}:</strong> 
+            <div id='default-packages'></div>
+        </div>
 
         {{=fh.field("packages")}}
 
+        <div class="available-packages-container">
+            <H2>{{=T('Available Packages')}}</h2>
 
-        <H2>{{=T('Available Packages')}}</h2>
-
-        <div class="panel-group" id="packagelist" role="tablist" aria-multiselectable="true">
-            <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
-            {{T("Loading package list...")}}
+            <div class="panel-group" id="packagelist" role="tablist" aria-multiselectable="true">
+                <img src="{{=URL('static', 'images/loading.gif')}}" alt="loading..." title="loading" style="padding-right: 8px">
+                {{T("Loading package list...")}}
+            </div>
         </div>
         {{=formhelpers.panel_end()}}
 
@@ -225,10 +234,14 @@
         <!-- UPLOAD TAB -->
         {{=formhelpers.panel_start("upload", T('Upload'), T('Upload a tar.gz file which will be extracted and included in the image. The files in this archive are placed in the root of your image in the same way they are arranged in the archive.'))}}
 
-        <input type="file" id="upload" class="upload" name="upload"/>
-        {{ if form.errors.upload:}}
-        <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
-        {{pass}}
+        <div class="form-group">
+            <div class="form-options">
+                <input type="file" id="upload" class="upload" name="upload"/>
+                {{ if form.errors.upload:}}
+                <div id="upload__error" class="error">{{=T('Only tar.gz archives can be uploaded.')}}</div>
+                {{pass}}
+            </div>
+        </div>
         {{=formhelpers.panel_end()}}
     </div>
     <input type="submit" value="{{=T('Build image')}}" class="btn btn-default btn-primary btn-submit" />

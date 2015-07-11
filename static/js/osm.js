@@ -1,4 +1,6 @@
 var map;
+var markers;
+var marker;
 var layer_mapnik;
 var layer_tah;
 var layer_markers;
@@ -55,20 +57,21 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 		var lonlat = map.getLonLatFromViewPortPx(e.xy);	
 		lat=merc2lat(lonlat.lat);
 		lon=merc2lon(lonlat.lon);
-		latfield=document.getElementById('imageconf_latitude');
-		lonfield=document.getElementById('imageconf_longitude');
-		latfield.value = lat;
-		lonfield.value = lon;								
+        $('.map-latitude').val(lat);
+        $('.map-longitude').val(lon);
+        marker = markers['markers'][0];
+        markers.removeMarker(marker);
+        markers.addMarker(new OpenLayers.Marker(lonlat));
+        //map.setCenter(lonlat, zoom);
 	}
 });
 
 function init(){			
-	var field = window.name.substring(0, window.name.lastIndexOf("."));
-	if(document.getElementById("imageconf_latitude")!=null){
-		centerlat =parseFloat(document.getElementById("imageconf_latitude").value);
+	if($('.map-latitude').length){
+		centerlat = parseFloat($('.map-latitude').val());
 	}
-	if(document.getElementById("imageconf_longitude")!=null){
-		centerlon = parseFloat(document.getElementById("imageconf_longitude").value);
+	if($('.map-latitude').length){
+		centerlon = parseFloat($('.map-longitude').val());
 	}
 	zoom = '13';
 }
@@ -94,9 +97,21 @@ function drawmap() {
 	layer_mapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
 
 	map.addLayers([layer_mapnik]);
-	var y =lat2merc(centerlat);
-	var x =lon2merc(centerlon);
+	var y = lat2merc(centerlat);
+	var x = lon2merc(centerlon);
 	map.setCenter(new OpenLayers.LonLat(x, y), zoom);
+    
+    
+    var lonLat = new OpenLayers.LonLat(centerlon, centerlat)
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // Transformation aus dem Koordinatensystem WGS 1984
+            map.getProjectionObject() // in das Koordinatensystem 'Spherical Mercator Projection'
+          );
+ 
+    markers = new OpenLayers.Layer.Markers( "Markers" );
+    map.addLayer(markers);
+ 
+    markers.addMarker(new OpenLayers.Marker(lonLat));
 	
 	var click = new OpenLayers.Control.Click();
 	map.addControl(click);

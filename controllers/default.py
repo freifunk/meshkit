@@ -177,14 +177,6 @@ def wizard():
                 db.imageconf[k].default = user_defaults[k]
 
 
-#        db.imageconf.location.default = auth.user.location
-#        db.imageconf.nickname.default = auth.user.username
-#        db.imageconf.name.default = auth.user.name
-#        db.imageconf.email.default = auth.user.email
-#        db.imageconf.homepage.default = auth.user.homepage
-#        db.imageconf.phone.default = auth.user.phone
-#        db.imageconf.note.default = auth.user.note
-
     db.imageconf.profile.requires = IS_IN_SET(
         session.profiles,
         zero=None,
@@ -365,8 +357,7 @@ def user_defaults():
     """ user defaults to prefill fields in forms """
     user_defaults = db(
         db.user_defaults.id_auth_user == auth.user_id).select(
-    ).first(
-    )
+    ).first()
     id_user_defaults = None
 
     if user_defaults:
