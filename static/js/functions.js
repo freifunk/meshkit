@@ -189,15 +189,20 @@ function handleContent()
 
 function handleProfilePkgs()
 {
-        if (xmlHttpObject.readyState == 4)
-        {
-		profilepackages=xmlHttpObject.responseText
-		profilepackages=eval( "(" + profilepackages + ")" );
-		var e = document.getElementById('imageconf_profile');
-		var sel = e.options[e.selectedIndex].value
-                profilepackages = profilepackages['info'][sel]['packages']
-		update_defaultpkgs();
-	}
+    if (xmlHttpObject.readyState === 4) {
+        profilepackages = xmlHttpObject.responseText;
+        profilepackages = eval("(" + profilepackages + ")");
+
+        var profile_select = $('#imageconf_profile');
+        if (profile_select.length) {
+            var sel = $('#imageconf_profile').val();
+            var e = document.getElementById('imageconf_profile');
+            var sel = e.options[e.selectedIndex].value;
+
+            profilepackages = profilepackages['info'][sel]['packages'];
+            update_defaultpkgs();
+        }
+    }
 }
 
 
