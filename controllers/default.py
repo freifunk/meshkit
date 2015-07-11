@@ -220,10 +220,15 @@ def wizard():
     id = None
     if auth.user and request.args(0):
         record = db.imageconf(
-            request.args(0)) or redirect(URL('access_denied'))
+            request.args(0)) or redirect(URL('access_denied')
+        )
 
         if record.id_user == auth.user_id:
-            form = SQLFORM(db.imageconf, record, table_name='imageconf')
+            form = SQLFORM.factory(
+                db.imageconf,
+                table_name='imageconf',
+                *wfields
+            )
             id = request.args(0)
         else:
             # access denied
@@ -296,6 +301,7 @@ def wizard():
         if id:
             query = (db.imageconf.id == id)
             db(query).update(**db.imageconf._filter_fields(form.vars))
+            session.id = id
         else:
             id = db.imageconf.insert(**db.imageconf._filter_fields(form.vars))
             session.id = id
@@ -409,24 +415,62 @@ def user_defaults():
 def user_builds():
     """ Builds the user has done """
 
+    def delete_multiple(ids):
+        if not ids:
+                session.flash=T('Select at least one record.')
+        else:
+                for id in ids:
+                        db(
+                            (db.imageconf.id_user == auth.user_id) & \
+                            (db.imageconf.id == id)
+                        ).delete()
+                pass
+        pass
+        return ''
+
     if len(request.args) > 2:
         if request.args[0] == "edit":
             redirect(URL(wizard, args=[request.args[2]]))
 
     fields = [
         db.imageconf.hostname,
+        db.imageconf.target,
         db.imageconf.profile,
         db.imageconf.location
     ]
+
+    db.imageconf.target.represent = lambda target, _: target_shorten(target)
+    
     grid = SQLFORM.grid(
         db.imageconf.id_user == auth.user_id,
         user_signature=False,
+        showbuttontext=False,
         fields=fields,
         create=False,
         details=False,
+        paginate=100,
         csv=False,
+        maxtextlength=50,
         ui=settings.ui_grid,
+        selectable=[
+            [
+                T('Delete'),
+                lambda ids: delete_multiple(ids),
+                "btn w2p-confirm"
+            ]
+        ]
     )
+
+    heading=grid.elements('th')
+    if heading:
+        heading[0].append(
+            INPUT(
+                _type='checkbox',
+                _id="imageconf-check-all",
+                _class="grid-check-all",
+                _title=T('Check all')
+            )
+        )
 
     # builds = db(db.user_defaults.id_auth_user ==
     # auth.user_id).select().first()

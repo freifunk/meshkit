@@ -26,7 +26,24 @@ function themepkgs() {
     }
 }
 
-// usesld to flip the display property
+function init_grid() {
+    /* enable all checkboxes on click in a selectable SQLFORM.grid */
+    $('.grid-check-all').click(function(e) {
+        var table = $(e.target).closest('table');
+        $('td input:checkbox[name="records"]', table).prop('checked', this.checked);
+    });
+    
+    /* add confirm message to delete all button */
+    $(".w2p-confirm").click(function(e) {
+        if (!$.web2py.confirm(w2p_ajax_confirm_message)) {
+            e.preventDefault();
+            $.web2py.stopEverything(e);
+            return;
+        }
+    });
+}
+
+// used to flip the display property
 //function showHide(obj){
 //  if(obj)
 //    obj.style.display = obj.style.display=='none' ? 'block' : 'none'
@@ -711,6 +728,7 @@ $( document ).ready(function() {
     help_toggle_init();
     pass_init();
     map_init();
+    init_grid();
     $("#language-select").change(function() {
         set_lang($(this).val());
     });
