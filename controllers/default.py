@@ -311,14 +311,17 @@ def wizard():
             if i["enabled"]:
                 id_row = db.wifi_interfaces.insert(
                     id_build=id,
-                    **db.wifi_interfaces._filter_fields(i))
+                    **db.wifi_interfaces._filter_fields(i)
+		)
                 if id_row:
                     row = db(db.wifi_interfaces.id == id_row).select().first()
                     row.update_record(id_build=id, enabled=True)
-                    db.commit()
                 if not session.main_mesh_ip:
                     if i["ipv4addr"]:
                         session.main_mesh_ip = i["ipv4addr"]
+
+	db.commit()
+
 
         # schedule task
         scheduler.queue_task(
