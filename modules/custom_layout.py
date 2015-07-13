@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from gluon import *
+if hasattr(current, 'T'):
+        T = current.T
 
 
 def formstyle_bootstrap3(col_label_size=3):
@@ -61,6 +63,7 @@ def navbar(auth_navbar, user_defaults=False):
             user_defaults: Show user defaults link for logged in users if True
 
     """
+    from gluon.tools import Auth
     bar = auth_navbar
     user = bar["user"]
 
@@ -85,11 +88,38 @@ def navbar(auth_navbar, user_defaults=False):
             _rel="nofollow"
         ))
 
-        dropdown = UL(li_reset_pass,
-                      li_register,
-                      LI('', _class="divider"),
-                      li_login,
-                      _class="dropdown-menu user-menu", _role="menu")
+        auth = Auth(current.globalenv['db'])
+        form = auth.login()
+        field_username = form.custom.widget.username
+        field_username.update(_placeholder=T('Username'))
+        field_password = form.custom.widget.password
+        field_password.update(_placeholder=T('Password'))
+        login_submit = form.custom.submit
+        login_submit.update(**{"_data-w2p_disable_with": "%s" % T("Working")})
+
+        li_login_form = LI(
+            CAT(
+                form.custom.begin,
+                field_username,
+                field_password,
+                form.custom.widget.remember_me,
+                LABEL(
+                    T("Remember me"),
+                    _for="auth_user_remember_me"
+                ),
+                form.custom.submit,
+                form.custom.end
+            )
+        )
+
+        dropdown = UL(
+            li_reset_pass,
+            li_register,
+            LI('', _class="divider"),
+            li_login,
+            li_login_form,
+            _class="dropdown-menu user-menu", _role="menu"
+        )
 
         return LI(toggle, dropdown, _class="dropdown")
 

@@ -75,6 +75,29 @@ h3 {
                 margin-right: 1em;
             }
         }
+        form {
+            padding: 0 (@baseUnit / 2);
+            .form-control {
+                margin: (@baseUnit / 3) 0;
+                height: 30px;
+            }
+            input.btn-default {
+                margin-top: (@baseUnit / 3);
+                height: @baseUnit;
+                width: 100%;
+                padding: 0 (@baseUnit / 3);
+            }
+        }
+        input[type=checkbox] {
+            margin: 4px 6px 0 0;
+            height: ( @baseUnit /2 );
+            width: ( @baseUnit /2 );
+            float:left;
+        }
+        label {
+            font-size: @font-size-small;
+            font-weight: normal;
+        }
     }
 }
 

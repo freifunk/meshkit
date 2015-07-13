@@ -732,6 +732,10 @@ $( document ).ready(function() {
     $("#language-select").change(function() {
         set_lang($(this).val());
     });
+    // Prevent closing the dropdown when user clicks on an input element
+    $('.dropdown input, .dropdown label').click(function(e) {
+        e.stopPropagation();
+    });
 });
 
 

@@ -5681,6 +5681,29 @@ h3 {
   margin-left: 0;
   margin-right: 1em;
 }
+.navbar.navbar-default .user-menu form {
+  padding: 0 15px;
+}
+.navbar.navbar-default .user-menu form .form-control {
+  margin: 10px 0;
+  height: 30px;
+}
+.navbar.navbar-default .user-menu form input.btn-default {
+  margin-top: 10px;
+  height: 30px;
+  width: 100%;
+  padding: 0 10px;
+}
+.navbar.navbar-default .user-menu input[type=checkbox] {
+  margin: 4px 6px 0 0;
+  height: 15px;
+  width: 15px;
+  float: left;
+}
+.navbar.navbar-default .user-menu label {
+  font-size: 14px;
+  font-weight: normal;
+}
 .navbar-header .site-logo {
   width: 48px;
   padding-left: 15px;
