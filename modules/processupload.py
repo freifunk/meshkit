@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# functions to process uploaded files
+
 import os
 import tarfile
 resolved = lambda x: os.path.realpath(os.path.abspath(x))

@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # required - do no delete
 
+import os
+import formhelpers
+from meshkit import target_shorten
+
 
 def user():
     return dict(form=auth())
@@ -12,11 +16,6 @@ def download():
 
 def call():
     return service()
-import mkutils
-import os
-import subprocess
-import formhelpers
-from meshkit import target_shorten
 
 
 def error():
@@ -522,15 +521,15 @@ def targets():
 def status():
     import status
     ret = {}
-    ret['num_workers'] = mkutils.workers_online()
+    ret['num_workers'] = status.workers_online()
     ret['loadavg'] = cache.ram(
         'loadavg',
-        lambda: mkutils.loadavg(),
+        lambda: status.loadavg(),
         time_expire=10
     )
     memory = cache.ram(
         'memory',
-        lambda: mkutils.memory_stats(),
+        lambda: status.memory_stats(),
         time_expire=10
     )
 
@@ -600,14 +599,14 @@ def status():
 @service.json
 def buildstatus():
     try:
-        _id = int(request.vars.id)
+        id = int(request.vars.id)
     except ValueError:
         return {'errors': 'Required variable "id" is invalid or missing.'}
     if not request.vars.rand:
         return {'errors': 'Required variable "rand" is missing.'}
 
     try:
-        row = db(db.imageconf.id == request.vars.id).select()
+        row = db(db.imageconf.id == id).select()
         row = row[0]
     except KeyError:
         return {'errors': 'Wrong id.'}

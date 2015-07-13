@@ -1,67 +1,90 @@
-import subprocess
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
-import re
-from datetime import timedelta
+import errno
+import distutils
+from distutils.dir_util import copy_tree
 from gluon import current
+if hasattr(current, 'T'):
+        T = current.T
+
+import log
+logger = log.initialize_logging(current.request.folder, __name__)
 
 
-def workers_online():
-    """ return the number of connected workers
+def write_file(file, content):
+    """ Write content to a file
+
+        Args:
+            file -- full path to the file to write to (string)
+            content -- content written to the file (str)
 
         Returns:
-            integer -- number of connected workers
+            True if the file was written, else False.
+
+        Logs an critical error in Case of IOError
+
     """
-    db_scheduler = current.globalenv['db_scheduler']
-    # show only workers, whose last heartbeat was not more than 3 * heartbeat
-    # seconds ago.
-    expiration = current.request.now - timedelta(
-        seconds=current.settings.scheduler['heartbeat'] * 3
-    )
-    workers = db_scheduler(
-        (db_scheduler.scheduler_worker.last_heartbeat > expiration) & (
-            (db_scheduler.scheduler_worker.status == "ACTIVE") |
-            (db_scheduler.scheduler_worker.status == "PICK")
+    logger.debug("write file: %s" % file)
+    try:
+        with open(file, "w") as f:
+            f.write(content)
+            return True
+    except IOError as e:
+        err = T('Could not write %s because of an IOError: %s: %s') \
+            % (file, e.errno, e.strerror)
+
+        logger.critical(err)
+        return False
+
+
+def mkdir_p(path):
+    """ Create a directory
+
+        Args:
+            path -- full pathname of the directory to create (string)
+
+        Returns:
+            True if the directory was created or already exists, else False
+
+    """
+    try:
+        os.makedirs(path)
+        return True
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            return True
+        else:
+            logger.critical("Error: Could not create directory %s" % path)
+            return False
+
+
+def cptree(src, dst):
+    """ recursively copy a directory tree to a new location
+
+        Args:
+            src -- source path (string)
+            dst -- destination path (string)
+
+        Returns:
+            True if successful, else False
+
+    """
+
+    ret = False
+    try:
+        copy_tree(src, dst, preserve_symlinks=0)
+        logger.debug('Copied %s to %s' % (src, dst))
+        ret = True
+    except distutils.errors.DistutilsFileError as e:
+        logger.warning(
+            'Source directory %s does not exist. %s' % (src, str(e))
         )
-    ).select()
-    num_worker = len(workers)
-    return num_worker
+    except IOError as e:
+        logger.critical(
+            'Could not create/write to directory %s. Check permissions.' %
+            dst
+        )
 
-
-def loadavg():
-    ''' Returns loadaverage
-
-        Returns:
-            string -- string with current load: "1m, 5m, 15m"
-    '''
-
-    load = os.getloadavg()
-    return str(load[0]) + ", " + str(load[1]) + ", " + str(load[2])
-
-
-def memory_stats():
-    """ Returns memory usage on linux
-
-        Returns:
-            list -- list containing total, used (free+buffers+cached)
-                    and free memory
-    """
-    ps = subprocess.Popen(
-        ['cat', '/proc/meminfo'],
-        stdout=subprocess.PIPE
-    ).communicate()[0]
-    rows = ps.split('\n')
-    sep = re.compile('[\s]+')
-    for row in rows:
-        if re.search(r"^MemTotal", row):
-            total = int(sep.split(row)[1]) / 1024
-        if re.search(r"^MemFree", row):
-            free = int(sep.split(row)[1])
-        if re.search(r"^Buffers", row):
-            buffers = int(sep.split(row)[1])
-        if re.search(r"^Cached", row):
-            cached = int(sep.split(row)[1])
-
-    freetotal = (free + buffers + cached) / 1024
-    used = total - freetotal
-
-    return (total, used, freetotal)
+    return ret

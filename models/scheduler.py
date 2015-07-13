@@ -9,11 +9,9 @@ Defined statuses:
 3: syserror (e.g. could not create directories)
 """
 
-import time
 import os
 import errno
 import subprocess
-import sys
 from datetime import datetime
 try:
     import json
@@ -21,56 +19,25 @@ except ImportError:
     import simplejson as json
 import shutil
 import mkutils
-import distutils
-from distutils.dir_util import copy_tree
-from gluon import current
 from gluon.scheduler import Scheduler
-
-import sys
-sys.path.append(os.path.join(request.folder, "private", "modules"))
+from gluon.fileutils import abspath
 import processupload
 import log
-logger = log.initialize_logging(request.folder, 'build_queue')
 
-
-def mkdir_p(path):
-    try:
-        os.makedirs(path)
-        return True
-    except OSError as e:
-        if e.errno == errno.EEXIST:
-            pass
-        else:
-            logger.critical("Error: Could not create directory %s" % path)
-            return False
-
-
-def cptree(src, dst):
-    try:
-        ct = copy_tree(src, dst, preserve_symlinks=0)
-        logger.debug('Copied %s to %s' % (src, dst))
-    except distutils.errors.DistutilsFileError as e:
-        logger.warning(
-            'Source directory %s does not exist. %s' % (src, str(e))
-        )
-    except IOError as e:
-        logger.error(
-            'Could not create/write to directory %s. Check permissions.' %
-            dst
-        )
+logger = log.initialize_logging(request.folder, __name__)
 
 
 class BuildImages(object):
 
-    """
-    This class is for configuring and building the images
-
-    Args:
-        config_path: Path where the uci config files are stored
-        config_file: filename of the config file
-    """
+    """ This class is for configuring and building the images """
 
     def __init__(self, row=None):
+        """ Init
+
+            Args:
+                row -- a web2py DAL row (object)
+        """
+
         def _get(option):
             ret = None
             try:
@@ -152,7 +119,14 @@ class BuildImages(object):
         self.OutputDirWeb = os.path.join(config.images_web_dir, self.Rand)
         self.BinDirWeb = os.path.join(self.OutputDirWeb, "bin")
 
-    def build_links_json(self):
+    def __getitem__(self, key):
+        """ get items from self in an dict like notation """
+        return self.__dict__[key]
+
+    def _download_links_write(self):
+        """ Write a file to static/ajax/<random number> containing all
+            Download Links
+        """
         files = []
         for filename in os.listdir(self.BinDir):
             size = os.path.getsize(os.path.join(self.BinDir, filename))
@@ -160,41 +134,26 @@ class BuildImages(object):
         r = json.dumps(sorted(files))
 
         # Write info to file
-        try:
-            f = open(
-                os.path.join(
-                    request.folder,
-                    "static",
-                    "ajax",
-                    self.Rand),
-                "w")
-            try:
-                f.write(str(r))
-            finally:
-                f.close()
-        except IOError:
-            pass
+        static_ajax_file = os.path.join(
+            abspath(request.folder), "static", "ajax", self.Rand
+        )
+        mkutils.write_file(static_ajax_file, str(r))
 
-    def summary_json(self):
+    def _summary_json(self):
+        """ returns the current configuration as json
+            Because wifi interface settings are stored in a seperate table
+            they are added here too
+        """
         self.rows_wifi = self.rows_wifi.as_dict()
         r = json.dumps(self.__dict__, indent=4)
         return r
 
-    def summary_json_write(self, jsondata):
-        summaryfile = os.path.join(self.BinDir, "summary.json")
-        logger.debug('Writing summary to %s' % summaryfile)
+    def _summary_json_write(self, jsondata):
+        summary_file = os.path.join(self.BinDir, "summary.json")
+        logger.debug('Writing summary to %s' % summary_file)
+        mkutils.write_file(summary_file, jsondata)
 
-        # write summary to bin directory
-        try:
-            f = open(summaryfile, "w")
-            try:
-                f.write(str(jsondata))
-            finally:
-                f.close()
-        except IOError:
-            logger.warning("Could not write the summary.json file!")
-
-    def SendMail(self, status):
+    def _send_mail(self, status):
         mail_template = "mail/build_error"
         if self.Nickname:
             name = self.Nickname
@@ -203,25 +162,20 @@ class BuildImages(object):
         else:
             name = T("fellow free networks enthusiast")
 
-        mail_vars = dict()
-        mail_vars['bin_dir'] = self.BinDirWeb
-        mail_vars['build_log'] = "%s/build.log" % self.BinDirWeb
-        mail_vars['doc_url'] = config.documentation_url
-        mail_vars['name'] = name
+        mail_vars = dict(
+            bin_dir=self.BinDirWeb,
+            build_log="%s/build.log" % self.BinDirWeb,
+            doc_url=config.documentation_url,
+            name=name
+        )
 
         settings_summary = dict()
-        if self.Community:
-            settings_summary[T("Community")] = self.Community
-        if self.Hostname:
-            settings_summary[T("Hostname")] = self.Hostname
-        if self.Location:
-            settings_summary[T("Location")] = self.Location
+        for o in ["Community", "Hostname", "Location", "Target", "Profile"]:
+            if self[o]:
+                settings_summary[T(o)] = self[o]
+
         if self.Community == 'weimar':
             settings_summary[T("Nodenumber")] = self.Nodenumber
-        if self.Target:
-            settings_summary[T("Target")] = self.Target
-        if self.Profile:
-            settings_summary[T("Profile")] = self.Profile
 
         if status == 0:
             mail_template = "mail/build_success"
@@ -295,12 +249,12 @@ class BuildImages(object):
                     config.adminmail
                 )
 
-
-    def createdirectories(self):
+    def _createdirectories(self):
         """ We need a directory structure like this:
             OutputDir
                 bin
                 files
+
             If noconf is not True then we also need to create some subfolders
             inside files, i.e. etc/config, etc/init.d, etc/rc.d
             If creating the directory structure fails then return False and
@@ -308,24 +262,25 @@ class BuildImages(object):
 
         """
         status = 0
-        if not mkdir_p(self.FilesDir):
+        if not mkutils.mkdir_p(self.FilesDir):
             status = 1
-        if not mkdir_p(self.BinDir):
+        if not mkutils.mkdir_p(self.BinDir):
             status = 1
         if self.Noconf is not True:
-            if not mkdir_p(self.FilesDirInit):
+            if not mkutils.mkdir_p(self.FilesDirInit):
                 status = 1
-            if not mkdir_p(self.FilesDirRc):
+            if not mkutils.mkdir_p(self.FilesDirRc):
                 status = 1
-        if not mkdir_p(self.FilesDirConfig):
+        if not mkutils.mkdir_p(self.FilesDirConfig):
             status = 1
         if status == 1:
             return False
         else:
             return True
 
-    def createconfig(self):
-        """ Write uci config file for meshwizard to FilesDirConfig/meshwizard
+    def _createconfig(self):
+        """ Write uci config file for meshwizard and meshkit to
+            FilesDirConfig/meshwizard
         """
 
         def add_section(type, name):
@@ -485,14 +440,8 @@ class BuildImages(object):
             self.mkconfig += "\n"
 
         # Write config to etc/config/meshwizard
-        try:
-            f = open(os.path.join(self.FilesDirConfig, 'meshwizard'), "w")
-            try:
-                f.write(self.mkconfig)
-            finally:
-                f.close()
-        except IOError:
-            logger.critical("Could not write config!")
+        mw_conf_file = os.path.join(self.FilesDirConfig, 'meshwizard')
+        mkutils.write_file(mw_conf_file, self.mkconfig)
 
         # Make meshwizard start at bootime
         filedir = os.path.join(request.folder, "private", "files")
@@ -523,14 +472,10 @@ class BuildImages(object):
         if self.password_hash:
             add_section('defaults', 'auth')
             add_option('password_hash', self.password_hash)
-        try:
-            f = open(os.path.join(self.FilesDirConfig, 'meshkit'), "w")
-            try:
-                f.write(self.mkconfig)
-            finally:
-                f.close()
-        except IOError:
-            logger.critical("Could not write /etc/config/meshkit!")
+
+        # write meshkit config file
+        mk_conf_file = os.path.join(self.FilesDirConfig, 'meshkit')
+        mkutils.write_file(mk_conf_file, self.mkconfig)
 
     def _build(self):
         status = 3
@@ -539,18 +484,18 @@ class BuildImages(object):
         logger.info(
             'Build started, ID: %s, Target: %s' %
             (self.Id, self.Target))
-        if self.createdirectories():
+        if self._createdirectories():
             if not self.Noconf:
-                self.createconfig()
+                self._createconfig()
 
             # write summary to output directory
-            settings_summary_json = self.summary_json()
-            self.summary_json_write(settings_summary_json)
+            settings_summary_json = self._summary_json()
+            self._summary_json_write(settings_summary_json)
 
             # handle files in <meshkit>/files
             mkfilesdir = os.path.join(request.folder, "files")
             if os.path.exists(mkfilesdir):
-                cptree(mkfilesdir, self.FilesDir)
+                mkutils.cptree(mkfilesdir, self.FilesDir)
                 logger.info(
                     'Copied files from %s to %s.' %
                     (mkfilesdir, self.FilesDir))
@@ -561,7 +506,7 @@ class BuildImages(object):
                 self.Target,
                 "files")
             if os.path.exists(ibfilesdir):
-                cptree(ibfilesdir, self.FilesDir)
+                mkutils.cptree(ibfilesdir, self.FilesDir)
 
             # handle community files (custom files uploaded by community)
             if config.communitysupport and config.communityfiles_dir:
@@ -573,7 +518,7 @@ class BuildImages(object):
                     'Copied files from %s to %s' %
                     (cfilesdir, self.FilesDir))
                 if os.path.exists(cfilesdir):
-                    cptree(cfilesdir, self.FilesDir)
+                    mkutils.cptree(cfilesdir, self.FilesDir)
                     if self.Community == 'weimar':
                         filesdir = "%s/etc/init.d/apply_profile.code" % \
                             self.FilesDir
@@ -613,11 +558,6 @@ class BuildImages(object):
                     except:
                         logger.warning('Could not delete %s' % uploaded_file)
 
-            if len(self.Profile) > 0:
-                option_profile = "PROFILE=%s" % self.Profile
-            else:
-                option_profile = 'PROFILE='
-
             # Copy community profile
             if config.communitysupport and self.Community:
                 communityprofile = os.path.join(
@@ -633,30 +573,20 @@ class BuildImages(object):
                         (communityprofile, self.FilesDirConfig))
                     shutil.copy(communityprofile, self.FilesDirConfig)
 
-            # check if there are any files to include in the image
-            if len(os.listdir(self.FilesDir)) > 0:
-                option_files = "FILES=%s" % self.FilesDir
-            else:
-                option_files = 'FILES='
-
-            if self.Pkgs:
-                option_pkgs = "PACKAGES=%s" % self.Pkgs
-            else:
-                option_pkgs = 'PACKAGES='
-
-            option_bin_dir = "BIN_DIR=%s" % self.BinDir
-
+            # construct the commandline
             path = os.path.join(config.buildroots_dir, self.Target)
+            cmdline = ["make", "image"]
+            if len(self.Profile) > 0:
+                cmdline.append("PROFILE=%s" % self.Profile)
+            if self.Pkgs:
+                cmdline.append("PACKAGES=%s" % self.Pkgs)
+            if len(os.listdir(self.FilesDir)) > 0:
+                cmdline.append("FILES=%s" % self.FilesDir)
+            if len(self.BinDir) > 0:
+                cmdline.append("BIN_DIR=%s" % self.BinDir)
 
             proc = subprocess.Popen(
-                [
-                    "make",
-                    "image",
-                    option_profile,
-                    option_pkgs,
-                    option_bin_dir,
-                    option_files,
-                ],
+                cmdline,
                 cwd=path,
                 stdout=subprocess.PIPE,
                 shell=False,
@@ -666,7 +596,7 @@ class BuildImages(object):
             out, _ = proc.communicate()
             ret = proc.returncode
 
-            self.build_links_json()
+            self._download_links_write()
             if ret != 0:
                 if ret < 0:
                     logger.critical('make was killed by signal %s', str(ret))
@@ -678,8 +608,9 @@ class BuildImages(object):
             else:
                 status = 0
 
-            with open(self.BinDir + "/build.log", 'w') as f:
-                f.write(out)
+            # write build log
+            build_log_file = os.path.join(self.BinDir, "build.log")
+            mkutils.write_file(build_log_file, out)
 
         return status, out, settings_summary_json
 
@@ -742,7 +673,6 @@ def build(id):
     builder = BuildImages(row)
     ret, out, settings_summary_json = builder._build()
 
-    logger.info("ret is: %s" % ret)
     if ret == 0:
         logger.info('Build finished, ID: %s ' % str(row.id))
         status = 0
@@ -768,7 +698,7 @@ def build(id):
         finished=datetime.now()
     )
     db.commit()
-    builder.SendMail(status)
+    builder._send_mail(status)
 
     # while it might seem like a good idea to return out (the complete output)
     # here: don't. It will prevent the job from completing, this probably is a
@@ -781,7 +711,6 @@ scheduler = Scheduler(
     db_scheduler,
     discard_results=True,
     heartbeat=settings.scheduler['heartbeat'],
-
 )
 
 # check if the set_failed task is there, else insert it

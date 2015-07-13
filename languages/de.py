@@ -110,6 +110,7 @@
 'Contact data that is shown on the routers web interface.': 'Kontaktdaten, die auf der "Kontakt"-Seite des Routers angezeigt werden.',
 'contains': 'enthält',
 'Controller': 'Controller',
+'Could not write build.log because of an IOError: %s: %s': 'Could not write build.log because of an IOError: %s: %s',
 'Created By': 'Erstellt von',
 'Created On': 'Erstellt am',
 'CSV': 'CSV',

@@ -6,8 +6,6 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 from gluon import *
-from gluon.storage import Storage
-from gluon.cache import Cache
 import os
 import glob
 import re
@@ -95,9 +93,8 @@ def get_communities(path):
             community_defaults = c.read()
             name = c.get(community_defaults, 'profile', 'name', key)
             communities[key] = name
-            
+
     return OrderedDict(sorted(communities.items(), key=lambda x: x[1].lower()))
-    
 
 
 def get_targets(ibpath):
@@ -117,6 +114,7 @@ def get_targets(ibpath):
             targets.append(filename)
     return sorted(targets)
 
+
 def target_shorten(target):
     """ Remove some parts of target for nicer display
 
@@ -128,7 +126,6 @@ def target_shorten(target):
     """
     short_target = target.replace('OpenWrt-ImageBuilder-', '')
     return short_target.replace('.Linux-x86_64', '')
-
 
 
 def dict_pkg_info(ibpath, target, savedir):
