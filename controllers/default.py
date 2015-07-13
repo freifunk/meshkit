@@ -138,6 +138,8 @@ def wizard():
     import datetime
     import hashlib
 
+    lang = T.accepted_language or 'en'
+
     # check if community and target are set, else redirect to the index page
     # todo
     # list of profiles
@@ -175,7 +177,6 @@ def wizard():
         for k in ud_items:
             if k in user_defaults and user_defaults[k]:
                 db.imageconf[k].default = user_defaults[k]
-
 
     db.imageconf.profile.requires = IS_IN_SET(
         session.profiles,
@@ -221,7 +222,7 @@ def wizard():
     if auth.user and request.args(0):
         record = db.imageconf(
             request.args(0)) or redirect(URL('access_denied')
-        )
+                                         )
 
         if record.id_user == auth.user_id:
             form = SQLFORM.factory(
@@ -294,6 +295,9 @@ def wizard():
         if auth.user:
             form.vars.id_user = auth.user_id
 
+        # write current language
+        form.vars.lang = lang
+
         # auto-set hostname if it is empty
         if not form.vars.hostname:
             form.vars.hostname = session.hostname
@@ -312,7 +316,7 @@ def wizard():
                 id_row = db.wifi_interfaces.insert(
                     id_build=id,
                     **db.wifi_interfaces._filter_fields(i)
-		)
+                )
                 if id_row:
                     row = db(db.wifi_interfaces.id == id_row).select().first()
                     row.update_record(id_build=id, enabled=True)
@@ -320,8 +324,7 @@ def wizard():
                     if i["ipv4addr"]:
                         session.main_mesh_ip = i["ipv4addr"]
 
-	db.commit()
-
+        db.commit()
 
         # schedule task
         scheduler.queue_task(
@@ -420,14 +423,14 @@ def user_builds():
 
     def delete_multiple(ids):
         if not ids:
-                session.flash=T('Select at least one record.')
+            session.flash = T('Select at least one record.')
         else:
-                for id in ids:
-                        db(
-                            (db.imageconf.id_user == auth.user_id) & \
-                            (db.imageconf.id == id)
-                        ).delete()
-                pass
+            for id in ids:
+                db(
+                    (db.imageconf.id_user == auth.user_id) &
+                    (db.imageconf.id == id)
+                ).delete()
+            pass
         pass
         return ''
 
@@ -443,7 +446,7 @@ def user_builds():
     ]
 
     db.imageconf.target.represent = lambda target, _: target_shorten(target)
-    
+
     grid = SQLFORM.grid(
         db.imageconf.id_user == auth.user_id,
         user_signature=False,
@@ -464,7 +467,7 @@ def user_builds():
         ]
     )
 
-    heading=grid.elements('th')
+    heading = grid.elements('th')
     if heading:
         heading[0].append(
             INPUT(

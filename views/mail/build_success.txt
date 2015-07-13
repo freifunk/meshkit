@@ -1,0 +1,8 @@
+{{=response.render("mail/partials/salutation.txt", dict(name=mail_vars['name']))}}
+
+{{=msg}}
+{{=mail_vars['bin_dir']}}
+
+{{=response.render("mail/partials/build_settings.txt", dict(mail_vars=mail_vars))}}
+
+{{=response.render("mail/partials/build_footer.txt", dict(mail_vars=mail_vars))}}

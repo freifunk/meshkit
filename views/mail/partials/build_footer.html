@@ -1,0 +1,11 @@
+<p>{{=T('Thank you for supporting free networks!')}}</p>
+
+<p>
+{{=T(
+    'If you need help with setting up the router please consult the manual ' +
+    'at %(manual_url)s or get help from your local community.'
+    ) % dict(manual_url=mail_vars['doc_url'])       
+}}
+</p>
+
+{{=T('Best wishes!')}}

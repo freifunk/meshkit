@@ -80,6 +80,8 @@ class BuildImages(object):
                 pass
             return ret
 
+        self.Lang = row.lang or 'en'
+        T.force(self.Lang)
         self.mkconfig = ''  # meshkit configuration (UCI format)
         self.Id = _get('id')
         self.Rand = _get('rand')
@@ -107,7 +109,7 @@ class BuildImages(object):
         self.Ipv6_config = _get('ipv6_config')
         self.Location = _get('location') or ''
         self.Community = _get('community')
-        self.nodenumber = _get('nodenumber') or '1024'
+        self.Nodenumber = _get('nodenumber') or '1024'
         self.Nickname = _get('nickname') or ''
         self.Name = _get('name') or ''
         self.Homepage = _get('homepage') or ''
@@ -193,96 +195,106 @@ class BuildImages(object):
             logger.warning("Could not write the summary.json file!")
 
     def SendMail(self, status):
-        if status == 0:
-            mailsubject = T("Meshkit has built your images")
-            mailmessage = T(
-                "Your images were built sucessfully, download them at %s." %
-                self.BinDirWeb
-            )
-            mailmessage += "\n\n" + \
-                T("Remember! You built this image with these settings:")
-            mailmessage += "\n" + T("Community") + ": " + self.Community
-            mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
-            mailmessage += "\n" + T("Location") + ": " + self.Location
-            if self.Community == 'weimar':
-                mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-            mailmessage += "\n" + T("Target") + ": " + self.Target
-            if self.Profile:
-                mailmessage += "\n" + T("Profile") + ": " + self.Profile
-            mailmessage += "\n\n" + T("Thank you for your cooperation!")
-        elif status == 3:
-            mailsubject = T("Meshkit could not built your images")
-            mailmessage = T(
-                "Your images could not be build because there was a system " +
-                "error."
-            )
-            mailmessage += "\n\n" + \
-                T("Remember! You tried to build an image with these settings:")
-            if self.Community:
-                mailmessage += "\n" + T("Community") + ": " + self.Community
-            if self.Hostname:
-                mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
-            if self.Location:
-                mailmessage += "\n" + T("Location") + ": " + self.Location
-            if self.Community == 'weimar':
-                mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-            if self.Target:
-                mailmessage += "\n" + T("Target") + ": " + self.Target
-            if self.Profile:
-                mailmessage += "\n" + T("Profile") + ": " + self.Profile or "-"
-            mailmessage += "\n\n" + T("Thank you for your cooperation!")
-            # also send a email to admin to let him know something went wrong
-            if config.adminmail and mail.send(
-                to=config.adminmail,
-                subject="There is a system error with the build queue",
-                message="Please inspect the build queue."
-            ):
-                logger.debug(
-                    'Mail to Admin (%s) sucessfully sent.' %
-                    config.adminmail)
-            else:
-                logger.error(
-                    'There was an error sending mail to Admin (%s).' %
-                    config.adminmail)
+        mail_template = "mail/build_error"
+        if self.Nickname:
+            name = self.Nickname
+        elif self.Name:
+            name = self.Name
         else:
-            mailsubject = T("Meshkit could not built your images")
-            mailmessage = T(
+            name = T("fellow free networks enthusiast")
+
+        mail_vars = dict()
+        mail_vars['bin_dir'] = self.BinDirWeb
+        mail_vars['build_log'] = "%s/build.log" % self.BinDirWeb
+        mail_vars['doc_url'] = config.documentation_url
+        mail_vars['name'] = name
+
+        settings_summary = dict()
+        if self.Community:
+            settings_summary[T("Community")] = self.Community
+        if self.Hostname:
+            settings_summary[T("Hostname")] = self.Hostname
+        if self.Location:
+            settings_summary[T("Location")] = self.Location
+        if self.Community == 'weimar':
+            settings_summary[T("Nodenumber")] = self.Nodenumber
+        if self.Target:
+            settings_summary[T("Target")] = self.Target
+        if self.Profile:
+            settings_summary[T("Profile")] = self.Profile
+
+        if status == 0:
+            mail_template = "mail/build_success"
+            mail_subject = T("Meshkit has built your images")
+            mail_msg = T(
+                'your images have been built and are ready for download'
+            )
+        else:
+            mail_subject = T("Meshkit could not built your images")
+            mail_msg = T(
                 "I tried hard, but i was not able to build your images. " +
-                "You will find a log of the build process at %s" %
-                self.BinDirWeb + "/build.log."
+                "You might find a log of the build process here:"
             )
-            mailmessage = T(
-                "Your images could not be build because there was a system " +
-                "error."
-            )
-            mailmessage += "\n\n" + \
-                T("Remember! You tried to build an image with these settings:")
-            if self.Community:
-                mailmessage += "\n" + T("Community") + ": " + self.Community
-            if self.Hostname:
-                mailmessage += "\n" + T("Hostname") + ": " + self.Hostname
-            if self.Location:
-                mailmessage += "\n" + T("Location") + ": " + self.Location
-            if self.Community == 'weimar':
-                mailmessage += "\n" + T("Nodenumber") + ": " + self.nodenumber
-            mailmessage += "\n" + T("Target") + ": " + self.Target
-            if self.Profile:
-                mailmessage += "\n" + T("Profile") + ": " + self.Profile
-            mailmessage += "\n\n" + T("Thank you for your cooperation!")
+            if status == 3:
+                # critical error. there will be no build_log
+                mail_vars['build_log'] = None
+                mail_msg = T(
+                    'There was a critical system error. ' +
+                    'The admin has been informed.'
+                )
+
+        # send mail to the user if we have an email address
         if self.Mail:
+            mail_plaintext = response.render(
+                "%s.txt" % mail_template,
+                dict(
+                    mail_vars=mail_vars,
+                    settings_summary=settings_summary,
+                    msg=mail_msg
+                )
+            )
+            mail_html = response.render(
+                "%s.html" % mail_template,
+                dict(
+                    mail_vars=mail_vars,
+                    settings_summary=settings_summary,
+                    msg=mail_msg
+                )
+            )
             if mail.send(
                 to=self.Mail,
-                subject=mailsubject,
-                message=mailmessage
+                subject=mail_subject,
+                message=(mail_plaintext, mail_html)
             ):
                 logger.debug('Mail to %s sucessfully sent.' % self.Mail)
             else:
                 logger.error(
-                    ' + There was an error sending mail to %s.' %
-                    self.Mail)
+                    'There was an error sending mail to %s.' % self.Mail)
         else:
             logger.debug(
                 "No email sent to user because no email address was given.")
+
+        # in case of a system error also send an email to the admin
+        if config.adminmail and status == 3:
+            msg = T(
+                "Please inspect the build queue, there was a critical system" +
+                "error. Most likely Meshkit could not create needed " +
+                "directories."
+            )
+            subject = T(
+                'System error with the build queue'
+            )
+            if mail.send(to=config.adminmail, subject=subject, message=msg):
+                logger.debug(
+                    'Mail to Admin (%s) sucessfully sent.' %
+                    config.adminmail
+                )
+            else:
+                logger.error(
+                    'There was an error sending mail to Admin (%s).' %
+                    config.adminmail
+                )
+
 
     def createdirectories(self):
         """ We need a directory structure like this:
@@ -573,11 +585,11 @@ class BuildImages(object):
                             data2 = data1.replace(
                                 "#SIM_ARG2=\"adhoc\"",
                                 "SIM_ARG2=\"hybrid\"")
-                            logger.info("node number: " + self.nodenumber)
+                            logger.info("node number: " + self.Nodenumber)
                             data3 = data2.replace(
                                 "#SIM_ARG3=2",
                                 "SIM_ARG3=" +
-                                self.nodenumber)
+                                self.Nodenumber)
                             source.seek(0)
                             source.write(data3)
                             source.close()
@@ -666,8 +678,8 @@ class BuildImages(object):
             else:
                 status = 0
 
-        with open(self.BinDir + "/build.log", 'w') as f:
-            f.write(out)
+            with open(self.BinDir + "/build.log", 'w') as f:
+                f.write(out)
 
         return status, out, settings_summary_json
 

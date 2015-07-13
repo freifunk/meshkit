@@ -1,0 +1,3 @@
+{{=T('Here is an overview of some settings of this built:')}}
+{{for k, v in settings_summary.iteritems():}}
+ - {{=k}}: {{=v}}{{pass}}

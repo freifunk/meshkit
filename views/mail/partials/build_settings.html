@@ -1,0 +1,5 @@
+<p>{{=T('Here is an overview of some settings of this built:')}}</p>
+<ul>
+{{for k, v in settings_summary.iteritems():}}
+<li><strong>{{=k}}</strong>: {{=v}}{{pass}}</li>
+</ul>

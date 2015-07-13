@@ -1,0 +1,1 @@
+{{=T("Dear")}} {{=mail_vars['name']}},

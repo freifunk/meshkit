@@ -424,6 +424,13 @@ if config is not None:
                 )
             )
         ),
+        Field(
+            'lang',
+            length=8,
+            requires=IS_EMPTY_OR(
+                IS_MATCH('[a-zA-Z]+')
+            )
+        ),
     )
 
     db.define_table(

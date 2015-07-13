@@ -1,0 +1,11 @@
+{{=response.render("mail/partials/salutation.html", dict(name=mail_vars['name']))}}
+
+<p>{{=msg}}</p>
+<p>
+    <a href="{{=mail_vars['bin_dir']}}">
+        {{=mail_vars['bin_dir']}}
+    </a>
+</p>
+{{=XML(response.render("mail/partials/build_settings.html", dict(settings_summary=settings_summary)))}}
+
+{{=XML(response.render("mail/partials/build_footer.html", dict(mail_vars=mail_vars)))}}

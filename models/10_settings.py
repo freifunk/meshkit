@@ -136,3 +136,4 @@ else:
 
 # save settings to current, so we can use it in modules
 current.settings = settings
+
