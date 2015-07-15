@@ -297,9 +297,10 @@ auth.define_tables(migrate=settings.migrate)
 
 has_user_defaults_latitude = False
 has_user_defaults_longitude = False
+user_defaults = None
 user_defaults_community = None
 
-if auth:
+if auth.user:
     # try to get the default location from user_defaults
     user_defaults = db(
         db.user_defaults.id_auth_user == auth.user_id).select(
