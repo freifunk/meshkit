@@ -296,9 +296,9 @@ if config is not None:
             'boolean',
             label=T('Share internet'),
             comment=T(
-                'Allow others in the mesh to use your internet connection. ' +
-                'This makes use of the olsrd dyngw_plain plugin, which ' +
-                'checks for available internet connectivity and starts to ' +
+                'Allow others in the mesh to use your internet connection. '
+                'This makes use of the olsrd dyngw_plain plugin, which '
+                'checks for available internet connectivity and starts to '
                 'announce it as hna as soon as it is detected.'
             )
         ),

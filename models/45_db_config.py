@@ -135,8 +135,8 @@ db.define_table(
         default=72,
         label=T('Keep images'),
         comment=T(
-            'Keep generated images for this number of hours. After this " +'
-            'time the will be deleted by a cleanup job.'
+            'Keep generated images for this number of hours. After this '
+            'time they will be deleted by a cleanup job.'
         )
     ),
     Field(
