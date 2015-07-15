@@ -37,7 +37,7 @@
     (left_sidebar_enabled and 1 or 0)+(right_sidebar_enabled and 1 or 0)]
         }}
     </head>
-    {{if current.config and current.config.expandablehelp:}}
+    {{if current.config and current.config.expandablehelp and request.function in ['index', 'wizard']:}}
     <body class="expandable-help">
     {{else:}}
     <body>
