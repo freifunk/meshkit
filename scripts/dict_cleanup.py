@@ -64,7 +64,8 @@ def get_dicts(dict_path1, dict_path2):
     @return: The two dictionaries as a sequence.
     """
 
-    return eval(open(dict_path1).read()), eval(open(dict_path2).read()) 
+    return eval(open(dict_path1).read()), eval(open(dict_path2).read())
+
 
 def get_dict_names(dict1_path, dict2_path):
     """
@@ -93,9 +94,26 @@ def compare_dicts(dict1, dict2, dict1_name, dict2_name):
 
     dict1_keyset = set(dict1.keys())
     dict2_keyset = set(dict2.keys())
-    return dict1_keyset - dict2_keyset
+#    print_key_diff(dict1_keyset - dict2_keyset, dict1_name, dict2_name)
+#    print_key_diff(dict2_keyset - dict1_keyset, dict2_name, dict1_name)
+#    print "Value differences:"
+    has_value_differences = False
+    newdict = dict()
+    for key in dict1_keyset:
+        if key not in dict2_keyset:
+            newdict[key] = dict1[key]
+#            print "  %s:" % (key,)
+#            print "    %s: %s" % (dict1_name, dict1[key],)
+#            print "    %s: %s" % (dict2_name, dict2[key],)
+#            print
+            has_value_differences = True
+#    if not has_value_differences:
+#        print "  None"
+        
+    return newdict
 
 def rm_unused(dict, key_diff):
+    #print(dict, key_diff)
     if len(key_diff):
         for key in key_diff:
             del dict[key]
@@ -113,6 +131,22 @@ def write_new_dict(dict, file2write):
         #output.write("}\n")
         output.write(str(dict))
 	output.close()
+    
+def print_key_diff(key_diff, dict1_name, dict2_name):
+    """
+    Prints the keys in the first dictionary and are in the second dictionary.
+    @param key_diff: Keys in dictionary 1 not in dictionary 2.
+    @param dict1_name: Name used for the first dictionary.
+    @param dict2_name: Name used for the second dictionary.
+    """
+
+    print "Keys in %s not in %s:" % (dict1_name, dict2_name)
+    if len(key_diff):
+        for key in key_diff:
+            print "  %s" % (key,)
+    else:
+        print "  None"
+    print
 
 if __name__ == "__main__":
     main(sys.argv[1:])  # Start the process (without the application name)
