@@ -90,7 +90,7 @@
 
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         <!-- SYSTEM TAB -->
-        {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), False)}}
+        {{=formhelpers.panel_start("system", T('System'), T('Basic system settings'), True)}}
         
         {{=fh.field("password_hash")}}
 
@@ -128,7 +128,7 @@
 
         <!-- LOCATION TAB -->
         {{if not session.noconf == True and session.communitysupport == True:}}
-        {{=formhelpers.panel_start("location", T('Location'), T('Location for this node'), True)}}
+        {{=formhelpers.panel_start("location", T('Location'), T('Location for this node'))}}
         
         <div id='osm'>
             {{=fh.field("location")}}
