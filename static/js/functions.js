@@ -119,17 +119,15 @@ function dynwifi() {
         
 
 function help_toggle_init() {
-    $(".help-toggle").each(function() {
-        $(this).click(function() {
-            var help_block = $(this).siblings(".help-block");
-            if (help_block.hasClass("open")) {
-                help_block.slideUp().removeClass("open");
-                $(this).attr("title", msg_show_help);
-            } else {
-                help_block.slideDown().addClass("open");
-                $(this).attr("title", msg_hide_help);
-            }
-        });
+    $( document ).on( "click", ".help-toggle", function() {
+        var help_block = $(this).siblings(".help-block");
+        if (help_block.hasClass("open")) {
+            help_block.slideUp().removeClass("open");
+            $(this).attr("title", msg_show_help);
+        } else {
+            help_block.slideDown().addClass("open");
+            $(this).attr("title", msg_hide_help);
+        }
     });
 }
 
@@ -626,7 +624,6 @@ function init_step2() {
     });
     $("#imageconf_webif").change(function() {
         themeselect();
-        help_toggle_init();
     });
     $("#imageconf_theme").change(function() {
         themepkgs();
@@ -639,11 +636,9 @@ function init_step2() {
     });
     $("#imageconf_lanproto").change(function() {
         lanselect();
-        help_toggle_init();
     });
     $("#imageconf_wanproto").change(function() {
         wanselect();
-        help_toggle_init();
     });
     $("#imageconf_sharenet").change(function() {
         nosharepkgs();
