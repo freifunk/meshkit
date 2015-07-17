@@ -52,10 +52,21 @@ if config is not None:
         Field(
             'mail',
             label=T('Email'),
-            comment=T(
-                'Enter your email address here. After the images have been ' +
-                'built you will receive an email with download links for ' +
-                'the firmware.'
+            comment=CAT(
+                P(
+                    T(
+                        'Enter your email address here. After the images have '
+                        'been built you will receive an email with download '
+                        'links for the firmware.'
+                    ),
+                ),
+                DIV(
+                    T(
+                        'This field is not mandatory, you can also use '
+                        'Meshkit without entering your email address here.'
+                    ),
+                    _class="alert alert-info"
+                )
             ),
             requires=IS_EMPTY_OR(
                 IS_EMAIL(
