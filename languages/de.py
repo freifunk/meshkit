@@ -307,6 +307,7 @@
 'Please go to %(config)s to configure this installation of meshkit.': 'Gehe zu %(config)s um Meshkit zu konfigurieren.',
 'Please select your wireless community here. This will select reasonable defaults for step 2 of the image configuration.': 'Wähle hier deine Community. Dies wird benötigt, um sinnvolle Defaultwerte für den nächsten Schritt zu wählen.',
 'Please visit <a href="%(url)s">%(url)s</a> to find instructions for a repository checkout or to browse the source code.': 'Besuche <a href="%(url)s">%(url)s</a> für den Checkout/Browsen des Meshkit Source Codes.',
+'Please visit <a href="https://github.com/freifunk/meshkit/">https://github.com/freifunk/meshkit/</a> to find instructions for a repository checkout or to browse the source code.': 'Please visit <a href="https://github.com/freifunk/meshkit/">https://github.com/freifunk/meshkit/</a> to find instructions for a repository checkout or to browse the source code.',
 'previous 100 rows': 'Vorherige 100 Zeilen',
 'Processing': 'In Bearbeitung',
 'Profile': 'Profil',

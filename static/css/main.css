@@ -4996,12 +4996,11 @@ select.autocomplete {
 .background {
   background: url(../images/background.jpg) no-repeat center center;
 }
-body {
-  padding-top: 30px;
-  margin-bottom: 60px;
-}
+/*body {
+    padding-top: @baseUnit;
+    margin-bottom: 60px;
+}*/
 html {
-  position: relative;
   min-height: 100%;
 }
 .right {
@@ -5527,7 +5526,11 @@ input[type=radio] {
 }
 html,
 body {
-  height: 101%;
+  height: 100%;
+  min-height: 100%;
+}
+.wrapper {
+  min-height: 101%;
 }
 h1 {
   text-transform: uppercase;
@@ -5557,46 +5560,23 @@ h3 {
   margin-top: 60px;
   margin-bottom: 0;
 }
-.wrapper {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -6em;
-  /* set last value to footer height plus footer vertical padding */
-}
+/*.wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -6em;  set last value to footer height plus footer vertical padding 
+}*/
 .main-content {
-  padding-bottom: 10px;
+  margin-bottom: 30px;
   padding-top: 30px;
 }
-/* sticky footer */
-.footer,
-.push {
-  height: 10em;
-}
-.footer:before,
-.push:before,
-.footer:after,
-.push:after {
-  content: " ";
-  display: table;
-}
-.footer:after,
-.push:after {
-  clear: both;
-}
-.footer:before,
-.push:before,
-.footer:after,
-.push:after {
-  content: " ";
-  display: table;
-}
-.footer:after,
-.push:after {
-  clear: both;
-}
 .footer {
+  width: 100%;
   background-color: #f5f5f5;
+}
+.footer.sticky {
+  position: fixed;
+  bottom: 30px;
 }
 .footer .footer-inner {
   margin-right: auto;
@@ -5632,8 +5612,7 @@ h3 {
   }
 }
 .footer .footer-inner > .row {
-  margin-bottom: 30px;
-  height: 10em;
+  margin-bottom: 0;
 }
 .footer .footer-inner > .row:before,
 .footer .footer-inner > .row:after {
@@ -5650,6 +5629,22 @@ h3 {
 }
 .footer .footer-inner > .row:after {
   clear: both;
+}
+.footer .footer-upper {
+  height: 30px;
+  background: #000000;
+  background: transparent\9;
+  background: rgba(0, 0, 0, 0.5);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#80000000, endColorstr=#80000000);
+  zoom: 1;
+  color: #ffffff;
+  line-height: 30px;
+  padding: 0 15px;
+  text-align: right;
+  font-size: 14px;
+}
+.footer .footer-upper:nth-child(n) {
+  filter: none;
 }
 .footer .footer_left,
 .footer .footer_right {
@@ -5657,7 +5652,6 @@ h3 {
   min-height: 1px;
   padding-left: 15px;
   padding-right: 15px;
-  height: 10em;
   padding-top: 15px;
   padding-bottom: 15px;
   background-color: #333333;
@@ -5769,6 +5763,7 @@ h3 {
 header.header {
   height: 200px;
   background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
+  margin-top: 45px;
 }
 header.header > .container {
   height: 100%;

@@ -26,6 +26,23 @@ function themepkgs() {
     }
 }
 
+function sticky_footer() {
+    var window_height =  $(window).height();
+    var footer_height = $("footer.footer").outerHeight();
+	var scroll_height = $(window).scrollTop();
+	var activate_height = $(document).height() - window_height - footer_height;
+    
+	if (scroll_height > activate_height) {
+		$("footer.footer").removeClass('sticky')
+            .css({"bottom": "auto"});
+            $(".main-content").css({"padding-bottom": 0});
+	} else {
+		$("footer.footer").addClass("sticky")
+            .css({"bottom": (footer_height - 30) / -1 });
+            $(".main-content").css({"padding-bottom": footer_height});
+	}
+}
+
 function init_grid() {
     /* enable all checkboxes on click in a selectable SQLFORM.grid */
     $('.grid-check-all').click(function(e) {
@@ -720,6 +737,11 @@ function map_init() {
 /* End Map init and control functions */
 
 $( document ).ready(function() {
+    $(".equal-height > div").matchHeight();
+    sticky_footer();
+    $(window).scroll(function() {
+        sticky_footer();
+    });
     help_toggle_init();
     pass_init();
     map_init();

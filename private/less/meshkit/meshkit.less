@@ -1,7 +1,11 @@
 html, body {
-	height: 101%;
+    height: 100%;
+	min-height: 100%;
 }
 
+.wrapper {
+	min-height: 101%;
+}
 h1 {
     text-transform: uppercase;
     margin-bottom: @baseUnit;
@@ -23,45 +27,52 @@ h3 {
     .horizontal-line-after(@color: @gray-lighter, @height: 1px, @width: 100%, @top: ( @baseUnit * 2), @bottom: 0);
 }
 
-.wrapper {
+/*.wrapper {
 	min-height: 100%;
 	height: auto !important;
 	height: 100%;
-	margin: 0 auto -6em; /* set last value to footer height plus footer vertical padding */
-}
+	margin: 0 auto -6em;  set last value to footer height plus footer vertical padding 
+}*/
 
 .main-content {
-	padding-bottom: 10px;
+	margin-bottom: @baseUnit;
     padding-top: @baseUnit;
 }
 
-/* sticky footer */
-.footer, .push {
-    .clearfix();
-	height: 10em;
-}
 .footer {
+    width: 100%;
     //.horizontal-line-before(@gray-lighter, 1px, 100%, 0, @baseUnit);
     background-color: @gray-extralight;
+    &.sticky {
+        position: fixed;
+        bottom: @baseUnit;
+    }
     .footer-inner {
         .container();
         &>.row {
-            margin-bottom: @baseUnit;
-            height: 10em;
+            margin-bottom: 0;
             .clearfix();
         }
     }
+    .footer-upper {
+        height: @baseUnit;
+        .transparentBackground(@black, 0.5);
+        color: @white;
+        line-height: 30px;
+        padding: 0 (@baseUnit / 2);
+        text-align: right;
+        font-size: @font-size-small;
+    }
+    
     .footer_left, .footer_right {
         .make-sm-column(6, @baseUnit);
-        height: 10em;
+        //height: 10em;
         padding-top: ( @baseUnit / 2);
         padding-bottom: ( @baseUnit / 2);
-        //background-color: lighten(@ff-yellow, 25%);
         background-color: @gray-dark;
         color: @gray-extralight;
     }
     .footer_left {
-        //background-color: lighten(@ff-yellow, 30%);
         background-color: @gray-darker;
     }
 }
@@ -148,6 +159,7 @@ header.header {
     //margin-top: @baseUnit;
     height: 200px;
     background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
+    margin-top: (@baseUnit * 1.5);
     >.container {
         height: 100%;
         position: relative;

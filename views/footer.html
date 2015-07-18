@@ -6,8 +6,11 @@
 </noscript>
 
 <footer class="footer">
-    <div class="footer-inner"
-        <div class="row">
+    <div class="footer-inner">
+        <div class="row footer-upper">
+            Meshkit {{=T('Version')}}: <strong>{{=version}}</strong>
+        </div>
+        <div class="row equal-height ">
             <div class="footer_left">
                 {{=XML(T('Meshkit is a webinterface for the %(openwrt)s image generator.' % dict(openwrt='<a href="https://openwrt.org">OpenWrt</a>')))}}
                 {{=T('It allows you to build customized OpenWrt firmware images to use on your router/access point.')}}
@@ -16,7 +19,6 @@
                 {{=T('Found a bug? Have some questions or suggestions?')}}
                 {{=XML(T('Then visit the %(about)s page to find some contact options.') % dict(about='<a href="' + URL('about') + '">' + T('About') +'</a>'))}}
                 <br />
-                <strong>{{=T('Version')}}:</strong> {{=version}}
             </div>
         </div>
     </div>
