@@ -6539,6 +6539,13 @@ fieldset.wifi-interface legend {
 .wifi-add-remove-buttons {
   padding: 15px;
 }
+table.web2py_checkboxeswidget input {
+  float: left;
+}
+table.web2py_checkboxeswidget label {
+  line-height: 45px;
+  margin-left: 15px;
+}
 @media (min-width: 768px) {
   .navbar.navbar-default {
     margin-bottom: 0;
