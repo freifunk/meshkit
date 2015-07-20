@@ -16,6 +16,8 @@ config_modellist = {
         "WDR4310":{"target":"ar71xx", "profile":"TLWDR4300"},
     },
     "Ubiquiti":{
+        "Nanostation Loco M2/M5":{"target":"ar71xx", "profile":"UBNT"},
+        "Nanostation M2/M5":{"target":"ar71xx", "profile":"UBNT"},
         "Routerstation":{"target":"ar71xx", "profile":"UBNTRS"},
         "Routerstation Pro":{"target":"ar71xx", "profile":"UBNTRSPRO"},
         "Litestation LS-SR71":{"target":"ar71xx", "profile":"UBNT"},
