@@ -736,26 +736,6 @@ function map_init() {
 
 /* End Map init and control functions */
 
-$( document ).ready(function() {
-    $(".equal-height > div").matchHeight();
-    sticky_footer();
-    $(window).scroll(function() {
-        sticky_footer();
-    });
-    help_toggle_init();
-    pass_init();
-    map_init();
-    init_grid();
-    $("#language-select").change(function() {
-        set_lang($(this).val());
-    });
-    // Prevent closing the dropdown when user clicks on an input element
-    $('.dropdown input, .dropdown label').click(function(e) {
-        e.stopPropagation();
-    });
-});
-
-
 /* START functions for the build.html page (build status/output) */
 
 function update_buildqueue_status() {
@@ -999,3 +979,102 @@ function updateGraphs(json) {
 }
 
 /* end graphs */
+
+/* model list - this is just a quick mockup and could need a lot of
+   improvements
+*/
+
+var target_options = [];
+function target_rewrite(target) {
+    var option;
+    var ret;
+    for(option in target_options) {
+        if(typeof target_options[option].value !== "undefined"){
+              if (target_options[option].value.match(target)) {
+                 ret = target_options[option].value;
+              }
+        }
+    }
+    return ret;
+}
+
+function set_target(target) {
+    $('select[name="target"]').val(target);
+}
+
+function set_profile(profile) {
+    $('input[name="profile"]').val(profile);
+}
+
+function build_model_list(modellist) {
+    var target_input = $('#imageconf_target');
+
+    if (target_input.length) {
+        if (target_input.hasClass("read-only")) {
+            // only one target that is read-only and a string
+            target_options.push({value: target_input.html()});
+        } else {
+            // get all options of the select widget
+            target_options = document.getElementById('imageconf_target').options;
+        }
+    }
+
+    var filtered_model_list = {};
+    for (var manufacturer in modellist) {
+        for (var model in modellist[manufacturer]) {
+            var target = modellist[manufacturer][model]['target'];
+            var profile = modellist[manufacturer][model]['profile'];
+            var full_target = target_rewrite(target);
+            var msg = '';
+            if (full_target !== undefined) {
+                msg = i18n.selected + ': ' + model + '<ul><li>' + i18n.target + ': ' + full_target + '</li><li>' + i18n.profile + ': ' + profile + '</li></ul>';
+                link = '<span class="model-link">';
+                link += "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");";
+                link += "set_profile(\"" + profile + "\");";
+                if (auto_submit) {
+                    link += "document.step1.submit();";
+                }
+                link += "jQuery(\".flash\").html(" + "\"" + msg + "\"" + ").slideDown()'>" + model + "</a></span>";
+                if (! filtered_model_list[manufacturer]) {
+                    filtered_model_list[manufacturer] = {};
+                }
+                filtered_model_list[manufacturer][model] = link;
+                
+            }
+        }
+    }
+    var list = '<table class="table table-hover">';
+    for (var manufacturer in filtered_model_list) {
+        list += '<tr>';
+        list += '<th>' + manufacturer + '</th>';
+        list += '<td>';
+        for (var model in filtered_model_list[manufacturer]) {
+            list += filtered_model_list[manufacturer][model];
+        }
+        list += '</td>';
+    }
+    list += "</table>";    
+    $('#modellist').html(list);
+}
+
+/* end model list */
+
+
+$( document ).ready(function() {
+    $(".equal-height > div").matchHeight();
+    sticky_footer();
+    $(window).scroll(function() {
+        sticky_footer();
+    });
+    help_toggle_init();
+    pass_init();
+    map_init();
+    init_grid();
+    $("#language-select").change(function() {
+        set_lang($(this).val());
+    });
+    // Prevent closing the dropdown when user clicks on an input element
+    $('.dropdown input, .dropdown label').click(function(e) {
+        e.stopPropagation();
+    });
+});

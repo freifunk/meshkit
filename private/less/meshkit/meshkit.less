@@ -633,9 +633,30 @@ input:-webkit-autofill:focus {
 .copyright {float: left;}
 
 #modellist {
-    margin-bottom: @baseUnit;
+    margin: @baseUnit 0;
     max-width: 100%;
     overflow-x: auto;
+    tr:first-of-type {
+        td, th {
+            border-top: 0;
+        }
+    }
+    .model-link {
+        a {
+            white-space: nowrap;
+        }
+        &:before {
+            content:'| ';
+            padding-left: 0.5em;
+            color: @gray-light;
+        }
+        &:first-of-type {
+            &:before {
+                content:'';
+                padding-left: 0;
+            }
+        }
+    }
 }
 
 #map-container {

@@ -163,6 +163,10 @@ class customField:
         except AttributeError:
             pass
 
+        # wrap string widgets for non-writeable fields with their id
+        if isinstance(widget, basestring):
+            widget = SPAN(widget, _id=id, _class="read-only")
+
         class_form_options = "form-options"
         if advanced:
             class_form_options += " has-suboptions"

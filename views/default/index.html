@@ -51,93 +51,22 @@
 </form>
 <!-- form end -->
 
-<div style="height:35px"></div>
-
 <h2>{{=T('Select by model')}}</h2>
 <p>{{=T('You may select some known router models below. The target on this page and the profile on the next page will automatically be set for you then.')}}<br />
 {{=T('If your model is not shown below then continue by setting target and profile (on the next page) manually.')}}</p>
 
 <div id="modellist">
 </div>
+
 <script type="text/javascript">
-
-var modellist = {{=XML(modellist)}};
-
-var target_input = document.getElementById('imageconf_target');
-var target_options = [];
-var target_hiddenvalue = '';
-
-if (target_input !== null) {
-    target_options = document.getElementById('imageconf_target').options;
-    target_hiddenvalue = document.getElementById('imageconf_target').value;
-} else {
-    
-}
-
-function target_rewrite(target) {
-    for(option in target_options) {
-	var ret;
-	if(typeof target_options[option].value != "undefined"){
-          if (target_options[option].value.match(target)) {
-             ret = target_options[option].value;
-          }
-	}
-    }
-    if (typeof ret == "undefined") {
-       ret = target_hiddenvalue
-    }
-    return ret;
-}
-
-
-function set_target(target) {
-    $('select[name="target"]').val(target);
-}
-
-function set_profile(profile) {
-    $('input[name="profile"]').val(profile);
-}
-
-var list = "<table>";
-
-for(var manufacturer in modellist) {
-  var len = Object.keys(modellist[manufacturer]).length;
-  list += '<tr>';
-  list += '<th>' + manufacturer + '</th>';
-  var i = 1;
-  for(var model in modellist[manufacturer]) {
-    list += '<td>';
-    var target = modellist[manufacturer][model]['target'];
-    var profile = modellist[manufacturer][model]['profile'];
-    var full_target = target_rewrite(target);
-    var msg = '';
-    if (full_target.length > 0) {
-        msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Target')}}: ' + full_target + '</li><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
-    } else {
-        msg = '{{=T('Selected')}} ' + model + '<ul><li>{{=T('Profile')}}: ' + profile + '</li></ul>';
-    }
-    link = "<a href='javascript:void(0)' onclick='set_target(\"" + full_target + "\");"
-    link += "set_profile(\"" + profile + "\");";
+    var modellist = {{=XML(modellist)}};
+    $( document ).ready(function() {
+        build_model_list(modellist);
+    });
+    auto_submit = false;
     {{ if config.autosubmit == True: }}
-        link += "document.step1.submit();";
+        auto_submit = true;
     {{pass}}
-    link += "jQuery(\".flash\").html(" + "\"" + msg + "\"" + ").slideDown()'>" + model + "</a>";
-    if( typeof full_target != "undefined") {
-      if(i < len) {
-        list += link + " | "
-      } else {
-        list += link;
-      }
-    }
-    i++;
-  }
-  list += '</td></tr>';
-list += "</table";
-}
-
-
-document.getElementById('modellist').innerHTML = list
-
 </script>
 
 {{block footer}}

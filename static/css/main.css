@@ -6394,9 +6394,25 @@ input:-webkit-autofill:focus {
   float: left;
 }
 #modellist {
-  margin-bottom: 30px;
+  margin: 30px 0;
   max-width: 100%;
   overflow-x: auto;
+}
+#modellist tr:first-of-type td,
+#modellist tr:first-of-type th {
+  border-top: 0;
+}
+#modellist .model-link a {
+  white-space: nowrap;
+}
+#modellist .model-link:before {
+  content: '| ';
+  padding-left: 0.5em;
+  color: #777777;
+}
+#modellist .model-link:first-of-type:before {
+  content: '';
+  padding-left: 0;
 }
 #map-container {
   background-color: #f5f5f5;

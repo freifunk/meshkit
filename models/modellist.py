@@ -26,6 +26,6 @@ config_modellist = {
         "Generic":{"target":"x86-generic", "profile":"Generic"},
         "Virtualbox":{"target":"x86-generic", "profile":"Generic"},
         "Vmware":{"target":"x86-generic", "profile":"Generic"},
-        "KVM Guest":{"target":"x86-kvm"},
+        "KVM Guest":{"target":"x86-kvm_guest"},
     },
 }
