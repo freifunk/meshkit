@@ -242,9 +242,9 @@ def get_profiles(ibpath, target, savedir, remove_default=False):
             if "ar71xx" in target and p == "Default":
                 pass
             else:
-                profiles[p] = info['info'][p]['desc']
+                profiles[p] = "%s | %s" % (info['info'][p]['desc'], p)
         else:
-            profiles[p] = info['info'][p]['desc']
+            profiles[p] = "%s | %s" % (info['info'][p]['desc'], p)
 
     return OrderedDict(sorted(profiles.items(), key=lambda x: x[1].lower()))
 
