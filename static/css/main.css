@@ -6675,6 +6675,12 @@ table.web2py_checkboxeswidget label {
     width: 75%;
   }
 }
+@media (min-width: 768px) and (max-width: 991px) {
+  .container,
+  .footer .footer-inner {
+    width: 90%;
+  }
+}
 @media (max-width: 767px) {
   body {
     font-size: 14px;
