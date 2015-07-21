@@ -144,7 +144,7 @@
         
         <!-- CONTACT TAB -->
         {{if not session.noconf == True and session.communitysupport == True:}}
-        {{=formhelpers.panel_start("contact", T('Contact'), T('Please enter some personal informations here so others can contact you. Please have at least one valid contact option (email or phone).'))}}
+        {{=formhelpers.panel_start("contact", T('Contact'), T('Please enter some personal informations here so others can contact you. Please have at least one valid contact option (email or phone). This data is shown on the public status page of the routers web interface.'))}}
 
         {{=fh.field("nickname")}}
         {{=fh.field("name")}}

@@ -510,7 +510,7 @@ if config is not None:
             'boolean',
             label=T('VAP'),
             default=True,
-            comment=(
+            comment=T(
                 'Configure a VAP as Access Point. Only with drivers that ' +
                 'support this. At the moment these are madwifi, ath5k and ' +
                 'ath9k.'

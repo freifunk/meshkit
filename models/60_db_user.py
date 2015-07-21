@@ -146,7 +146,7 @@ if config and config.communitysupport:
         ),
         Field(
             'latitude',
-            label=("Latitude"),
+            label=T("Latitude"),
             comment=T('Latitude') + " " + T('in decimal notation.'),
             default=48,
             requires=IS_EMPTY_OR(
