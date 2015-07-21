@@ -55,6 +55,18 @@
       "src": "entypo"
     },
     {
+      "uid": "70370693ada58ef0a60fa0984fe8d52a",
+      "css": "plus",
+      "code": 59415,
+      "src": "entypo"
+    },
+    {
+      "uid": "1256e3054823e304d7e452a589cf8bb8",
+      "css": "minus",
+      "code": 59416,
+      "src": "entypo"
+    },
+    {
       "uid": "63b86fedd4ee9ad2105f54f4888e7088",
       "css": "info",
       "code": 59411,

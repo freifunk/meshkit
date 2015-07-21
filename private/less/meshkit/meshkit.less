@@ -357,7 +357,7 @@ select:-moz-focusring {
         right: 0;
         color: @white;
         font-size: @font-size-large;
-        padding-top: 11px;
+        line-height: ( @baseUnit * 1.5);
         font-weight: bold;
         background-color: lighten(@ff-yellow, 15%);
         &:hover, &:active, &:focus{
@@ -718,6 +718,26 @@ fieldset.wifi-interface {
 
 .wifi-add-remove-buttons {
     padding: (@baseUnit / 2);
+    #wifi-interface-add, #wifi-interface-remove {
+        white-space: nowrap;
+        display: block;
+        .icon-base();
+        &:before {
+            margin-left: 0;
+            margin-right: 0.5em;
+        }
+        &:hover, &:active, &:focus {
+            &:before {
+                text-decoration: none;
+            }
+        }
+    }
+    #wifi-interface-add {
+        .icon-plus();
+    }
+    #wifi-interface-remove {
+        .icon-minus();
+    }
 }
 
 // checkboxes widget for appadmin
@@ -808,7 +828,7 @@ table.web2py_checkboxeswidget {
         height: (@baseUnit * 1.5);
         background-color: @ff-yellow;
         text-align: center;
-        padding-top: 3px;
+        padding-top: 0;
         color: @white;
         font-size: @font-size-large;
         &:hover, &:active, &:focus {
@@ -820,6 +840,10 @@ table.web2py_checkboxeswidget {
     }
     .advanced {
         right: ( @baseUnit * 2);
+        background-color: lighten(@ff-yellow, 15%);
+        &:hover, &:active, &:focus{
+            background-color: darken(@ff-yellow, 5%); 
+        }
     }
 }
 
