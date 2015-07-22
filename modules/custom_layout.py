@@ -90,6 +90,19 @@ def navbar(auth_navbar, user_defaults=False):
 
         auth = Auth(current.globalenv['db'])
         form = auth.login()
+
+        # use https as target for the login form if it is enabled
+        if current.settings.https_enabled:
+            login_url = URL(
+                "user",
+                args=["login"],
+                scheme="https",
+                port=current.settings.https_port
+            )
+            form.custom.begin = XML(
+                str(form.custom.begin).replace("#", login_url)
+            )
+
         field_username = form.custom.widget.username
         field_username.update(_placeholder=T('Username'))
         field_password = form.custom.widget.password

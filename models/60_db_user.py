@@ -4,7 +4,9 @@
 # create all tables needed by auth if not custom tables
 
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
+
 auth = Auth(db, hmac_key=Auth.get_or_create_key())
+
 import uci
 
 # We don't use first/lastname, so replace firstname with username to show

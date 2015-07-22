@@ -22,6 +22,8 @@ appconfig = ConfigParser.RawConfigParser(
         'sender': 'noreply@example.com',
         'tls': False,
         'login': None,
+        'https_enabled': True,
+        'https_port': 443,
     },
 )
 appconfig.read(config_file)
@@ -63,14 +65,17 @@ settings.layout_theme = appconfig.get('general', 'layout')
 # database connection
 settings.database_uri = appconfig.get('db', 'database_uri')
 
+settings.https_enabled = appconfig.getboolean('security', 'https_enabled')
+settings.https_port = appconfig.get('security', 'https_port')
+
 # security key. If none exists it will be auto-generated
-settings.security_key = appconfig.get('general', 'security_key')
+settings.security_key = appconfig.get('security', 'security_key')
 if not settings.security_key:
     sec_key = str(uuid.uuid4())
     settings.security_key = sec_key
     tmpconfig = ConfigParser.RawConfigParser()
     tmpconfig.read(config_file)
-    tmpconfig.set('general', 'security_key', sec_key)
+    tmpconfig.set('security', 'security_key', sec_key)
     with open(config_file, 'w') as cf:
         tmpconfig.write(cf)
 

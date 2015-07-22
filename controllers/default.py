@@ -5,8 +5,14 @@ import os
 import formhelpers
 from meshkit import target_shorten
 
+# force https for all authenticated users
+if settings.https_enabled and auth.user:
+    request.requires_https()
 
 def user():
+    if settings.https_enabled:
+        request.requires_https()
+
     return dict(form=auth())
 
 
@@ -366,6 +372,9 @@ def wizard():
 @auth.requires_login()
 def user_defaults():
     """ user defaults to prefill fields in forms """
+    if settings.https_enabled:
+        request.requires_https()
+
     user_defaults = db(
         db.user_defaults.id_auth_user == auth.user_id).select(
     ).first()
@@ -419,6 +428,9 @@ def user_defaults():
 @auth.requires_login()
 def user_builds():
     """ Builds the user has done """
+
+    if settings.https_enabled:
+        request.requires_https()
 
     def delete_multiple(ids):
         if not ids:
@@ -477,8 +489,6 @@ def user_builds():
             )
         )
 
-    # builds = db(db.user_defaults.id_auth_user ==
-    # auth.user_id).select().first()
     return dict(grid=grid)
 
 
