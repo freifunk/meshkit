@@ -195,6 +195,7 @@ if config and config.communitysupport:
             comment=T('If you have a homepage, then you can add it here.'),
             requires=IS_EMPTY_OR(
                 IS_URL(
+                    mode='generic',
                     error_message=T("%(name)s isn't a valid URL") %
                     dict(name=T('Homepage'), len='255')
                 )

@@ -429,6 +429,7 @@ if config is not None:
             'url',
             requires=IS_EMPTY_OR(
                 IS_URL(
+                    mode='generic',
                     error_message=T(
                         '%(name)s is invalid'
                     ) % dict(name=T('URL'))

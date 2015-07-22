@@ -92,6 +92,7 @@ db.define_table(
         label=T('Images download URL'),
         comment=T('Base-URL from where the images can be downloaded.'),
         requires=IS_URL(
+            mode='generic',
             error_message=T('%(name)s is invalid') %
             dict(name=T('Images download URL'))
         )
@@ -103,6 +104,7 @@ db.define_table(
         label=T('Documentation URL'),
         comment=T('Link to the documentation'),
         requires=IS_URL(
+            mode='generic',
             error_message=T('%(name)s is invalid') %
             dict(name=T('URL to documentation'))
         )
