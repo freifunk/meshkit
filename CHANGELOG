@@ -15,6 +15,9 @@ Changelog for 0.1.0
  * Add a seperate user defaults profile with more options to set as defaults
  * add a overview page of all builds of a user with an option to edit/rebuild
  * fixes for OpenWrt Chaos Calmer
+ * force https for authenticated pages. Can be disabled in config if needed.
+ * only show models in model list when a target (openwrt imagebuilder) is
+   available for this model.
  * some other minor bugfixes/improvements
  
 
