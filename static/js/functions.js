@@ -679,14 +679,14 @@ function toggle_map_container(cmd, target) {
             $(target).addClass('visible').slideDown();
         } else {
             var osm1 = function() {
-                loadScript('http://www.openstreetmap.org/openlayers/OpenStreetMap.js', osm2);
+                loadScript(assets_js + '/osm/OpenStreetMap.js', osm2);
             };
             $(target).html("<div id='map'></div><div class='powered-by-osm'>" +
                     "Map by <a href='http://www.openstreetmap.org' " +
                     "title='www.openstreetmap.org'>openstreetmap.org</a>, " +
                     "License CC-BY-SA</div>"
             ).addClass('visible').slideDown();
-            loadScript('http://www.openlayers.org/api/OpenLayers.js', osm1);
+            loadScript(assets_js + '/osm/OpenLayers.js', osm1);
             var osm2 = function() {
                 loadScript(assets_js + "/osm.js", do_map);
             };
