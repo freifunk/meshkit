@@ -27,18 +27,34 @@ appconfig = ConfigParser.RawConfigParser(
     },
 )
 appconfig.read(config_file)
-
 settings = Storage()
-try:
-    settings.app_mode = appconfig.get('general', 'mode')
-except ConfigParser.NoSectionError:
-    raise HTTP(
-        500,
-        T(
-            'No configuration found. Copy conf/meshkit_example.conf to ' +
-            'conf.meshkit.conf and edit it.'
+
+
+def get_option(section, option, type=None):
+    val = None
+    try:
+        if type == "boolean":
+            val = appconfig.getboolean(section, option)
+        else:
+            val = appconfig.get(section, option)
+    except ConfigParser.NoSectionError, e:
+        errmsg = T(
+            'No configuration found or configuration invalid.'
+            'Copy conf/meshkit_example.conf to conf.meshkit.conf'
+            ' and edit it.'
         )
-    )
+
+        raise HTTP(
+            500,
+            CAT(
+                DIV(errmsg),
+                DIV(str(e))
+            )
+        )
+    return val
+
+
+settings.app_mode = get_option('general', 'mode')
 
 # DB Migration is off. See below where it gets enabled in developer mode
 settings.migrate = False
@@ -46,8 +62,8 @@ settings.fake_migrate = False
 settings.fake_migrate_all = False
 
 # default title/subtitle for the page header
-response.title = settings.title = appconfig.get('general', 'title')
-response.subtitle = settings.subtitle = appconfig.get('general', 'subtitle')
+response.title = settings.title = get_option('general', 'title')
+response.subtitle = settings.subtitle = get_option('general', 'subtitle')
 
 
 # settings.author = 'soma'
@@ -60,16 +76,16 @@ response.subtitle = settings.subtitle = appconfig.get('general', 'subtitle')
 # )
 
 # layout - currently unused, leave at 'Default'
-settings.layout_theme = appconfig.get('general', 'layout')
+settings.layout_theme = get_option('general', 'layout')
 
 # database connection
-settings.database_uri = appconfig.get('db', 'database_uri')
+settings.database_uri = get_option('db', 'database_uri')
 
-settings.https_enabled = appconfig.getboolean('security', 'https_enabled')
-settings.https_port = appconfig.get('security', 'https_port')
+settings.https_enabled = get_option('security', 'https_enabled', 'boolean')
+settings.https_port = get_option('security', 'https_port')
 
 # security key. If none exists it will be auto-generated
-settings.security_key = appconfig.get('security', 'security_key')
+settings.security_key = get_option('security', 'security_key')
 if not settings.security_key:
     sec_key = str(uuid.uuid4())
     settings.security_key = sec_key
@@ -80,10 +96,10 @@ if not settings.security_key:
         tmpconfig.write(cf)
 
 # Mail configuration
-settings.email_server = appconfig.get('mail', 'server')
-settings.email_sender = appconfig.get('mail', 'sender')
-settings.email_tls = appconfig.getboolean('mail', 'tls')
-settings.email_login = appconfig.get('mail', 'login')
+settings.email_server = get_option('mail', 'server')
+settings.email_sender = get_option('mail', 'sender')
+settings.email_tls = get_option('mail', 'tls', 'boolean')
+settings.email_login = get_option('mail', 'login')
 
 # Login configuration
 settings.login_method = 'local'
@@ -141,4 +157,3 @@ else:
 
 # save settings to current, so we can use it in modules
 current.settings = settings
-
