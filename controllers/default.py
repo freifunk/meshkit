@@ -190,12 +190,6 @@ def wizard():
     )
     db.imageconf.profile.default = session.profile
 
-    db.imageconf.theme.requires = IS_IN_SET(
-        themes,
-        error_message=T('%(name)s is invalid') % dict(name=T('Theme')),
-        zero=None,
-    )
-
     db.imageconf.lanproto.requires = IS_IN_SET(
         config.lanprotos,
         error_message=T('%(name)s is invalid') % dict(
