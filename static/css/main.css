@@ -5572,12 +5572,6 @@ h3 {
   margin-top: 60px;
   margin-bottom: 0;
 }
-/*.wrapper {
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
-	margin: 0 auto -6em;  set last value to footer height plus footer vertical padding 
-}*/
 .main-content {
   margin-bottom: 30px;
   padding-top: 30px;
@@ -5585,7 +5579,7 @@ h3 {
 .footer {
   width: 100%;
   background-color: #f5f5f5;
-  background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
+  background-image: url("../images/freifunk_verbindet.jpg");
   min-height: 120px;
 }
 .footer.sticky {
@@ -5776,7 +5770,7 @@ h3 {
 }
 header.header {
   height: 200px;
-  background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
+  background-image: url("../images/freifunk_verbindet.jpg");
   margin-top: 45px;
 }
 header.header > .container {
@@ -5824,6 +5818,48 @@ header.header .statusbar #language-select-wrapper {
   position: absolute;
   right: -120px;
   color: #333333;
+  /* '' */
+  /* '' */
+}
+header.header .statusbar #language-select-wrapper:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+header.header .statusbar #language-select-wrapper:before {
+  content: '\e800';
+}
+header.header .statusbar #language-select-wrapper:before {
+  content: '\e800';
+}
+header.header .statusbar #language-select-wrapper:before {
+  pointer-events: none;
+  position: absolute;
+  right: -3px;
+  padding-top: 5px;
+  width: 29px;
+  height: 29px;
+  background-color: #ffd266;
 }
 header.header .statusbar #language-select-wrapper select {
   background: #ffb400;
@@ -5856,7 +5892,12 @@ header.header .site-title {
   padding-left: 15px;
   padding-right: 15px;
 }
+header.header .site-title .title {
+  text-shadow: 5px 5px 6px #dddddd;
+  filter: dropshadow(color=#dddddd, offx=4, offy=4);
+}
 header.header .site-title h1 {
+  font-size: 4em;
   color: #ffb400;
 }
 header.header .site-title small {
@@ -5890,17 +5931,6 @@ dl dd {
   margin: 2px 0;
   /*padding:2px 0;*/
 }
-#docurl {
-  margin-bottom: 25px;
-}
-/* do not wrap pubkey text fields */
-/*
-textarea[id$="_pubkeys"] {
-    white-space: pre;
-    word-wrap: normal;
-    overflow-x: auto;
-}
-*/
 input.pass-edit.match {
   background-color: #5cb85c;
 }
@@ -6093,50 +6123,6 @@ select:-moz-focusring {
 .select-wrapper:before:focus {
   background-color: #e6a200;
 }
-#language-select-wrapper {
-  /* '' */
-  /* '' */
-}
-#language-select-wrapper:before {
-  font-family: "fontello";
-  font-style: normal;
-  font-weight: normal;
-  speak: none;
-  display: inline-block;
-  text-decoration: inherit;
-  width: 1em;
-  margin-right: .2em;
-  text-align: center;
-  /* opacity: .8; */
-  /* For safety - reset parent styles, that can break glyph codes*/
-  font-variant: normal;
-  text-transform: none;
-  /* fix buttons height, for twitter bootstrap */
-  line-height: 1em;
-  /* Animation center compensation - margins should be symmetric */
-  /* remove if not needed */
-  margin-left: .2em;
-  /* you can be more comfortable with increased icons size */
-  /* font-size: 120%; */
-  /* Font smoothing. That was taken from TWBS */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-#language-select-wrapper:before {
-  content: '\e800';
-}
-#language-select-wrapper:before {
-  content: '\e800';
-}
-#language-select-wrapper:before {
-  pointer-events: none;
-  position: absolute;
-  right: -3px;
-  padding-top: 5px;
-  width: 29px;
-  height: 29px;
-  background-color: #ffd266;
-}
 select.form-control,
 #language-select {
   -webkit-appearance: none;
@@ -6318,7 +6304,6 @@ form input.btn-default.btn-submit {
 }
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 50px #fff0cc inset;
-  /* Change the color to your own background color */
 }
 input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 50px #ffe199 inset;
@@ -6346,24 +6331,17 @@ input:-webkit-autofill:focus {
 #imageconf_packages {
   width: 99%;
 }
-.title {
-  text-shadow: 5px 5px 6px #cccccc;
-  filter: dropshadow(color=#cccccc, offx=4, offy=4);
-  font-size: 4em;
-}
 #noscript {
   position: fixed;
   width: 60%;
-  height: 20%;
   top: 30%;
   left: 20%;
   font-size: 2em;
   font-weight: bold;
   line-height: 200%;
   color: red;
-  background-color: #eeeeee;
-  padding: 0 30px 0 30px;
-  padding-top: 6%;
+  background-color: #f5f5f5;
+  padding: 30px;
   text-align: center;
   z-index: 20;
 }
@@ -6373,17 +6351,11 @@ input:-webkit-autofill:focus {
 .required {
   color: red;
 }
-/*#auth_user_pubkeys {
-	white-space:nowrap;
-	overflow:auto;
-}*/
 #custom_text_start {
   margin-bottom: 20px;
 }
 /* expert options (hidden or shown, depending on mode) */
-.expert {
-  display: none;
-}
+.expert,
 #tab-lan,
 #tab-wan,
 #tab-packages,

@@ -27,13 +27,6 @@ h3 {
     .horizontal-line-after(@color: @gray-lighter, @height: 1px, @width: 100%, @top: ( @baseUnit * 2), @bottom: 0);
 }
 
-/*.wrapper {
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
-	margin: 0 auto -6em;  set last value to footer height plus footer vertical padding 
-}*/
-
 .main-content {
 	margin-bottom: @baseUnit;
     padding-top: @baseUnit;
@@ -41,9 +34,8 @@ h3 {
 
 .footer {
     width: 100%;
-    //.horizontal-line-before(@gray-lighter, 1px, 100%, 0, @baseUnit);
     background-color: @gray-extralight;
-    background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
+    background-image: url("../images/freifunk_verbindet.jpg");
     min-height: 120px;
     &.sticky {
         position: fixed;
@@ -60,7 +52,7 @@ h3 {
         height: @baseUnit;
         .transparentBackground(@black, 0.5);
         color: @white;
-        line-height: 30px;
+        line-height: @baseUnit;
         padding: 0 (@baseUnit / 2);
         text-align: right;
         font-size: @font-size-small;
@@ -92,7 +84,7 @@ h3 {
             padding: 0 (@baseUnit / 2);
             .form-control {
                 margin: (@baseUnit / 3) 0;
-                height: 30px;
+                height: @baseUnit;
             }
             input.btn-default {
                 margin-top: (@baseUnit / 3);
@@ -160,7 +152,7 @@ h3 {
 header.header {
     //margin-top: @baseUnit;
     height: 200px;
-    background-image: url("/meshkit/static/images/freifunk_verbindet.jpg");
+    background-image: url("../images/freifunk_verbindet.jpg");
     margin-top: (@baseUnit * 1.5);
     >.container {
         height: 100%;
@@ -184,6 +176,17 @@ header.header {
             position: absolute;
             right: -120px;
             color: @gray-dark;
+            .icon-base();
+            .icon-down-open-big(); 
+            &:before {
+                pointer-events: none;
+                position: absolute;
+                right: -3px;
+                padding-top: 5px;
+                width: ( @baseUnit - 1);
+                height: ( @baseUnit - 1);
+                background-color: lighten( @ff-yellow, 20%);
+            }
             select {
                 .transparentBackground(@ff-yellow, 0.7);
                 width: 120px;
@@ -202,7 +205,7 @@ header.header {
         }
         .breadcrumbs {
             float: left;
-            padding: 0 10px;
+            padding: 0 (@baseUnit / 3);
             line-height: @baseUnit;
         }
     }
@@ -210,7 +213,12 @@ header.header {
         text-align: center;
         padding-left: ( @baseUnit / 2 );
         padding-right: ( @baseUnit / 2 );
+        .title {
+            text-shadow: 5px 5px 6px @gray-lighter;
+            filter: dropshadow(color=@gray-lighter, offx=4, offy=4);
+        }
         h1 {
+            font-size: 4em;
             color: @ff-yellow;
         }
         small {
@@ -233,7 +241,7 @@ dl {
     dt {
         float:left; 
         font-weight:bold; 
-        margin-right:10px; 
+        margin-right:(@baseUnit / 3); 
         width:150px; 
     }
     dd {
@@ -242,26 +250,13 @@ dl {
     }
 }
 
-#docurl {
-    margin-bottom: 25px;
-}
-
-/* do not wrap pubkey text fields */
-/*
-textarea[id$="_pubkeys"] {
-    white-space: pre;
-    word-wrap: normal;
-    overflow-x: auto;
-}
-*/
-
 input {
     &.pass-edit {
         &.match {
-            background-color: #5cb85c;
+            background-color: @brand-success;
         }
         &.mismatch {
-            background-color: #d9534f;
+            background-color: @brand-danger;
         }
     }
     &.password-hash {
@@ -366,20 +361,6 @@ select:-moz-focusring {
     }
 }
 
-#language-select-wrapper {
-    .icon-base();
-    .icon-down-open-big(); 
-    &:before {
-        pointer-events: none;
-        position: absolute;
-        right: -3px;
-        padding-top: 5px;
-        width: ( @baseUnit - 1);
-        height: ( @baseUnit - 1);
-        background-color: lighten( @ff-yellow, 20%);
-    }
-}
-
 select.form-control, #language-select {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -395,9 +376,9 @@ select.form-control, #language-select {
 }
 
 .form_value {
-	margin-bottom: 30px;
+	margin-bottom: @baseUnit;
     padding-left: 200px; /* like label width*/
-    padding-right: 60px;
+    padding-right: (@baseUnit * 2);
     position: relative;
 }
 
@@ -417,10 +398,10 @@ select.form-control, #language-select {
         }
         &>.form-options{
             position: relative;
-            padding-right:  15px;
+            padding-right:  (@baseUnit / 2);
             line-height: ( @baseUnit * 1.5);
             &.has-suboptions {
-                padding-right: 60px;
+                padding-right: (@baseUnit * 2);
             }
         }
     }
@@ -456,7 +437,7 @@ select.form-control, #language-select {
 }
 
 .advanced {
-    right: 60px;
+    right: (@baseUnit * 2);
     background-color: lighten(@ff-yellow, 15%);
     .icon-base();
     .icon-wrench();
@@ -474,14 +455,11 @@ select.form-control, #language-select {
 	background-color: @gray-extralight;
 	display:block;
 	font-size:0.9em;
-	margin:0 0 30px 0;
-	padding:10px;
+	margin:0 0 @baseUnit 0;
+	padding:(@baseUnit / 3);
 	z-index:10;
 	padding: .5em 1em;
     line-height: @line-height-base;
-	//border: 1px solid #ddd;
-    //border-top: 0;
-
 }
 
 .expandable-help .help-block {
@@ -499,7 +477,7 @@ select.form-control, #language-select {
 
 
 .formelement {
-	padding: 30px 20px 20px 20px;
+	padding: @baseUnit 20px 20px 20px;
 	background-color: #F5F5F5;
 	border: 1px solid #ddd;
 	border-radius: 5px;
@@ -535,14 +513,12 @@ form input.btn-default {
 }
 
 input:-webkit-autofill {
-    -webkit-box-shadow:0 0 0 50px lighten(@ff-yellow, 40%) inset; /* Change the color to your own background color */
-    //-webkit-text-fill-color: #333;
+    -webkit-box-shadow:0 0 0 50px lighten(@ff-yellow, 40%) inset;
+    &:focus {
+        -webkit-box-shadow:0 0 0 50px lighten(@ff-yellow, 30%) inset;
+    }
 }
 
-input:-webkit-autofill:focus {
-    -webkit-box-shadow:0 0 0 50px lighten(@ff-yellow, 30%) inset;
-    //-webkit-text-fill-color: #333;
-} 
 
 /* Packages List */
 #packages_category{
@@ -557,11 +533,11 @@ input:-webkit-autofill:focus {
 }
 
 .default-packages-container {
-    padding: 15px;
+    padding: (@baseUnit / 2);
 }
 
 .available-packages-container {
-    padding: 15px;
+    padding: (@baseUnit / 2);
 }
 
 .packages_table{
@@ -570,25 +546,17 @@ input:-webkit-autofill:focus {
 
 #imageconf_packages { width: 99% }
 
-.title {
-	text-shadow: 5px 5px 6px #cccccc;
-	filter: dropshadow(color=#cccccc, offx=4, offy=4);
-	font-size: 4em;
-}
-
 #noscript {
 	position:fixed;
 	width: 60%;
-	height: 20%;
 	top:30%;
 	left:20%;
 	font-size: 2em;
 	font-weight: bold;
 	line-height:200%;
 	color: red;
-	background-color: #eeeeee;
-	padding: 0 30px 0 30px;
-	padding-top: 6%;
+	background-color: @gray-extralight;
+	padding: @baseUnit;
 	text-align:center;
 	z-index:20;
 }
@@ -601,20 +569,12 @@ input:-webkit-autofill:focus {
 	color: red;
 }
 
-/*#auth_user_pubkeys {
-	white-space:nowrap;
-	overflow:auto;
-}*/
-
 #custom_text_start {
 	margin-bottom: 20px;
 }
 
 /* expert options (hidden or shown, depending on mode) */
-.expert{
-        display: none;
-}
-#tab-lan, #tab-wan, #tab-packages, #tab-upload {
+.expert, #tab-lan, #tab-wan, #tab-packages, #tab-upload {
         display: none;
 }
 .expert-mode {
@@ -627,7 +587,7 @@ input:-webkit-autofill:focus {
 }
 
 #status {
-	margin-bottom:30px;
+	margin-bottom: @baseUnit;
 }
 
 .copyright {float: left;}
@@ -697,7 +657,7 @@ input:-webkit-autofill:focus {
             .icon-location();
             &:before {
                 color: @ff-magenta;
-                font-size: 60px;
+                font-size: (@baseUnit * 2);
             }
         }
     }
@@ -774,7 +734,7 @@ table.web2py_checkboxeswidget {
         .site-logo {
             .make-xs-column(4, @baseUnit);
             display: block;
-            margin-top: 15px;
+            margin-top: (@baseUnit / 2);
             img {
                 max-width: 100%;
                 float: right;
@@ -814,7 +774,7 @@ table.web2py_checkboxeswidget {
         .form-group {
             &>.form-options{
                 .make-sm-column(9);
-                padding-right:  60px;
+                padding-right:  (@baseUnit * 2);
                 &.has-suboptions {
                     padding-right: 105px;
                 }
