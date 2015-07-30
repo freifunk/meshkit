@@ -128,8 +128,8 @@ Add Defaultpackages:	A space seperated list of packages that should be added
 			to all generated images
 
 Keep Images:		How long (in hours) generated images are kept in
-			"Images Output Dir" before they are deleted by the
-			internal cronjob. Set to 0 to never delete them.
+			"Images Output Dir" before they are deleted by the a regular
+			internal task. Set to 0 to never delete them.
 
 Webifs:			Webinterfaces to offer in the select field for webinterface
 			seperated by comma, e.g.

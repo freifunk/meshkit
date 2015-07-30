@@ -706,6 +706,13 @@ def build(id):
     return ret
 
 
+def clean_imagedir():
+    # cleans images that are older than config.keep_images hours
+    from clean_imagedir import cleanup
+    ret = cleanup()
+    return ret
+
+
 # start the scheduler
 scheduler = Scheduler(
     db_scheduler,
@@ -714,10 +721,13 @@ scheduler = Scheduler(
 )
 
 # check if the set_failed task is there, else insert it
-sched_failed = db_scheduler(
-    db_scheduler.scheduler_task.task_name == "set_failed"
-).select().first()
-
+sched_failed = cache.ram(
+    'sched_failed',
+    lambda: db_scheduler(
+        db_scheduler.scheduler_task.task_name == "set_failed"
+    ).select().first(),
+    time_expire=60
+)
 if not sched_failed:
     scheduler.queue_task(
         set_failed,
@@ -725,5 +735,23 @@ if not sched_failed:
         timeout=30,
         retry_failed=-1,
         period=60,
+        repeats=0,
+    )
+
+# check if the clean_imagedir task is there, else insert it
+sched_clean_imagedir = cache.ram(
+    'sched_clean_imagedir',
+    lambda: db_scheduler(
+        db_scheduler.scheduler_task.task_name == "clean_imagedir"
+    ).select().first(),
+    time_expire=60
+)
+if not sched_clean_imagedir:
+    scheduler.queue_task(
+        clean_imagedir,
+        task_name="clean_imagedir",
+        timeout=300,
+        retry_failed=-1,
+        period=7200,
         repeats=0,
     )
