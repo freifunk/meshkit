@@ -7,27 +7,36 @@ import uuid
 from gluon.storage import Storage
 from gluon import current
 
+
 config_file = os.path.join(request.folder, "conf", "meshkit.conf")
 
 # raw config parser and default values
-appconfig = ConfigParser.RawConfigParser(
-    {
-        'mode': 'development',
-        'title': 'Meshkit',
-        'subtitle': 'Freifunk OpenWrt Imagebuilder',
-        'layout': 'Default',
-        'database_uri': 'sqlite://storage.sqlite',
-        'security_key': None,
-        'server': '127.0.0.1',
-        'sender': 'noreply@example.com',
-        'tls': False,
-        'login': None,
-        'https_enabled': True,
-        'https_port': 443,
-    },
-)
-appconfig.read(config_file)
+
+
+def get_appconfig():
+    appconfig = ConfigParser.RawConfigParser(
+        {
+            'mode': 'development',
+            'title': 'Meshkit',
+            'subtitle': 'Freifunk OpenWrt Imagebuilder',
+            'layout': 'Default',
+            'database_uri': 'sqlite://storage.sqlite',
+            'security_key': None,
+            'server': '127.0.0.1',
+            'sender': 'noreply@example.com',
+            'tls': False,
+            'login': None,
+            'https_enabled': True,
+            'https_port': 443,
+            'cache_validity_time_long': 300,
+            'cache_validity_time_short': 10
+        },
+    )
+    appconfig.read(config_file)
+    return appconfig
+
 settings = Storage()
+appconfig = get_appconfig()
 
 
 def get_option(section, option, type=None):
@@ -35,6 +44,8 @@ def get_option(section, option, type=None):
     try:
         if type == "boolean":
             val = appconfig.getboolean(section, option)
+        elif type == "integer":
+            val = appconfig.getint(section, option)
         else:
             val = appconfig.get(section, option)
     except ConfigParser.NoSectionError, e:
@@ -55,6 +66,13 @@ def get_option(section, option, type=None):
 
 
 settings.app_mode = get_option('general', 'mode')
+settings.cache_validity_time_long = get_option(
+    'cache', 'cache_validity_time_long', 'integer'
+)
+
+settings.cache_validity_time_short = get_option(
+    'cache', 'cache_validity_time_short', 'integer'
+)
 
 # DB Migration is off. See below where it gets enabled in developer mode
 settings.migrate = False
@@ -150,6 +168,8 @@ if settings.app_mode == "development":
     settings.migrate = True
     settings.fake_migrate = False
     settings.fake_migrate_all = False
+    settings.cache_validity_time_short = 0
+    settings.cache_validity_time_long = 0
 else:
     # optimize handling of static files
     response.optimize_css = 'concat,minify'

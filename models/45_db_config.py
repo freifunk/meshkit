@@ -225,19 +225,31 @@ if config:
     # We need to have this check here. else the buildqueue script will fail
     # because it does not know about any session
     if session.target is not None:
-        themes = get_luci_themes(config.buildroots_dir, session.target)
+        themes = cache.ram(
+            'themes',
+            lambda: get_luci_themes(config.buildroots_dir, session.target),
+            time_expire=settings.cache_validity_time_long
+        )
     else:
         profiles = ["a"]
         themes = ["a"]
 
-    targets = get_targets(config.buildroots_dir)
+    available_targets = cache.ram(
+        'available_targets',
+        lambda: get_targets(config.buildroots_dir),
+        time_expire=settings.cache_validity_time_long
+    )
 
     if config.noconf:
         config.communitysupport = False
 
     if config.communitysupport:
         if config.profiles and os.access(config.profiles, os.R_OK):
-            communities = get_communities(config.profiles)
+            communities = cache.ram(
+                'communities',
+                lambda: get_communities(config.profiles),
+                time_expire=settings.cache_validity_time_long
+            )
         else:
             communities = []
     else:

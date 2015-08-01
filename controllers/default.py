@@ -43,33 +43,22 @@ def index():
     if not config:
         response.flash = "No config found, redirecting you to create one"
         redirect(
-            URL(request.application,
-                request.controller,
-                'config_not_found'))
+            URL(request.application, request.controller, 'config_not_found')
+        )
 
-    # Get a list of communities we know
-    if config.communitysupport:
-        if not config.profiles or not os.access(config.profiles, os.R_OK):
-            redirect(URL(request.application, request.controller, 'error'))
-        else:
-            communities = get_communities(config.profiles)
-    else:
+    # change validator if communitysupport is disabled
+    if not config.communitysupport:
         db.imageconf.community.requires = IS_EMPTY()
-        communities = []
 
-    # allow empty values for webif in this step
-    db.imageconf.webif.requires = IS_EMPTY_OR(
-        IS_IN_DB(
-            db, db.gui.id, '%(full_name)s'
-        ),
-    ),
+    # allow everything for webif in this step, will be filtered in next step
+    db.imageconf.webif.requires = None
+    db.imageconf.webif.widget = SQLFORM.widgets.string.widget
 
-    targets = get_targets(config.buildroots_dir)
-    if len(targets) == 1:
-        db.imageconf.target.default = targets[0]
+    if len(available_targets) == 1:
+        db.imageconf.target.default = available_targets[0]
         db.imageconf.target.writable = False
         db.imageconf.target.widget = SQLFORM.widgets.string.widget
-        session.target = targets[0]
+        session.target = available_targets[0]
 
     if len(communities) == 1:
         db.imageconf.community.default = communities[0]
@@ -491,7 +480,7 @@ def build():
         cache.ram(
             'queuedimg',
             lambda: len(db(db.imageconf.status == '1').select()),
-            time_expire=60
+            time_expire=settings.cache_validity_time_long
         )
     )
     url_summary = A(
@@ -516,9 +505,7 @@ def access_denied():
 
 @service.json
 def targets():
-    targets = get_targets(config.buildroots_dir)
-    if targets:
-        return targets
+    return available_targets
 
 
 @service.json
@@ -529,18 +516,18 @@ def status():
     ret['loadavg'] = cache.ram(
         'loadavg',
         lambda: status.loadavg(),
-        time_expire=10
+        time_expire=settings.cache_validity_time_short
     )
     memory = cache.ram(
         'memory',
         lambda: status.memory_stats(),
-        time_expire=10
+        time_expire=settings.cache_validity_time_short
     )
 
     queued = cache.ram(
         'queuedimg',
         lambda: db(db.imageconf.status == '1').count(),
-        time_expire=60
+        time_expire=settings.cache_validity_time_short
     )
 
     failed = cache.ram(
@@ -548,13 +535,13 @@ def status():
         lambda: db(
             (db.build_log.status == '2') | (db.build_log.status == '3')
         ).count(),
-        time_expire=60
+        time_expire=settings.cache_validity_time_short
     )
 
     success = cache.ram(
         'successimg',
         lambda: db(db.build_log.status == '0').count(),
-        time_expire=60
+        time_expire=settings.cache_validity_time_short
     )
 
     ret['memused'], ret['memfree'] = str(memory[1]), str(memory[2])
@@ -584,7 +571,7 @@ def status():
         "data": cache.ram(
             'builds_community',
             lambda: status.community_builds(),
-            time_expire=60
+            time_expire=settings.cache_validity_time_short
         ),
         "title": T("Builds per community")
     }
@@ -592,7 +579,7 @@ def status():
         "data": cache.ram(
             'builds_target',
             lambda: status.target_builds(),
-            time_expire=60
+            time_expire=settings.cache_validity_time_short
         ),
         "title": T("Builds per target")
     }
@@ -622,7 +609,7 @@ def buildstatus():
     ret['queued'] = cache.ram(
         'queuedimg',
         lambda: len(db(db.imageconf.status == '1').select()),
-        time_expire=10
+        time_expire=settings.cache_validity_time_short
     )
     # add some summary information
     ret['status'] = int(row.status)

@@ -30,7 +30,7 @@ if config is not None:
                 'vist the openwrt wiki and search for your device there.'
             ),
             requires=IS_IN_SET(
-                targets,
+                available_targets,
                 error_message=T(
                     '%(name)s is invalid'
                 ) % dict(name=T('Target')),
@@ -552,7 +552,11 @@ if config is not None:
 
 if session.community:
     c = uci.UCI(config.profiles, "profile_" + session.community)
-    community_defaults = c.read()
+    community_defaults = cache.ram(
+        'community_defaults_%s' % session.community,
+        lambda: c.read(),
+        time_expire=settings.cache_validity_time_long
+    )
     defchannel = c.get(community_defaults, 'wifi_device', 'channel', '1')
     mesh_network = c.get(
         community_defaults,
