@@ -243,8 +243,9 @@ if config and config.communitysupport:
         Field('modified_on', 'datetime', default=request.now,
               label=T('Modified On'), writable=False, readable=False,
               update=request.now),
+        auth.signature,
         format='%(name)s',
-        migrate=settings.migrate, fake_migrate=settings.fake_migrate
+        migrate=settings.migrate, fake_migrate=settings.fake_migrate,
     )
     db.user_defaults.name.requires = IS_EMPTY_OR([
         IS_LENGTH(

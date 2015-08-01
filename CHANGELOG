@@ -13,6 +13,7 @@ Changelog for 0.1.0
  * New configuration options: QOS, set password hash, homepage
  * pubkeys are now of type string and use a multiple input widget
  * Add a seperate user defaults profile with more options to set as defaults
+   (see migration script in migration_0.0.2_to_0.1.0)
  * add a overview page of all builds of a user with an option to edit/rebuild
  * fixes for OpenWrt Chaos Calmer
  * force https for authenticated pages. Can be disabled in config if needed.

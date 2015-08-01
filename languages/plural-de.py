@@ -6,5 +6,6 @@
 'hour': ['Stunden'],
 'minute': ['Minuten'],
 'miss': ['Misses'],
+'row': ['row'],
 'second': ['Sekunden'],
 }
