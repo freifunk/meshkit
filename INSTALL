@@ -20,6 +20,7 @@ web2py help: http://www.web2py.com/examples/default/documentation
 First of all you need to download and extract the web2py source 
 code package:
 
+$ cd; mkdir meshkit; cd meshkit
 $ wget http://www.web2py.com/examples/static/web2py_src.zip
 $ unzip web2py_src.zip
 
@@ -89,19 +90,22 @@ Noconf:			Globally disable configuration. Check this if you only
 
 Communitysupport:	Check this if you want to use meshkit to create images
 			for wireless communities. It will support community
-			profiles then. Profiles are taken from:
-			http://luci.subsignal.org/trac/browser/luci/trunk/contrib/package/community-profiles/files/etc/config
-			You need to checkout those and save them in a local directory.
+			profiles then, taken from git and stored locally.
 			You should setup a cronjob to autoupdate them periodically.
 
 Profiles:		The path where the community profiles are stored locally.
 			You only need to set this if Communitysupport is enabled.
 			This must start end end with a slash ("/")
+			cd ~/meshkit; git clone https://github.com/openwrt/luci.git
+			cd luci/contrib/package/community-profiles/files/etc/config/; pwd
 
 Communityfiles Dir:	Directory where custom files files for communities are stored
 			which will be copied into the generated firmware image.
 			You only need to set this if Communitysupport is enabled.
 			This must start end end with a slash ("/")
+			cd ~/meshkit; mkdir communityfiles; cd communityfiles
+			svn co https://svn.augsburg.freifunk.net/kamikaze/contrib/imagebuilder/trunk/profiles
+			cd profiles; pwd
 
 Buildroots Dir:		This is the directory where meshkit can find your
 			extracted OpenWrt imagebuilders. Make sure this path
@@ -112,11 +116,13 @@ Buildroots Dir:		This is the directory where meshkit can find your
 			may rename these to some nices names, e.g.
 			ar71xx-backfire-10.03.1
 			This must start end end with a slash ("/")
+			cd ~/meshkit; mkdir buildroots; cd buildroots; pwd
 
 Images Output Dir:	This is the local path where generated images should
 			be stored after they are generated. Make sure the
 			user running web2py has read and write access to it.
 			This must start end end with a slash ("/")
+			cd ~/meshkit; mkdir images; cd images; pwd
 
 Images Web Dir:		The web accessible path where users can download the
 			generated images. I assume you have some webserver
