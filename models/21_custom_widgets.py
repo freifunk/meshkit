@@ -41,8 +41,7 @@ def password_md5crypt(field, value):
     widget = DIV(
         CAT(
             input_hash,
-            BUTTON(
-                _type="button",
+            DIV(
                 _class="password-edit-toggle"
             ),
         ),
