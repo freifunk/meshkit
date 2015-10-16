@@ -184,7 +184,7 @@ if config is not None:
             'hostname',
             requires=IS_EMPTY_OR(
                 IS_MATCH(
-                    '[a-zA-Z0-9][a-zA-Z0-9\.\-]+[a-zA-Z0-9]',
+                    '^[a-zA-Z0-9][a-zA-Z0-9\.\-]+[a-zA-Z0-9]$',
                     error_message=T(
                         '%(name)s is invalid'
                     ) % dict(name=T('Hostname'))
