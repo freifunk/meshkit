@@ -1,5 +1,8 @@
 import os
 import re
+from gluon import current
+import log
+logger = log.initialize_logging(current.request.folder, __name__)
 
 
 class UCI(object):
@@ -39,6 +42,7 @@ class UCI(object):
         if os.access(file, os.R_OK):
             config_file = open(file, 'r')
             for line in config_file:
+                line_orig = line
                 line = line.replace('\n', '')
                 line = line.replace("'", '')
                 line = line.replace('"', '')
@@ -54,7 +58,11 @@ class UCI(object):
                     line = re.sub('\t', ' ', line)
                     line = line.split(' ')
                     length = len(line)
-                    option = line[2]
+                    try:
+                        option = line[2]
+                    except IndexError:
+                        logger.warning("Warning, could not read uci option for %s in %s." % (line_orig, file))
+                        continue
                     # values may be separated by space, so iterate over
                     # everything thats left
                     value = ""
