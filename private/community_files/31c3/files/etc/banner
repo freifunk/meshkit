@@ -1,0 +1,18 @@
+  _______                     ________        __    OLSR
+ |       |.-----.-----.-----.|  |  |  |.----.|  |_    +
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|  bat
+ |_______||   __|_____|__|__||________||__|  |____|  man
+          |__| W I R E L E S S   F R E E D O M  !!!  adv
+       FREIFUNK 31c3 http://31c3.freifunk.net
+
+logread -f                        // syslog Ausgabe auf Konsole
+neigh.sh                          // OLSR Nachbarn anzeigen
+batctl o                          // batman-adv nachbarn anzeigen
+iw dev wlan0 station dump         // WLAN Nachbarn mit Details
+traceroute -n 10.61.104.2         // Traceroute via OLSR
+batctl tr 10.61.71.1              // Traceroute via batman-adv
+ip a s                            // alle IPs anzeigen
+ip r s t all                      // gesamte Routingtabelle
+===============================================================
+
+

@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+# Freifunk Leipzig post run
+# $Id: freifunk-leipzig  2014-02-21 23:51:08Z ufo $
+
+START=99
+
+start() {
+
+
+chmod o+r /etc/config/olsrd
+chmod o+r /etc/config/network
+}
+

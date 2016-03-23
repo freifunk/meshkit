@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+# Freifunk Leipzig post run
+# $Id: freifunk-leipzig  2014-02-21 23:51:08Z ufo $
+
+START=99
+
+start() {
+
+#grep -q batadvbugfix /etc/crontabs/root || echo "*/5 * * * *  /etc/rc.local.batadvbugfix" >> /etc/crontabs/root
+grep -q reboot /etc/crontabs/root || echo "2 1 * * *  [ $(cat /proc/uptime | cut -d '.' -f 1) -gt 20000 ] && /sbin/reboot -f" >> /etc/crontabs/root
+grep -q olsrd.pid /etc/init.d/olsrd || echo "PID=/var/run/olsrd.pid" >> /etc/init.d/olsrd
+#chmod o+r /etc/config/olsrd
+#chmod o+r /etc/config/network
+}
+
