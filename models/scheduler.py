@@ -76,7 +76,7 @@ class BuildImages(object):
         self.Ipv6_config = _get('ipv6_config')
         self.Location = _get('location') or ''
         self.Community = _get('community')
-        self.Nodenumber = _get('nodenumber') or '1000'
+        self.Nodenumber = _get('nodenumber') or ''
         self.Wifimode = _get('wifimode') or 'hybrid' # kalua: adhoc, ap, hybrid (adhoc+ap)
         self.Ipschema = _get('ipschema') or 'ffweimar' # kalua: configures ip schema, based on node number
         self.Nickname = _get('nickname') or ''
