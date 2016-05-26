@@ -84,12 +84,6 @@ def index():
 
     form = SQLFORM.factory(db.imageconf, table_name='imageconf')
 
-    modellist = '{'
-    i = 1
-    for k in sorted(config_modellist.keys()):
-        modellist += k + ":" + str(config_modellist[k]) + ","
-    modellist += '}'
-
     # TODO. rework. Use wiki?
 
     lang = T.accepted_language or 'en'
@@ -123,7 +117,7 @@ def index():
             response.flash = XML(
                 T('Form has errors:') + "</br><ul>" + errormsg + "</ul>")
 
-    return dict(form=form, formhelpers=formhelpers, modellist=modellist,
+    return dict(form=form, formhelpers=formhelpers,
                 startpage=startpage)
 
 
@@ -274,8 +268,9 @@ def wizard():
         session.rand = form.vars.rand
         session.id = form.vars.id
         session.hostname = get_hostname_from_form_vars(form.vars)
+	session.nodenumber = form.vars.nodenumber
         session.lanipv4addr = form.vars.lanipv4addr or '192.168.1.1'
-        session.location = session.location or '-'
+        session.location = form.vars.location or '-'
 
         wifi_options = filter_wifi_interfaces(form.vars)
 

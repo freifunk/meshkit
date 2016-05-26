@@ -28,7 +28,9 @@
         {{if session.main_mesh_ip:}}
         <dt>{{=T('Mesh IP')}}</dt><dd>{{=session.main_mesh_ip}}</dd></dt>
         {{pass}}
+	{{if session.community != "weimar":}}
         <dt>{{=T('LAN IP-Address')}}</dt><dd>{{=session.lanipv4addr}}</dd>
+	{{pass}}
         <dt>{{=T('Target')}}</dt><dd>{{=session.target}}</dd>
         <dt>{{=T('Profile')}}</dt>{{=session.profile}}</dd>
     </dl>

@@ -101,6 +101,7 @@
 
         {{if session.community == 'weimar':}}
         {{=fh.field("nodenumber")}}
+        <div id="imageconf_nodenumber_status" class="form-group"></div>
         {{pass}}
 
         <div class="expert">
@@ -269,18 +270,21 @@
 
 {{if session.community == 'weimar':}}
   <!-- REGISTRATOR client -->
-  <script src="http://reg.weimarnetz.de/static/jquery-client.js"></script>
+  <script src="//reg.weimarnetz.de/static/jquery-client.js"></script>
   <script>
   // define function to handle api answer as a callback
   function _ffreg_check_callback(answer) {
 
     // update the status HTML with the result
-    jQuery('#imageconf_nodenumber_status').text(answer.result);
+    jQuery('#imageconf_nodenumber_status').html("<label class='control-label col-sm-3'>Result</label><div class='form-options'>" + answer.result + "</div>");
         
     var status_color = "lightgrey";
     status_color = answer.free ? 'lightgreen' : 'lightsalmon';
     $('#imageconf_nodenumber').css('background', status_color);
   }
+  jQuery("#imageconf_nodenumber").focusout(function(e) {
+    FFReg.check(this.value, _ffreg_check_callback)
+  });
   </script>
 {{pass}}
 

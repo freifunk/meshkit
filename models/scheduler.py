@@ -76,7 +76,9 @@ class BuildImages(object):
         self.Ipv6_config = _get('ipv6_config')
         self.Location = _get('location') or ''
         self.Community = _get('community')
-        self.Nodenumber = _get('nodenumber') or '1024'
+        self.Nodenumber = _get('nodenumber') or '1000'
+        self.Wifimode = _get('wifimode') or 'hybrid' # kalua: adhoc, ap, hybrid (adhoc+ap)
+        self.Ipschema = _get('ipschema') or 'ffweimar' # kalua: configures ip schema, based on node number
         self.Nickname = _get('nickname') or ''
         self.Name = _get('name') or ''
         self.Homepage = _get('homepage') or ''
@@ -312,6 +314,10 @@ class BuildImages(object):
         # section community
         add_section('public', 'community')
         add_option('name', self.Community)
+        if self.Community == 'weimar':
+          add_option('nodenumber', self.Nodenumber)
+          add_option('ipschema', self.Ipschema)
+          add_option('wifimode', self.Wifimode)
         self.mkconfig += "\n"
 
         # section contact
@@ -519,25 +525,6 @@ class BuildImages(object):
                     (cfilesdir, self.FilesDir))
                 if os.path.exists(cfilesdir):
                     mkutils.cptree(cfilesdir, self.FilesDir)
-                    if self.Community == 'weimar':
-                        filesdir = "%s/etc/init.d/apply_profile.code" % \
-                            self.FilesDir
-                        with open(filesdir) as source:
-                            data = source.read()
-                            data1 = data.replace(
-                                "#SIM_ARG1=\"olympia\"",
-                                "SIM_ARG1=\"ffweimar\"")
-                            data2 = data1.replace(
-                                "#SIM_ARG2=\"adhoc\"",
-                                "SIM_ARG2=\"hybrid\"")
-                            logger.info("node number: " + self.Nodenumber)
-                            data3 = data2.replace(
-                                "#SIM_ARG3=2",
-                                "SIM_ARG3=" +
-                                self.Nodenumber)
-                            source.seek(0)
-                            source.write(data3)
-                            source.close()
 
             # Handle uploaded archive
             if self.Upload:

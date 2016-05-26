@@ -59,9 +59,10 @@
 </div>
 
 <script type="text/javascript">
-    var modellist = {{=XML(modellist)}};
     $( document ).ready(function() {
-        build_model_list(modellist);
+	$.getJSON("{{=URL('static', 'modellist.json')}}", function (data) {
+		build_model_list(data);
+	});
     });
     auto_submit = false;
     {{ if config.autosubmit == True: }}
