@@ -578,6 +578,14 @@ def status():
         ),
         "title": T("Builds per target")
     }
+    ret['builds_profile'] = {
+        "data": cache.ram(
+            'builds_profile',
+            lambda: status.profile_builds(),
+            time_expire=settings.cache_validity_time_short
+        ),
+        "title": T("Builds per profile")
+    }
 
     return ret
 
