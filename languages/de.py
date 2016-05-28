@@ -79,6 +79,7 @@
 'Buildroots directory': 'Verzeichnis mit Imagebuildern',
 'Builds in queue:': 'Builds in der Warteschlange:',
 'Builds per community': 'Builds per Community',
+'Builds per profile': 'Builds per profile',
 'Builds per target': 'Builds per Target',
 'cache': 'cache',
 'Cache Keys': 'Cache Keys',

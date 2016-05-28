@@ -123,3 +123,30 @@ def target_builds():
             target_stats[target_shorten(target_name)] = [target_builds]
 
     return target_stats
+
+def profile_builds():
+    """ Get a dict of profiles and how many builds were done for each
+
+        Returns:
+            dict:   profile name as key and a list as value
+
+        The value of each dict entry is a list in the form:
+        [ count, title, color ], where only the first one is required
+
+    """
+    db = current.globalenv['db']
+    profile_stats = {}
+
+    count = db.build_log.profile.count()
+    profile_stats_select = db().select(
+        db.build_log.profile, count, groupby=db.build_log.profile
+    )
+
+    for row in profile_stats_select:
+        profile_name = row.build_log.profile
+        profile_builds = row._extra['COUNT(build_log.profile)']
+        if profile_name:
+            profile_stats[profile_name] = [profile_builds]
+
+    return profile_stats
+

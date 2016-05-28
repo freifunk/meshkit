@@ -972,10 +972,23 @@ function graph_builds_target(stats) {
     graph_add_label(target, title);
 }
 
+function graph_builds_profile(stats) {
+    /* graph build count per target */
+    var data = [];
+    jQuery.each(stats["data"], function(i, val) {
+        data.push(graph_labels_and_colors(i, val));
+    });
+    var profile = "#builds-profile";
+    graph_pie(profile, data);
+    var title = stats["title"];
+    graph_add_label(profile, title);
+}
+
 function updateGraphs(json) {
     graph_builds(json.build_status);
     graph_builds_community(json.builds_community)
     graph_builds_target(json.builds_target)
+    graph_builds_profile(json.builds_profile)
 }
 
 /* end graphs */
