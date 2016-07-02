@@ -2,7 +2,7 @@
 # A list of common models
 config_modellist = {
     "Netgear": {
-        "WGT634U":{"target":"brcm47xx", "profile":"WGT634U"},
+        "WGT634U":{"target":"brcm47xx-legacy", "profile":"WGT634U"},
         "WNDR3700v1":{"target":"ar71xx", "profile":"WNDR3700"},
         "WNDR3700v2":{"target":"ar71xx", "profile":"WNDR3700"},
     },
