@@ -18,5 +18,6 @@ Nice=19
 ExecStart=/usr/bin/python /opt/web2py/web2py.py -K meshkit,meshkit
 Restart=on-failure
 RestartSec=30
+StandardOutput=null
 [Install]
 WantedBy=multi-user.target
