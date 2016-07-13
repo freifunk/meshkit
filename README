@@ -1,6 +1,6 @@
 == Overview ==
 This is an application for web2py and is used to build preconfigured firmware
-images for openwrt and is a rewrite of the "Freifunk OpenWrt Imagebuilder" [1].
+images for openwrt and LEDE and is a rewrite of the "Freifunk OpenWrt Imagebuilder" [1].
 
 Meshkit is mainly intended to be used for creating
 firmware images for wireless communities like Freifunk that are
@@ -23,9 +23,9 @@ Watch Meshkit development at: https://github.com/freifunk/meshkit
 
 == CONFIG ==
 Different Communities can have different configs. this can be edited via
-http://luci.subsignal.org/trac/browser/luci/trunk/contrib/package/community-profiles/files/etc/config
+https://github.com/openwrt/luci/tree/master/contrib/package/community-profiles/files/etc/config
 and special files here
-https://trac.augsburg.freifunk.net/browser/kamikaze/contrib/imagebuilder/trunk/profiles
+https://github.com/freifunk/meshkit-community_files
 
 == BUGTRACKER ==
 Report bugs, feature requests etc. at: https://github.com/freifunk/meshkit/issues
