@@ -22,13 +22,13 @@
         {{if session.location:}}
         <dt>{{=T('Location')}}</dt><dd>{{=session.location}}</dd>
         {{pass}}
-        {{if session.community == "weimar":}}
+        {{if session.firmware == "kalua":}}
         <dt>{{=T('Nodenumber')}}</dt><dd>{{=session.nodenumber}}</dd>
         {{pass}}
         {{if session.main_mesh_ip:}}
         <dt>{{=T('Mesh IP')}}</dt><dd>{{=session.main_mesh_ip}}</dd></dt>
         {{pass}}
-	{{if session.community != "weimar":}}
+	{{if session.firmware != "kalua":}}
         <dt>{{=T('LAN IP-Address')}}</dt><dd>{{=session.lanipv4addr}}</dd>
 	{{pass}}
         <dt>{{=T('Target')}}</dt><dd>{{=session.target}}</dd>

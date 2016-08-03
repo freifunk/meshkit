@@ -582,6 +582,20 @@ if session.community:
         ''
     )
 
+    session.firmware = c.get(
+        community_defaults,
+        'profile',
+        'firmware',
+        ''
+    )
+
+    session.kalua_registrator = c.get(
+        community_defaults,
+        'profile',
+        'kalua_registrator',
+        '//reg.weimarnetz.de/static/jquery-client.js'
+    )
+
     # db.wifi_interfaces defaults
     db.wifi_interfaces.chan.default = defchannel
     db.wifi_interfaces.ipv4addr.default = defipv4

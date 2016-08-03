@@ -99,7 +99,7 @@
         {{pass}}
 
 
-        {{if session.community == 'weimar':}}
+        {{if session.firmware == 'kalua':}}
         {{=fh.field("nodenumber")}}
         <div id="imageconf_nodenumber_status" class="form-group"></div>
         <div>
@@ -161,7 +161,7 @@
         {{pass}}
 
         <!-- Start wifi tab -->
-        {{if session.community <> 'weimar' and not session.noconf == True:}}
+        {{if session.firmware <> 'kalua' and not session.noconf == True:}}
         {{=formhelpers.panel_start("wireless", T('Wireless'), T('Configure your wireless interface(s) here. These will be configured to operate in adhoc mode with the correct settings for your community.'))}}
         <input type="hidden" name="wifiifsnr" id="wifiifsnr" value="{{=form.vars.wifiifsnr or '0'}}" />
 
@@ -187,7 +187,7 @@
             lan_descr += '</ul>'
         }}
     
-        {{if session.community <> 'weimar' and not session.noconf == True:}}
+        {{if session.firmware <> 'kalua' and not session.noconf == True:}}
         {{=formhelpers.panel_start("lan", T('LAN'), lan_descr)}}
 
         {{=fh.field("lanproto")}}
@@ -203,7 +203,7 @@
   
  
         <!-- WAN TAB -->
-        {{if session.community <> 'weimar' and not session.noconf == True:}}
+        {{if session.firmware <> 'kalua' and not session.noconf == True:}}
         {{=formhelpers.panel_start("wan", T('WAN'), T('Configure your wan interface here. The OpenWrt Default is to use "dhcp".'))}}
 
         {{=fh.field("wanproto")}}
@@ -271,9 +271,9 @@
 </form>
 
 
-{{if session.community == 'weimar':}}
+{{if session.firmware == 'kalua':}}
   <!-- REGISTRATOR client -->
-  <script src="//reg.weimarnetz.de/static/jquery-client.js"></script>
+  <script src="{{=session.kalua_registrator}}"></script>
   <script>
   // define function to handle api answer as a callback
   function _ffreg_check_callback(answer) {
