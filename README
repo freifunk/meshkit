@@ -30,6 +30,15 @@ https://github.com/freifunk/meshkit-community_files
 == BUGTRACKER ==
 Report bugs, feature requests etc. at: https://github.com/freifunk/meshkit/issues
 
+== EXAMPLES ==
+running meshkit servers are
+*  Meshkit Freifunk general (openwrt cc) https://meshkit.freifunk.net/ and https://testing.meshkit.freifunk.net/
+*  Meshkit Freifunk Halle (viele profiles, zb x86-kvm) https://meshkit.freifunk-halle.org/
+*  Meshkit Freifunk Weimarnetz (nur für weimar-IPs) https://meshkit.weimarnetz.de/
+*  Meshkit Freifunk Leipzig (viele profiles, auch x86, LEDE trunk-versionen) http://gadow.freifunk.net:8086/meshkit/
+
+== DOCUMENTATION ==
+https://github.com/freifunk/meshkit-doc
 
 == LINKS ==
 [1] http://trac.augsburg.freifunk.net/browser/kamikaze/contrib/imagebuilder
