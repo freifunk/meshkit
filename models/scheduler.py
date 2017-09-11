@@ -76,6 +76,7 @@ class BuildImages(object):
         self.Ipv6_config = _get('ipv6_config')
         self.Location = _get('location') or ''
         self.Community = _get('community')
+        self.Firmware = _get('firmware') or ''
         self.Nodenumber = _get('nodenumber') or ''
         self.Wifimode = _get('wifimode') or 'hybrid' # kalua: adhoc, ap, hybrid (adhoc+ap)
         self.Ipschema = _get('ipschema') or 'ffweimar' # kalua: configures ip schema, based on node number
@@ -176,7 +177,7 @@ class BuildImages(object):
             if self[o]:
                 settings_summary[T(o)] = self[o]
 
-        if self.Community == 'weimar':
+        if self.Firmware == 'kalua':
             settings_summary[T("Nodenumber")] = self.Nodenumber
 
         if status == 0:
@@ -314,7 +315,7 @@ class BuildImages(object):
         # section community
         add_section('public', 'community')
         add_option('name', self.Community)
-        if self.Community == 'weimar':
+        if self.Firmware == 'kalua':
           add_option('nodenumber', self.Nodenumber)
           add_option('ipschema', self.Ipschema)
           add_option('wifimode', self.Wifimode)

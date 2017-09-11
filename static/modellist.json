@@ -7,7 +7,9 @@
     "TP-Link":{
         "WR741":{"target":"ar71xx", "profile":"TLWR741"},
         "WR841":{"target":"ar71xx", "profile":"TLWR841"},
-        "WR842":{"target":"ar71xx", "profile":"TLWR842"},
+        "WR841 V11":{"target":"weimarnetz_lede_1701", "profile":"tl-wr841-v11"},
+        "WR842 V1":{"target":"weimarnetz_lede_1701", "profile":"tl-wr842n-v1"},
+        "WR842 V3":{"target":"weimarnetz_lede_1701", "profile":"tl-wr842n-v3"},
         "WR1043ND":{"target":"ar71xx", "profile":"TLWR1043"},
         "WDR3600":{"target":"ar71xx", "profile":"TLWDR4300"},
         "WDR4300":{"target":"ar71xx", "profile":"TLWDR4300"},

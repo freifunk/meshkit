@@ -237,6 +237,7 @@
 'Invalid login': 'Invalid login',
 'Invalid Query': 'Ungültige Anfrage',
 'invalid request': 'Ungültige Anfrage',
+'Invalid username': 'Invalid username',
 'IP address': 'IP-Adresse',
 'IPv4 Address': 'IPv4-Adresse',
 'IPv4 address for the LAN interface': 'IPv4-Adresse der LAN Schnittstelle',
